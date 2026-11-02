@@ -14,7 +14,7 @@ Kullanıcı banka hesap ekstresini (PDF veya CSV) yükler. Uygulama işlemleri a
 - **Backend:** Python 3.12, FastAPI, SQLAlchemy 2.0, Alembic, Pydantic v2
 - **Veritabanı:** PostgreSQL
 - **Kimlik doğrulama:** JWT (access + refresh token), şifreler bcrypt/argon2 ile hash'lenir
-- **Ekstre ayrıştırma:** pdfplumber (PDF), pandas (CSV)
+- **Ekstre ayrıştırma:** pdfplumber (PDF), Python `csv` modülü (CSV; pandas bu iş için gereksiz ağır bulundu)
 - **Kategorizasyon:** önce kural tabanlı (anahtar kelime eşleşmesi + kullanıcı kuralları), sonra opsiyonel olarak scikit-learn (TF-IDF + Logistic Regression)
 - **Frontend:** React + TypeScript + Vite, Tailwind CSS, Recharts (grafikler), TanStack Query (API istekleri)
 - **Test:** pytest (backend), Vitest (frontend, temel düzeyde)
@@ -70,13 +70,13 @@ harcamam/
 - [x] Testler: başarılı kayıt, tekrar eden email, hatalı şifre, süresi dolmuş token
 
 ### Faz 2 — Ekstre yükleme ve ayrıştırma
-- [ ] Statement ve Transaction modelleri
-- [ ] `/statements/upload`: PDF ve CSV kabul etsin, dosya boyutu ve türü doğrulansın
-- [ ] Parser'ı **strateji deseni** ile yaz: `BaseParser` arayüzü + `CsvParser`, `GenericPdfParser`. İleride banka bazlı parser eklemek kolay olsun.
-- [ ] Türkçe formatları doğru işle: tarih `GG.AA.YYYY`, tutar `1.234,56 TL`, negatif/pozitif ayrımı
-- [ ] Aynı ekstre iki kez yüklenirse mükerrer işlem oluşmasın
-- [ ] `sample_data/` içine 2–3 **sahte** örnek ekstre (CSV + PDF) oluştur
-- [ ] Testler: her parser için örnek dosyalarla birim testleri, bozuk dosya senaryosu
+- [x] Statement ve Transaction modelleri
+- [x] `/statements/upload`: PDF ve CSV kabul etsin, dosya boyutu ve türü doğrulansın
+- [x] Parser'ı **strateji deseni** ile yaz: `BaseParser` arayüzü + `CsvParser`, `GenericPdfParser`. İleride banka bazlı parser eklemek kolay olsun.
+- [x] Türkçe formatları doğru işle: tarih `GG.AA.YYYY`, tutar `1.234,56 TL`, negatif/pozitif ayrımı
+- [x] Aynı ekstre iki kez yüklenirse mükerrer işlem oluşmasın
+- [x] `sample_data/` içine 2–3 **sahte** örnek ekstre (CSV + PDF) oluştur
+- [x] Testler: her parser için örnek dosyalarla birim testleri, bozuk dosya senaryosu
 
 ### Faz 3 — Kategorizasyon
 - [ ] Varsayılan kategoriler (seed): Market, Yemek, Ulaşım, Faturalar, Kira, Eğlence, Sağlık, Giyim, Abonelikler, Nakit Çekim, Gelir, Diğer

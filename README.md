@@ -97,7 +97,7 @@ pre-commit run --all-files   # tüm dosyalarda elle çalıştırmak için
 
 - [x] Faz 0 — Kurulum (Docker, FastAPI, React, lint ve pre-commit)
 - [x] Faz 1 — Kimlik doğrulama (JWT access + refresh token)
-- [ ] Faz 2 — Ekstre yükleme ve ayrıştırma
+- [x] Faz 2 — Ekstre yükleme ve ayrıştırma (CSV + PDF, mükerrer kontrolü)
 - [ ] Faz 3 — Kategorizasyon
 - [ ] Faz 4 — Raporlar
 - [ ] Faz 5 — Frontend arayüzü
