@@ -15,7 +15,9 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.database import get_db
+from app.core.security import hash_password
 from app.main import app
+from app.models import User
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
 
@@ -83,3 +85,11 @@ def client(db: Session) -> Iterator[TestClient]:
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def user(db: Session) -> User:
+    user = User(email="test@example.com", password_hash=hash_password("guclu-sifre-123"))
+    db.add(user)
+    db.flush()
+    return user
