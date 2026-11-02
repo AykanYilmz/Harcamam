@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-harcamam}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-harcamam}
+      POSTGRES_DB: ${POSTGRES_DB:-harcamam}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-harcamam}:${POSTGRES_PASSWORD:-harcamam}@db:5432/${POSTGRES_DB:-harcamam}
+      CORS_ORIGINS: '["http://localhost:5173"]'
+      # File change events don't reach containers from Windows bind mounts reliably.
+      WATCHFILES_FORCE_POLLING: "true"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_URL: http://localhost:8000
+      VITE_USE_POLLING: "true"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      # Keep the container's Linux node_modules instead of the host's.
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
