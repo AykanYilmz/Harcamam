@@ -52,7 +52,7 @@ source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 
 uvicorn app.main:app --reload    # sunucuyu başlat
-pytest                           # testler
+pytest                           # testler (önce: docker compose up -d db)
 ruff check . && black --check .  # lint
 ```
 
@@ -96,7 +96,7 @@ pre-commit run --all-files   # tüm dosyalarda elle çalıştırmak için
 ## Yol haritası
 
 - [x] Faz 0 — Kurulum (Docker, FastAPI, React, lint ve pre-commit)
-- [ ] Faz 1 — Kimlik doğrulama
+- [x] Faz 1 — Kimlik doğrulama (JWT access + refresh token)
 - [ ] Faz 2 — Ekstre yükleme ve ayrıştırma
 - [ ] Faz 3 — Kategorizasyon
 - [ ] Faz 4 — Raporlar

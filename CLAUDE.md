@@ -64,10 +64,10 @@ harcamam/
 - [x] ruff, black, ESLint, Prettier ayarları ve pre-commit hook'ları
 
 ### Faz 1 — Kimlik doğrulama
-- [ ] User modeli + Alembic migration
-- [ ] `/auth/register`, `/auth/login`, `/auth/refresh`, `/auth/me`
-- [ ] Şifre hash'leme, JWT üretimi/doğrulama, korumalı endpoint dependency'si
-- [ ] Testler: başarılı kayıt, tekrar eden email, hatalı şifre, süresi dolmuş token
+- [x] User modeli + Alembic migration
+- [x] `/auth/register`, `/auth/login`, `/auth/refresh`, `/auth/me`
+- [x] Şifre hash'leme, JWT üretimi/doğrulama, korumalı endpoint dependency'si
+- [x] Testler: başarılı kayıt, tekrar eden email, hatalı şifre, süresi dolmuş token
 
 ### Faz 2 — Ekstre yükleme ve ayrıştırma
 - [ ] Statement ve Transaction modelleri
