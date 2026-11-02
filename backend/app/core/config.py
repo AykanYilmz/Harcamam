@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 7
 
+    max_upload_size_bytes: int = 5 * 1024 * 1024
+
 
 @lru_cache
 def get_settings() -> Settings:

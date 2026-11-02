@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.database import get_db
-from app.core.security import hash_password
+from app.core.security import create_token, hash_password
 from app.main import app
 from app.models import User
 
@@ -93,3 +93,8 @@ def user(db: Session) -> User:
     db.add(user)
     db.flush()
     return user
+
+
+@pytest.fixture
+def auth_headers(user: User) -> dict[str, str]:
+    return {"Authorization": f"Bearer {create_token(str(user.id), 'access')}"}
