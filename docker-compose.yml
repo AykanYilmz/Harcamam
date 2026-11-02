@@ -17,9 +17,12 @@ services:
 
   backend:
     build: ./backend
+    # Apply pending migrations before starting the dev server.
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-harcamam}:${POSTGRES_PASSWORD:-harcamam}@db:5432/${POSTGRES_DB:-harcamam}
       CORS_ORIGINS: '["http://localhost:5173"]'
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (see .env.example)}
       # File change events don't reach containers from Windows bind mounts reliably.
       WATCHFILES_FORCE_POLLING: "true"
     ports:

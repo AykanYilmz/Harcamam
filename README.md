@@ -28,7 +28,9 @@ Gereksinim: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 ```bash
 git clone https://github.com/AykanYilmz/Harcamam.git
 cd Harcamam
-cp .env.example .env   # isteğe bağlı; varsayılan değerlerle de çalışır
+cp .env.example .env
+# .env içindeki JWT_SECRET'ı doldurun:
+# python -c "import secrets; print(secrets.token_hex(32))"
 docker compose up --build
 ```
 
