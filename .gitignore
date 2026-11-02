@@ -1,0 +1,43 @@
+# --- Environment / secrets ---
+.env
+.env.*
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# --- Node / frontend ---
+node_modules/
+dist/
+*.tsbuildinfo
+npm-debug.log*
+
+# --- Bank statements: never commit real data ---
+# Only fake samples inside sample_data/ are allowed.
+*.pdf
+*.csv
+*.xlsx
+*.xls
+!sample_data/**/*.pdf
+!sample_data/**/*.csv
+
+# --- Uploads ---
+uploads/
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
