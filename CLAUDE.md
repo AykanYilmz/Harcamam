@@ -58,10 +58,10 @@ harcamam/
 **Kural:** Fazları sırayla yap. Her fazın sonunda testleri çalıştır, ne yaptığını özetle ve bir sonraki faza geçmeden önce bana sor. Her fazı mantıklı, küçük commit'lere böl ve Conventional Commits formatında commit mesajı öner (`feat:`, `fix:`, `test:`, `docs:`, `chore:`).
 
 ### Faz 0 — Kurulum
-- [ ] Repo yapısını oluştur, `.gitignore`, `.env.example`, `README.md` taslağı
-- [ ] docker-compose ile PostgreSQL + backend + frontend ayağa kalksın
-- [ ] FastAPI'de `/health` endpoint'i, React'te boş bir ana sayfa
-- [ ] ruff, black, ESLint, Prettier ayarları ve pre-commit hook'ları
+- [x] Repo yapısını oluştur, `.gitignore`, `.env.example`, `README.md` taslağı
+- [x] docker-compose ile PostgreSQL + backend + frontend ayağa kalksın
+- [x] FastAPI'de `/health` endpoint'i, React'te boş bir ana sayfa
+- [x] ruff, black, ESLint, Prettier ayarları ve pre-commit hook'ları
 
 ### Faz 1 — Kimlik doğrulama
 - [ ] User modeli + Alembic migration
