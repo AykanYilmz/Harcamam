@@ -93,12 +93,12 @@ harcamam/
 - [x] Testler: rapor hesaplamalarının doğruluğu
 
 ### Faz 5 — Frontend
-- [ ] Giriş/kayıt sayfaları, token yönetimi, korumalı route'lar
-- [ ] Dashboard: bu ayın özeti (kartlar), kategori pasta grafiği, aylık trend çizgi grafiği
-- [ ] Ekstre yükleme sayfası (sürükle-bırak, yükleme durumu, hata mesajları)
-- [ ] İşlemler tablosu: filtreleme, kategori düzeltme (satır içi dropdown)
-- [ ] Kategoriler ve kurallar yönetim sayfası
-- [ ] Mobil uyumlu, temiz ve sade tasarım. Arayüz dili Türkçe.
+- [x] Giriş/kayıt sayfaları, token yönetimi, korumalı route'lar
+- [x] Dashboard: bu ayın özeti (kartlar), kategori dağılımı (pasta yerine sıralı çubuklar), aylık trend çizgi grafiği, gelir/gider halkası, günlük harcama
+- [x] Ekstre yükleme sayfası (sürükle-bırak, yükleme durumu, hata mesajları)
+- [x] İşlemler tablosu: filtreleme, kategori düzeltme (satır içi dropdown)
+- [x] Kategoriler ve kurallar yönetim sayfası
+- [x] Mobil uyumlu, temiz ve sade tasarım. Arayüz dili Türkçe. (+ açık/koyu tema)
 - [ ] Ayarlar sayfası: şifre değiştirme, hesap silme, tema (+ backend endpoint'leri)
 - [ ] Yardım sayfası: desteklenen dosya formatları, sık sorulan sorular
 - [ ] Raporlar sayfası (uzun dönem grafikler, kategori trendleri) ve Takvim sayfası (harcamalar takvimde)
