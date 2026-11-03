@@ -46,8 +46,7 @@ export function UploadPage() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold text-fg">Ekstre Yükle</h1>
-      <p className="mt-1 text-sm text-fg-subtle">
+      <p className="text-sm text-fg-subtle">
         Bankandan indirdiğin hesap veya kredi kartı ekstresini yükle. İşlemler otomatik olarak
         kategorilere ayrılır; aynı işlem iki kez kaydedilmez.
       </p>

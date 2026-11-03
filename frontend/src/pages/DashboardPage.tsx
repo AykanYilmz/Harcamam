@@ -49,8 +49,7 @@ export function DashboardPage() {
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-fg">Özet</h1>
+      <div className="flex justify-end">
         <MonthPicker
           month={data.month}
           onChange={(next) => setSearchParams({ [MONTH_PARAM]: next })}

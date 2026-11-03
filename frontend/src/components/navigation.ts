@@ -1,4 +1,4 @@
-import { LayoutDashboard, List, Tags, Upload, type LucideIcon } from 'lucide-react'
+import { LayoutDashboard, Upload, type LucideIcon } from 'lucide-react'
 
 export interface NavItem {
   to: string
@@ -6,9 +6,16 @@ export interface NavItem {
   icon: LucideIcon
 }
 
-export const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Özet', icon: LayoutDashboard },
-  { to: '/yukle', label: 'Ekstre Yükle', icon: Upload },
-  { to: '/islemler', label: 'İşlemler', icon: List },
-  { to: '/kategoriler', label: 'Kategoriler', icon: Tags },
+/** Sidebar sections, separated by a divider. A page is listed only once it is built. */
+export const NAV_SECTIONS: NavItem[][] = [
+  [
+    { to: '/', label: 'Özet', icon: LayoutDashboard },
+    { to: '/yukle', label: 'Ekstre Yükle', icon: Upload },
+  ],
 ]
+
+/** The title shown in the app bar for the current page. */
+export function pageTitle(pathname: string): string {
+  const item = NAV_SECTIONS.flat().find(({ to }) => to === pathname)
+  return item?.label ?? 'Harcamam'
+}

@@ -2,7 +2,6 @@ import { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router'
 import { GuestOnly, RequireAuth } from './auth/routes.tsx'
 import { AppLayout } from './components/AppLayout.tsx'
-import { ComingSoonPage } from './pages/ComingSoonPage.tsx'
 import { LoginPage } from './pages/LoginPage.tsx'
 import { NotFoundPage } from './pages/NotFoundPage.tsx'
 import { RegisterPage } from './pages/RegisterPage.tsx'
@@ -32,8 +31,6 @@ function App() {
             }
           />
           <Route path="/yukle" element={<UploadPage />} />
-          <Route path="/islemler" element={<ComingSoonPage title="İşlemler" />} />
-          <Route path="/kategoriler" element={<ComingSoonPage title="Kategoriler" />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />
