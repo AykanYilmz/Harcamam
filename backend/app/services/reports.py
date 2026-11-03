@@ -1,9 +1,9 @@
 """Report calculations.
 
-Rules shared by every report:
-- Transactions in "Transfer" are left out entirely (moving money is neither income nor spending).
-- Income is the net of the "Gelir" category.
-- Spending in any other category is its expenses minus its income, so a refund lowers the
+Rules shared by every report, based on each category's kind:
+- Transfer categories are left out entirely (moving money is neither income nor spending).
+- Income is the net of the income categories.
+- Spending in an expense category is its expenses minus its income, so a refund lowers the
   spending of the category it belongs to instead of counting as income.
 """
 
@@ -15,15 +15,8 @@ from decimal import Decimal
 from sqlalchemy import Date, case, func, select
 from sqlalchemy.orm import Session
 
-from app.models import (
-    INCOME_CATEGORY,
-    TRANSFER_CATEGORY,
-    Category,
-    Transaction,
-    TransactionType,
-    User,
-)
-from app.services.categories import build_categorizer, get_default_category
+from app.models import Category, CategoryKind, Transaction, TransactionType, User
+from app.services.categories import build_categorizer
 from app.services.parsing.formats import normalize_text
 
 ZERO = Decimal("0.00")
@@ -99,28 +92,20 @@ class MonthlyReport:
     categories: list[CategorySpending]
 
 
-class _ReportCategories:
-    """Ids of the default categories the rules above depend on."""
-
-    def __init__(self, db: Session) -> None:
-        self.income_id = get_default_category(db, INCOME_CATEGORY).id
-        self.transfer_id = get_default_category(db, TRANSFER_CATEGORY).id
-
-
 def monthly_totals(db: Session, user: User, first: dt.date, last: dt.date) -> list[MonthTotals]:
     """Income and expense for every month from `first` to `last`, months without data as 0."""
-    categories = _ReportCategories(db)
     month = func.date_trunc("month", Transaction.date).cast(Date).label("month")
-    is_income = Transaction.category_id == categories.income_id
+    is_income = Category.kind == CategoryKind.INCOME
     rows = db.execute(
         select(
             month,
             func.coalesce(func.sum(case((is_income, _signed_amount), else_=0)), 0),
             func.coalesce(func.sum(case((is_income, 0), else_=-_signed_amount)), 0),
         )
+        .join(Category, Transaction.category_id == Category.id)
         .where(
             Transaction.user_id == user.id,
-            Transaction.category_id != categories.transfer_id,
+            Category.kind != CategoryKind.TRANSFER,
             Transaction.date >= first,
             Transaction.date < add_months(last, 1),
         )
@@ -137,15 +122,13 @@ def monthly_totals(db: Session, user: User, first: dt.date, last: dt.date) -> li
     return result
 
 
-def _spending_by_category(
-    db: Session, user: User, month: dt.date, categories: _ReportCategories
-) -> dict[Category, Decimal]:
+def _spending_by_category(db: Session, user: User, month: dt.date) -> dict[Category, Decimal]:
     rows = db.execute(
         select(Category, func.sum(-_signed_amount))
         .join(Transaction, Transaction.category_id == Category.id)
         .where(
             Transaction.user_id == user.id,
-            Transaction.category_id.not_in([categories.income_id, categories.transfer_id]),
+            Category.kind == CategoryKind.EXPENSE,
             Transaction.date >= month,
             Transaction.date < add_months(month, 1),
         )
@@ -159,9 +142,8 @@ def monthly_report(db: Session, user: User, month: dt.date | None = None) -> Mon
     previous_month = add_months(month, -1)
     previous, current = monthly_totals(db, user, previous_month, month)
 
-    categories = _ReportCategories(db)
-    spending = _spending_by_category(db, user, month, categories)
-    previous_spending = _spending_by_category(db, user, previous_month, categories)
+    spending = _spending_by_category(db, user, month)
+    previous_spending = _spending_by_category(db, user, previous_month)
     category_rows = [
         CategorySpending(
             category=category,
@@ -215,13 +197,12 @@ def top_merchants(
     lower their merchant's total, the same way they lower category spending.
     """
     month = month or latest_month(db, user)
-    categories = _ReportCategories(db)
     rows = db.execute(
         select(Transaction, Category)
         .join(Category, Transaction.category_id == Category.id)
         .where(
             Transaction.user_id == user.id,
-            Transaction.category_id.not_in([categories.income_id, categories.transfer_id]),
+            Category.kind == CategoryKind.EXPENSE,
             Transaction.date >= month,
             Transaction.date < add_months(month, 1),
         )

@@ -10,8 +10,6 @@ from app.core.database import Base
 # Default categories the code refers to by name; all defaults are seeded by migration.
 OTHER_CATEGORY = "Diğer"
 INCOME_CATEGORY = "Gelir"
-# Money moved between the user's own accounts; excluded from income and expense reports.
-TRANSFER_CATEGORY = "Transfer"
 
 
 class CategoryKind(enum.StrEnum):

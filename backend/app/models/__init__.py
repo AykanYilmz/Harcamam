@@ -1,7 +1,6 @@
 from app.models.category import (
     INCOME_CATEGORY,
     OTHER_CATEGORY,
-    TRANSFER_CATEGORY,
     Category,
     CategoryKind,
     CategoryRule,
@@ -13,7 +12,6 @@ from app.models.user import User
 __all__ = [
     "INCOME_CATEGORY",
     "OTHER_CATEGORY",
-    "TRANSFER_CATEGORY",
     "Category",
     "CategoryKind",
     "CategoryRule",
