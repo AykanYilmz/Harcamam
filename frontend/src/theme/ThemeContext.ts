@@ -1,19 +1,13 @@
 import { createContext } from 'react'
 
-export type ThemePreference = 'light' | 'dark' | 'system'
-export type ResolvedTheme = 'light' | 'dark'
-/** Animations: follow the OS "reduce motion" setting, or always on / always off. */
-export type MotionPreference = 'system' | 'on' | 'off'
+export type Theme = 'light' | 'dark'
 
 export interface ThemeContextValue {
-  preference: ThemePreference
-  /** What is actually shown: `system` resolved through the OS setting. */
-  resolved: ResolvedTheme
-  setPreference(preference: ThemePreference): void
-  motion: MotionPreference
-  /** Whether animations are off right now (`motion` resolved through the OS setting). */
-  reducedMotion: boolean
-  setMotion(motion: MotionPreference): void
+  theme: Theme
+  setTheme(theme: Theme): void
+  /** Page transitions, count-up numbers, the sliding menu… On unless turned off in Settings. */
+  animations: boolean
+  setAnimations(on: boolean): void
 }
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null)

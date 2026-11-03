@@ -120,7 +120,7 @@ body {
 
 /*
  * Animations are decoration. ThemeProvider sets data-motion="reduce" when the user turned
- * them off in Settings, or left the setting on "system" and the OS asks to reduce motion.
+ * them off in Settings.
  */
 [data-motion='reduce'] *,
 [data-motion='reduce'] ::backdrop {

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HesapKitap</title>
     <script>
-      // Apply the saved theme and motion choice before the first paint, so a dark page never
+      // Apply the saved theme and animations choice before the first paint, so a dark page never
       // flashes white. Same storage keys and rules as src/theme/ThemeProvider.tsx.
       try {
         var theme = localStorage.getItem('harcamam.theme')
@@ -15,11 +15,9 @@
           (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.classList.toggle('dark', dark)
 
-        var motion = localStorage.getItem('harcamam.motion')
-        var reduce =
-          motion === 'off' ||
-          (motion !== 'on' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-        if (reduce) document.documentElement.dataset.motion = 'reduce'
+        if (localStorage.getItem('harcamam.motion') === 'off') {
+          document.documentElement.dataset.motion = 'reduce'
+        }
       } catch (e) {}
     </script>
   </head>

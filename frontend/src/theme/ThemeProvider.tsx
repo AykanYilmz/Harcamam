@@ -1,88 +1,63 @@
-import { useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   MOTION_STORAGE_KEY,
   THEME_STORAGE_KEY,
   ThemeContext,
-  type MotionPreference,
-  type ResolvedTheme,
+  type Theme,
   type ThemeContextValue,
-  type ThemePreference,
 } from './ThemeContext.ts'
 
-const DARK_QUERY = '(prefers-color-scheme: dark)'
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
-
-function readStored<T extends string>(key: string, allowed: T[], fallback: T): T {
+function readStored(key: string): string | null {
   try {
-    const stored = window.localStorage.getItem(key) as T | null
-    return stored && allowed.includes(stored) ? stored : fallback
+    return window.localStorage.getItem(key)
   } catch {
-    return fallback
+    return null
   }
 }
 
-/** Remember a choice; the default ("system") is stored as nothing at all. */
 function store(key: string, value: string) {
   try {
-    if (value === 'system') window.localStorage.removeItem(key)
-    else window.localStorage.setItem(key, value)
+    window.localStorage.setItem(key, value)
   } catch {
     // Not persisted (e.g. storage blocked); the choice still applies to this visit.
   }
 }
 
-/** Live value of a media query; re-renders when the OS setting changes. */
-function useMediaQuery(query: string): boolean {
-  return useSyncExternalStore(
-    (onChange) => {
-      const media = window.matchMedia?.(query)
-      media?.addEventListener('change', onChange)
-      return () => media?.removeEventListener('change', onChange)
-    },
-    () => window.matchMedia?.(query).matches ?? false,
-  )
+/** The saved theme, or on a first visit whichever one the operating system uses. */
+function initialTheme(): Theme {
+  const stored = readStored(THEME_STORAGE_KEY)
+  if (stored === 'light' || stored === 'dark') return stored
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [preference, setPreferenceState] = useState(() =>
-    readStored<ThemePreference>(THEME_STORAGE_KEY, ['light', 'dark'], 'system'),
-  )
-  const [motion, setMotionState] = useState(() =>
-    readStored<MotionPreference>(MOTION_STORAGE_KEY, ['on', 'off'], 'system'),
-  )
-  const systemDark = useMediaQuery(DARK_QUERY)
-  const systemReducedMotion = useMediaQuery(REDUCED_MOTION_QUERY)
-
-  const resolved: ResolvedTheme =
-    preference === 'system' ? (systemDark ? 'dark' : 'light') : preference
-  const reducedMotion = motion === 'off' || (motion === 'system' && systemReducedMotion)
+  const [theme, setThemeState] = useState(initialTheme)
+  const [animations, setAnimationsState] = useState(() => readStored(MOTION_STORAGE_KEY) !== 'off')
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', resolved === 'dark')
-  }, [resolved])
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+  }, [theme])
 
   useEffect(() => {
     // index.css switches every animation and transition off under this attribute.
-    if (reducedMotion) document.documentElement.dataset.motion = 'reduce'
-    else delete document.documentElement.dataset.motion
-  }, [reducedMotion])
+    if (animations) delete document.documentElement.dataset.motion
+    else document.documentElement.dataset.motion = 'reduce'
+  }, [animations])
 
   const value = useMemo<ThemeContextValue>(
     () => ({
-      preference,
-      resolved,
-      setPreference(next) {
-        setPreferenceState(next)
+      theme,
+      setTheme(next) {
+        setThemeState(next)
         store(THEME_STORAGE_KEY, next)
       },
-      motion,
-      reducedMotion,
-      setMotion(next) {
-        setMotionState(next)
-        store(MOTION_STORAGE_KEY, next)
+      animations,
+      setAnimations(on) {
+        setAnimationsState(on)
+        store(MOTION_STORAGE_KEY, on ? 'on' : 'off')
       },
     }),
-    [preference, resolved, motion, reducedMotion],
+    [theme, animations],
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

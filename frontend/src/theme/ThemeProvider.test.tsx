@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { Switch } from '../components/ui/Switch.tsx'
 import { MOTION_STORAGE_KEY, THEME_STORAGE_KEY } from './ThemeContext.ts'
 import { ThemeProvider } from './ThemeProvider.tsx'
 import { ThemeSwitcher } from './ThemeSwitcher.tsx'
@@ -26,6 +27,7 @@ function renderSwitcher() {
 }
 
 const isDark = () => document.documentElement.classList.contains('dark')
+const themeSwitch = () => screen.getByRole('switch', { name: 'Koyu tema' })
 
 describe('ThemeProvider', () => {
   beforeEach(() => {
@@ -35,103 +37,78 @@ describe('ThemeProvider', () => {
 
   afterEach(() => vi.unstubAllGlobals())
 
-  it('follows the system theme by default', () => {
+  it('starts from the system theme on a first visit', () => {
     mockSystemTheme(true)
     renderSwitcher()
 
     expect(isDark()).toBe(true)
-    expect(screen.getByRole('radio', { name: 'Sistem teması' })).toBeChecked()
+    expect(themeSwitch()).toBeChecked()
   })
 
-  it('applies and remembers an explicit choice', async () => {
+  it('toggles and remembers the choice', async () => {
     mockSystemTheme(true)
     renderSwitcher()
 
-    await userEvent.click(screen.getByRole('radio', { name: 'Açık tema' }))
+    await userEvent.click(themeSwitch())
 
     expect(isDark()).toBe(false)
+    expect(themeSwitch()).not.toBeChecked()
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('light')
   })
 
-  it('restores the saved choice', () => {
+  it('restores the saved choice over the system theme', () => {
     mockSystemTheme(false)
     localStorage.setItem(THEME_STORAGE_KEY, 'dark')
     renderSwitcher()
 
     expect(isDark()).toBe(true)
-    expect(screen.getByRole('radio', { name: 'Koyu tema' })).toBeChecked()
-  })
-
-  it('forgets the saved choice when switching back to system', async () => {
-    mockSystemTheme(false)
-    localStorage.setItem(THEME_STORAGE_KEY, 'dark')
-    renderSwitcher()
-
-    await userEvent.click(screen.getByRole('radio', { name: 'Sistem teması' }))
-
-    expect(isDark()).toBe(false)
-    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBeNull()
+    expect(themeSwitch()).toBeChecked()
   })
 })
 
-describe('ThemeProvider motion', () => {
-  function mockReducedMotion(reduce: boolean) {
-    vi.stubGlobal(
-      'matchMedia',
-      vi.fn((query: string) => ({
-        matches: reduce && query === '(prefers-reduced-motion: reduce)',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      })),
-    )
+describe('ThemeProvider animations', () => {
+  function AnimationsSwitch() {
+    const { animations, setAnimations } = useTheme()
+    return <Switch checked={animations} onChange={setAnimations} label="Animasyonlar" />
   }
 
-  function MotionChoice({ value }: { value: 'on' | 'off' | 'system' }) {
-    const { setMotion } = useTheme()
-    return <button onClick={() => setMotion(value)}>{value}</button>
-  }
-
-  function renderMotion() {
+  function renderAnimations() {
     render(
       <ThemeProvider>
-        <MotionChoice value="on" />
-        <MotionChoice value="off" />
-        <MotionChoice value="system" />
+        <AnimationsSwitch />
       </ThemeProvider>,
     )
   }
 
   const reduced = () => document.documentElement.dataset.motion === 'reduce'
+  const animationsSwitch = () => screen.getByRole('switch', { name: 'Animasyonlar' })
 
   beforeEach(() => {
     localStorage.clear()
     delete document.documentElement.dataset.motion
   })
-  afterEach(() => vi.unstubAllGlobals())
 
-  it('follows the OS by default', () => {
-    mockReducedMotion(true)
-    renderMotion()
+  it('is on by default', () => {
+    renderAnimations()
+
+    expect(animationsSwitch()).toBeChecked()
+    expect(reduced()).toBe(false)
+  })
+
+  it('can be turned off and remembers it', async () => {
+    renderAnimations()
+
+    await userEvent.click(animationsSwitch())
 
     expect(reduced()).toBe(true)
+    expect(localStorage.getItem(MOTION_STORAGE_KEY)).toBe('off')
   })
 
-  it('can turn animations on even when the OS reduces motion', async () => {
-    mockReducedMotion(true)
-    renderMotion()
+  it('restores the saved choice', () => {
+    localStorage.setItem(MOTION_STORAGE_KEY, 'off')
+    renderAnimations()
 
-    await userEvent.click(screen.getByRole('button', { name: 'on' }))
-
-    expect(reduced()).toBe(false)
-    expect(localStorage.getItem(MOTION_STORAGE_KEY)).toBe('on')
-  })
-
-  it('can turn animations off', async () => {
-    mockReducedMotion(false)
-    renderMotion()
-
-    await userEvent.click(screen.getByRole('button', { name: 'off' }))
-
+    expect(animationsSwitch()).not.toBeChecked()
     expect(reduced()).toBe(true)
   })
 })

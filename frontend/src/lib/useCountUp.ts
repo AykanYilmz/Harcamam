@@ -12,7 +12,7 @@ function osPrefersReducedMotion(): boolean {
  */
 export function useCountUp(target: number, durationMs = 800): number {
   const theme = useContext(ThemeContext)
-  const reduced = theme ? theme.reducedMotion : osPrefersReducedMotion()
+  const reduced = theme ? !theme.animations : osPrefersReducedMotion()
   const [value, setValue] = useState(0)
   // What is on screen right now, so a new target continues from it instead of jumping.
   const shown = useRef(0)
