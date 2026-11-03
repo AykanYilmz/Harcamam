@@ -67,8 +67,6 @@
   --canvas: #f3f0ea;
   --surface: #fbfaf7;
   --surface-muted: #ece8e0;
-  /* A shade darker than the page, so the menu reads as its own soft panel. */
-  --sidebar: #ece7df;
   --line: #e2ddd4;
   --line-strong: #d3cdc2;
   --fg: var(--color-stone-900);
@@ -96,6 +94,7 @@
   --canvas: var(--color-slate-950);
   --surface: var(--color-slate-900);
   --surface-muted: var(--color-slate-800);
+  /* The sidebar is always dark (it carries the .dark class), in both themes. */
   --sidebar: var(--color-slate-900);
   --line: var(--color-slate-800);
   --line-strong: var(--color-slate-700);
