@@ -99,8 +99,8 @@ harcamam/
 - [x] İşlemler tablosu: filtreleme, kategori düzeltme (satır içi dropdown)
 - [x] Kategoriler ve kurallar yönetim sayfası
 - [x] Mobil uyumlu, temiz ve sade tasarım. Arayüz dili Türkçe. (+ açık/koyu tema)
-- [ ] Ayarlar sayfası: şifre değiştirme, hesap silme, tema (+ backend endpoint'leri)
-- [ ] Yardım sayfası: desteklenen dosya formatları, sık sorulan sorular
+- [x] Ayarlar sayfası: şifre değiştirme, hesap silme, tema (+ backend endpoint'leri)
+- [x] Yardım sayfası: desteklenen dosya formatları, sık sorulan sorular
 - [ ] Raporlar sayfası (uzun dönem grafikler, kategori trendleri) ve Takvim sayfası (harcamalar takvimde)
 - Kenar menüsünde yalnızca sayfası hazır olan sekmeler görünür.
 
