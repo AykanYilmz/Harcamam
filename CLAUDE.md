@@ -101,7 +101,8 @@ harcamam/
 - [x] Mobil uyumlu, temiz ve sade tasarım. Arayüz dili Türkçe. (+ açık/koyu tema)
 - [x] Ayarlar sayfası: şifre değiştirme, hesap silme, tema (+ backend endpoint'leri)
 - [x] Yardım sayfası: desteklenen dosya formatları, sık sorulan sorular
-- [ ] Raporlar sayfası (uzun dönem grafikler, kategori trendleri) ve Takvim sayfası (harcamalar takvimde)
+- [x] Raporlar sayfası (uzun dönem grafikler, kategori trendleri) ve Takvim sayfası (harcamalar takvimde)
+- [x] E-posta doğrulama (kayıt ve değişiklikte) ve e-posta değiştirme
 - Kenar menüsünde yalnızca sayfası hazır olan sekmeler görünür.
 
 ### Faz 6 — Kalite ve altyapı

@@ -101,7 +101,7 @@ pre-commit run --all-files   # tüm dosyalarda elle çalıştırmak için
 - [x] Faz 2 — Ekstre yükleme ve ayrıştırma (CSV + PDF, mükerrer kontrolü)
 - [x] Faz 3 — Kategorizasyon (anahtar kelime + kullanıcı kuralları)
 - [x] Faz 4 — Raporlar (aylık özet, trend, en çok harcama yapılan yerler, işlem listesi)
-- [ ] Faz 5 — Frontend arayüzü
+- [x] Faz 5 — Frontend arayüzü (dashboard, işlemler, takvim, raporlar, kategoriler, ayarlar; açık/koyu tema)
 - [ ] Faz 6 — CI, test kapsamı ve deploy
 - [ ] Faz 7 — Opsiyonel geliştirmeler (ML kategorizer, bütçe, abonelik tespiti)
 - [ ] Faz 8 — Dokümantasyon ve portfolyo cilası
