@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { useAuth } from '../../auth/useAuth.ts'
 import type { CategoryTrendReport } from '../../api/types.ts'
 import { heatColor, heatLevel } from '../../lib/calendar.ts'
 import {
@@ -16,6 +17,7 @@ import { Card } from '../ui/Card.tsx'
  * rise and fall show up whatever its size; the totals column compares categories.
  */
 export function CategoryHeatmap({ report }: { report: CategoryTrendReport }) {
+  const endDay = useAuth().user?.period_end_day ?? null
   return (
     <Card className="p-0">
       <div className="px-5 pt-5">
@@ -69,7 +71,7 @@ export function CategoryHeatmap({ report }: { report: CategoryTrendReport }) {
                         <td key={month} className="p-0">
                           {amount > 0 ? (
                             <Link
-                              to={categoryMonthLink(category.category_id, month)}
+                              to={categoryMonthLink(category.category_id, month, endDay)}
                               title={`${category.name}, ${formatMonth(month)}: ${formatCurrency(amount)}`}
                               className="block rounded-md px-1.5 py-2 text-center text-xs font-medium text-fg tabular-nums ring-1 ring-line hover:ring-2 hover:ring-emerald-500"
                               style={{ backgroundColor: heatColor(heatLevel(amount, max)) }}

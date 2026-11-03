@@ -64,8 +64,14 @@ describe('transaction filters in the URL', () => {
   })
 
   it('links a category to its month', () => {
-    expect(categoryMonthLink('a', '2026-02')).toBe(
+    expect(categoryMonthLink('a', '2026-02', null)).toBe(
       '/islemler?baslangic=2026-02-01&bitis=2026-02-28&kategori=a',
+    )
+  })
+
+  it('links to the same days the reports count with a closing day', () => {
+    expect(categoryMonthLink('a', '2026-10', 6)).toBe(
+      '/islemler?baslangic=2026-09-07&bitis=2026-10-06&kategori=a',
     )
   })
 })

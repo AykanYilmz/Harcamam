@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+import { useAuth } from '../../auth/useAuth.ts'
 import type { CategorySpending } from '../../api/types.ts'
 import { formatCurrency, formatPercent } from '../../lib/format.ts'
 import { categoryMonthLink } from '../../lib/transactionFilters.ts'
@@ -29,6 +30,7 @@ export function CategoryBreakdown({
   categories: CategorySpending[]
   month: string
 }) {
+  const endDay = useAuth().user?.period_end_day ?? null
   const [showAll, setShowAll] = useState(false)
   const spent = categories.filter((category) => Number(category.amount) > 0)
   const largest = Math.max(...spent.map((category) => Number(category.amount)), 0)
@@ -47,7 +49,7 @@ export function CategoryBreakdown({
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2">
                   <Link
-                    to={categoryMonthLink(category.category_id, month)}
+                    to={categoryMonthLink(category.category_id, month, endDay)}
                     title="Bu ayın işlemlerini göster"
                     className="truncate text-sm font-medium text-fg hover:text-accent-fg hover:underline"
                   >

@@ -1,4 +1,5 @@
 import type { TransactionSort, TransactionType } from '../api/types.ts'
+import { periodRange } from './periods.ts'
 
 /** Filters for the transactions list, as kept in the page URL. */
 export interface TransactionFilters {
@@ -85,14 +86,25 @@ export function hasActiveFilters(filters: TransactionFilters): boolean {
   )
 }
 
-/** The transactions page filtered to one category in one month ("2026-10"). */
-export function categoryMonthLink(categoryId: string, month: string): string {
-  const [year, monthNumber] = month.split('-').map(Number)
-  const lastDay = new Date(year, monthNumber, 0).getDate()
+function isoDate(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  return `${date.getFullYear()}-${month}-${String(date.getDate()).padStart(2, '0')}`
+}
+
+/**
+ * The transactions page filtered to one category in one month ("2026-10"), using the same
+ * days the reports count for that month (`endDay` is the user's statement closing day).
+ */
+export function categoryMonthLink(
+  categoryId: string,
+  month: string,
+  endDay: number | null,
+): string {
+  const { start, end } = periodRange(month, endDay)
   const params = filtersToParams({
     query: '',
-    dateFrom: `${month}-01`,
-    dateTo: `${month}-${String(lastDay).padStart(2, '0')}`,
+    dateFrom: isoDate(start),
+    dateTo: isoDate(end),
     categoryIds: [categoryId],
     type: '',
     sort: DEFAULT_SORT,
