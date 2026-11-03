@@ -6,6 +6,7 @@ import { ComingSoonPage } from './pages/ComingSoonPage.tsx'
 import { LoginPage } from './pages/LoginPage.tsx'
 import { NotFoundPage } from './pages/NotFoundPage.tsx'
 import { RegisterPage } from './pages/RegisterPage.tsx'
+import { UploadPage } from './pages/UploadPage.tsx'
 import { PageLoader } from './components/ui/Spinner.tsx'
 
 // The dashboard pulls in the chart library; loading it on demand keeps the login page light.
@@ -30,7 +31,7 @@ function App() {
               </Suspense>
             }
           />
-          <Route path="/yukle" element={<ComingSoonPage title="Ekstre Yükle" />} />
+          <Route path="/yukle" element={<UploadPage />} />
           <Route path="/islemler" element={<ComingSoonPage title="İşlemler" />} />
           <Route path="/kategoriler" element={<ComingSoonPage title="Kategoriler" />} />
         </Route>
