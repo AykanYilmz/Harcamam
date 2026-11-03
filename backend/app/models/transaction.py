@@ -4,7 +4,17 @@ import uuid
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Date, Enum, ForeignKey, Index, Numeric, String, UniqueConstraint
+from sqlalchemy import (
+    Boolean,
+    Date,
+    Enum,
+    ForeignKey,
+    Index,
+    Numeric,
+    String,
+    UniqueConstraint,
+    false,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -46,5 +56,13 @@ class Transaction(Base):
         )
     )
     fingerprint: Mapped[str] = mapped_column(String(64))
+    # RESTRICT: a category's transactions are moved to "Diğer" before it is deleted.
+    category_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("categories.id", ondelete="RESTRICT"), index=True
+    )
+    # Set when the user picked the category; automatic re-categorization leaves these alone.
+    is_manually_categorized: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default=false()
+    )
 
     statement: Mapped["Statement"] = relationship(back_populates="transactions")
