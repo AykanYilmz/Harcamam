@@ -9,8 +9,8 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.models import OTHER_CATEGORY, Statement, Transaction, TransactionType, User
-from app.services.categories import get_default_category
+from app.models import Statement, Transaction, TransactionType, User
+from app.services.categories import build_categorizer
 from app.services.parsing.base import ParsedTransaction
 from app.services.parsing.formats import normalize_description
 from app.services.parsing.registry import get_parser
@@ -108,7 +108,25 @@ def import_statement(
     if not new:
         raise DuplicateStatementError("All transactions in this file were already imported")
 
-    other = get_default_category(db, OTHER_CATEGORY)
+    categorizer = build_categorizer(db, user)
+    transactions = []
+    for parsed_transaction, fingerprint in new:
+        transaction_type = (
+            TransactionType.EXPENSE if parsed_transaction.amount < 0 else TransactionType.INCOME
+        )
+        description = parsed_transaction.description[:500]
+        transactions.append(
+            Transaction(
+                user_id=user.id,
+                date=parsed_transaction.date,
+                description=description,
+                amount=abs(parsed_transaction.amount),
+                type=transaction_type,
+                fingerprint=fingerprint,
+                category_id=categorizer.categorize(description, transaction_type),
+            )
+        )
+
     dates = [t.date for t in parsed.transactions]
     statement = Statement(
         user_id=user.id,
@@ -117,18 +135,7 @@ def import_statement(
         file_hash=file_hash,
         period_start=min(dates),
         period_end=max(dates),
-        transactions=[
-            Transaction(
-                user_id=user.id,
-                date=t.date,
-                description=t.description[:500],
-                amount=abs(t.amount),
-                type=TransactionType.EXPENSE if t.amount < 0 else TransactionType.INCOME,
-                fingerprint=fp,
-                category_id=other.id,
-            )
-            for t, fp in new
-        ],
+        transactions=transactions,
     )
     db.add(statement)
     try:
