@@ -43,6 +43,38 @@ def create_token(subject: str, token_type: TokenType, version: int = 0) -> str:
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
 
+EMAIL_TOKEN_TYPE = "email_verify"
+
+
+def create_email_token(subject: str, email: str) -> str:
+    """A link token proving the user can read mail sent to `email`."""
+    settings = get_settings()
+    now = datetime.now(UTC)
+    payload = {
+        "sub": subject,
+        "type": EMAIL_TOKEN_TYPE,
+        "email": email,
+        "iat": now,
+        "exp": now + timedelta(hours=settings.email_verification_expire_hours),
+    }
+    return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
+
+
+def decode_email_token(token: str) -> tuple[str, str]:
+    """Return (subject, email). Raises jwt.InvalidTokenError if invalid, expired or not an
+    email token (so an access token can't be used here, nor this one as an access token)."""
+    settings = get_settings()
+    payload = jwt.decode(
+        token,
+        settings.jwt_secret,
+        algorithms=[settings.jwt_algorithm],
+        options={"require": ["sub", "type", "exp", "email"]},
+    )
+    if payload["type"] != EMAIL_TOKEN_TYPE:
+        raise jwt.InvalidTokenError("Expected an email verification token")
+    return payload["sub"], payload["email"]
+
+
 @dataclass(frozen=True)
 class TokenClaims:
     subject: str

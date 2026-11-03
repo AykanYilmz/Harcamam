@@ -18,6 +18,7 @@ from app.core.database import get_db
 from app.core.security import create_token, hash_password
 from app.main import app
 from app.models import User
+from app.services.email import OutgoingEmail, get_email_sender
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
 
@@ -83,9 +84,26 @@ def db(engine: Engine) -> Iterator[Session]:
     connection.close()
 
 
+class FakeEmailSender:
+    """Collects emails instead of sending them."""
+
+    def __init__(self) -> None:
+        self.sent: list[OutgoingEmail] = []
+
+    def send(self, email: OutgoingEmail) -> None:
+        self.sent.append(email)
+
+
 @pytest.fixture
-def client(db: Session) -> Iterator[TestClient]:
+def outbox() -> FakeEmailSender:
+    return FakeEmailSender()
+
+
+@pytest.fixture
+def client(db: Session, outbox: FakeEmailSender) -> Iterator[TestClient]:
     app.dependency_overrides[get_db] = lambda: db
+    # Tests never talk to an SMTP server; background tasks run before the response returns.
+    app.dependency_overrides[get_email_sender] = lambda: outbox
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()

@@ -1,29 +1,45 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.core.dependencies import CurrentUser, DbSession, user_from_token
 from app.core.security import create_token
 from app.models import User
 from app.schemas.auth import (
+    ChangeEmailRequest,
     ChangePasswordRequest,
     DeleteAccountRequest,
     RefreshRequest,
     TokenPair,
     UserCreate,
     UserRead,
+    VerifyEmailRequest,
+    VerifyEmailResult,
 )
+from app.services.email import EmailSender, get_email_sender
 from app.services.users import (
+    AlreadyVerifiedError,
     EmailAlreadyRegisteredError,
+    InvalidVerificationLinkError,
+    ResendTooSoonError,
+    SameEmailError,
     WrongPasswordError,
     authenticate_user,
+    cancel_email_change,
     change_password,
     create_user,
     delete_account,
+    request_email_change,
+    resend_verification,
+    start_verification,
+    verify_email,
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+Mailer = Annotated[EmailSender, Depends(get_email_sender)]
+EMAIL_TAKEN = "Email is already registered"
 
 
 def issue_tokens(user: User) -> TokenPair:
@@ -35,13 +51,16 @@ def issue_tokens(user: User) -> TokenPair:
 
 
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
-def register(payload: UserCreate, db: DbSession) -> User:
+def register(
+    payload: UserCreate, db: DbSession, mailer: Mailer, background_tasks: BackgroundTasks
+) -> User:
+    """Creates the account and emails a verification link. Verifying is not required to log in."""
     try:
-        return create_user(db, payload.email, payload.password)
+        user = create_user(db, payload.email, payload.password)
     except EmailAlreadyRegisteredError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Email is already registered"
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=EMAIL_TAKEN) from exc
+    background_tasks.add_task(mailer.send, start_verification(db, user))
+    return user
 
 
 @router.post("/login", response_model=TokenPair)
@@ -90,3 +109,63 @@ def remove_account(payload: DeleteAccountRequest, current_user: CurrentUser, db:
         delete_account(db, current_user, payload.password)
     except WrongPasswordError as exc:
         raise WRONG_PASSWORD from exc
+
+
+@router.post("/verify-email", response_model=VerifyEmailResult)
+def confirm_email(payload: VerifyEmailRequest, db: DbSession) -> VerifyEmailResult:
+    """Opened from the emailed link; works without being logged in (e.g. on a phone)."""
+    try:
+        user = verify_email(db, payload.token)
+    except InvalidVerificationLinkError as exc:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, detail="The verification link is invalid or has expired"
+        ) from exc
+    except EmailAlreadyRegisteredError as exc:
+        raise HTTPException(status.HTTP_409_CONFLICT, detail=EMAIL_TAKEN) from exc
+    return VerifyEmailResult(email=user.email)
+
+
+@router.post("/resend-verification", status_code=status.HTTP_204_NO_CONTENT)
+def resend_link(
+    current_user: CurrentUser, db: DbSession, mailer: Mailer, background_tasks: BackgroundTasks
+) -> None:
+    try:
+        message = resend_verification(db, current_user)
+    except AlreadyVerifiedError as exc:
+        raise HTTPException(status.HTTP_409_CONFLICT, detail="Email is already verified") from exc
+    except ResendTooSoonError as exc:
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Please wait before requesting another email",
+            headers={"Retry-After": str(exc.retry_after_seconds)},
+        ) from exc
+    background_tasks.add_task(mailer.send, message)
+
+
+@router.post("/change-email", response_model=UserRead, status_code=status.HTTP_202_ACCEPTED)
+def change_email(
+    payload: ChangeEmailRequest,
+    current_user: CurrentUser,
+    db: DbSession,
+    mailer: Mailer,
+    background_tasks: BackgroundTasks,
+) -> User:
+    """Accepted, not done: the address changes once the link sent to it is opened."""
+    try:
+        messages = request_email_change(db, current_user, payload.new_email, payload.password)
+    except WrongPasswordError as exc:
+        raise WRONG_PASSWORD from exc
+    except SameEmailError as exc:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT, detail="This is already your email"
+        ) from exc
+    except EmailAlreadyRegisteredError as exc:
+        raise HTTPException(status.HTTP_409_CONFLICT, detail=EMAIL_TAKEN) from exc
+    for message in messages:
+        background_tasks.add_task(mailer.send, message)
+    return current_user
+
+
+@router.delete("/pending-email", status_code=status.HTTP_204_NO_CONTENT)
+def cancel_pending_email(current_user: CurrentUser, db: DbSession) -> None:
+    cancel_email_change(db, current_user)

@@ -23,6 +23,9 @@ services:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-harcamam}:${POSTGRES_PASSWORD:-harcamam}@db:5432/${POSTGRES_DB:-harcamam}
       CORS_ORIGINS: '["http://localhost:5173"]'
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (see .env.example)}
+      FRONTEND_URL: http://localhost:5173
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
       # File change events don't reach containers from Windows bind mounts reliably.
       WATCHFILES_FORCE_POLLING: "true"
     ports:
@@ -32,6 +35,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
 
   frontend:
     build: ./frontend
@@ -46,6 +51,14 @@ services:
       - /app/node_modules
     depends_on:
       - backend
+
+  # Development mail server: catches every email the app sends (nothing is delivered).
+  # Inbox: http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:v1.33.0
+    ports:
+      - "8025:8025"
+      - "1025:1025"
 
 volumes:
   postgres_data:

@@ -25,6 +25,20 @@ class Settings(BaseSettings):
 
     max_upload_size_bytes: int = 5 * 1024 * 1024
 
+    # Where links in emails point to.
+    frontend_url: str = "http://localhost:5173"
+
+    # Defaults match the Mailpit container used in development (inbox at localhost:8025).
+    smtp_host: str = "localhost"
+    smtp_port: int = 1025
+    smtp_username: str | None = None
+    smtp_password: str | None = None
+    smtp_use_tls: bool = False
+    email_from: str = "Harcamam <no-reply@harcamam.local>"
+    email_verification_expire_hours: int = 24
+    # Minimum wait between two verification emails to the same user.
+    verification_resend_seconds: int = 60
+
 
 @lru_cache
 def get_settings() -> Settings:

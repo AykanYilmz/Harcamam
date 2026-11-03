@@ -23,6 +23,9 @@ class UserRead(BaseModel):
     id: uuid.UUID
     email: EmailStr
     created_at: datetime
+    email_verified: bool
+    # A new address waiting for its verification link to be opened.
+    pending_email: EmailStr | None
 
 
 class TokenPair(BaseModel):
@@ -42,4 +45,17 @@ class ChangePasswordRequest(BaseModel):
 
 class DeleteAccountRequest(BaseModel):
     # Asked again so an unattended, logged-in browser can't delete the account.
+    password: str
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str
+
+
+class VerifyEmailResult(BaseModel):
+    email: EmailStr
+
+
+class ChangeEmailRequest(BaseModel):
+    new_email: EmailStr
     password: str
