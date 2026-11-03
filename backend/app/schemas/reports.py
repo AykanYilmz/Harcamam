@@ -36,6 +36,7 @@ class MonthlyReportRead(BaseModel):
     # None when the previous month is zero (no meaningful percentage).
     income_change_pct: float | None
     expense_change_pct: float | None
+    net_change_pct: float | None
     categories: list[CategorySpendingRead]
 
 

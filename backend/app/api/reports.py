@@ -51,6 +51,7 @@ def monthly(
         previous=to_totals_read(previous),
         income_change_pct=reports.change_pct(current.income, previous.income),
         expense_change_pct=reports.change_pct(current.expense, previous.expense),
+        net_change_pct=reports.change_pct(current.net, previous.net),
         categories=[
             CategorySpendingRead(
                 category_id=row.category.id,

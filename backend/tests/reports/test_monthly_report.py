@@ -73,6 +73,8 @@ def test_comparison_with_previous_month(client: TestClient, auth_headers: dict[s
     }
     assert report["income_change_pct"] == 20.0
     assert report["expense_change_pct"] == 10.0
+    # Net 9.800 vs 8.000
+    assert report["net_change_pct"] == 22.5
 
 
 @pytest.mark.usefixtures("data")
