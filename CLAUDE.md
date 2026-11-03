@@ -99,6 +99,10 @@ harcamam/
 - [ ] İşlemler tablosu: filtreleme, kategori düzeltme (satır içi dropdown)
 - [ ] Kategoriler ve kurallar yönetim sayfası
 - [ ] Mobil uyumlu, temiz ve sade tasarım. Arayüz dili Türkçe.
+- [ ] Ayarlar sayfası: şifre değiştirme, hesap silme, tema (+ backend endpoint'leri)
+- [ ] Yardım sayfası: desteklenen dosya formatları, sık sorulan sorular
+- [ ] Raporlar sayfası (uzun dönem grafikler, kategori trendleri) ve Takvim sayfası (harcamalar takvimde)
+- Kenar menüsünde yalnızca sayfası hazır olan sekmeler görünür.
 
 ### Faz 6 — Kalite ve altyapı
 - [ ] GitHub Actions: lint + backend testleri + frontend build. Her push ve PR'da çalışsın.
@@ -108,6 +112,7 @@ harcamam/
 - [ ] Ücretsiz bir platforma deploy ve canlı demo linki. Demo kullanıcısı + sahte veriyle dolu hesap.
 
 ### Faz 7 — Opsiyonel geliştirmeler (vakit kalırsa)
+Not: Bütçeler, Abonelikler ve Dışa aktarma kenar menüsüne sekme olarak eklenecek; Faz 5'ten sonra öne çekildi.
 - [ ] ML tabanlı kategorizer: kullanıcının düzelttiği işlemlerle eğitilen TF-IDF + Logistic Regression. Kural eşleşmeyince devreye girsin, güven skoru düşükse "Diğer".
 - [ ] Bütçe hedefleri: kategori bazlı aylık limit, aşılınca uyarı
 - [ ] Abonelik tespiti: her ay tekrar eden ödemeleri otomatik bul
