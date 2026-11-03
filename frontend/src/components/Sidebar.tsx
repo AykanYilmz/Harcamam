@@ -2,7 +2,6 @@ import { LogOut } from 'lucide-react'
 import { NavLink } from 'react-router'
 import { useAuth } from '../auth/useAuth.ts'
 import { ThemeSwitcher } from '../theme/ThemeSwitcher.tsx'
-import { Logo } from './Logo.tsx'
 import { NAV_SECTIONS } from './navigation.ts'
 
 export const SIDEBAR_ID = 'app-sidebar'
@@ -36,7 +35,12 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
       className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-surface transition-[translate,visibility] duration-300 ease-drawer ${state}`}
     >
       <div className="flex h-14 shrink-0 items-center border-b border-line px-4">
-        <Logo />
+        {/* The app bar already names the app; the menu carries its motto. */}
+        <p className="text-sm leading-snug font-semibold text-accent-fg">
+          Her kuruşun hesabı,
+          <br />
+          her ayın kitabı.
+        </p>
       </div>
 
       <nav aria-label="Ana menü" className="flex-1 overflow-y-auto px-3 py-4">
