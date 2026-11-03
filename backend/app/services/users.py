@@ -12,6 +12,10 @@ class EmailAlreadyRegisteredError(Exception):
     pass
 
 
+class WrongPasswordError(Exception):
+    pass
+
+
 def get_user_by_email(db: Session, email: str) -> User | None:
     return db.scalar(select(User).where(User.email == email.strip().lower()))
 
@@ -44,3 +48,21 @@ def authenticate_user(db: Session, email: str, password: str) -> User | None:
     if not verify_password(password, user.password_hash):
         return None
     return user
+
+
+def change_password(db: Session, user: User, current_password: str, new_password: str) -> None:
+    """Set a new password and revoke every token issued so far (other sessions log out)."""
+    if not verify_password(current_password, user.password_hash):
+        raise WrongPasswordError
+    user.password_hash = hash_password(new_password)
+    user.token_version += 1
+    db.commit()
+
+
+def delete_account(db: Session, user: User, password: str) -> None:
+    """Delete the user; the database cascades to their statements, transactions,
+    categories and rules."""
+    if not verify_password(password, user.password_hash):
+        raise WrongPasswordError
+    db.delete(user)
+    db.commit()

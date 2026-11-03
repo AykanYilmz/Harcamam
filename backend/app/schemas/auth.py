@@ -1,13 +1,15 @@
 import uuid
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+
+Password = Annotated[str, Field(min_length=8, max_length=128)]
 
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=8, max_length=128)
+    password: Password
 
     @field_validator("email")
     @classmethod
@@ -31,3 +33,13 @@ class TokenPair(BaseModel):
 
 class RefreshRequest(BaseModel):
     refresh_token: str
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: Password
+
+
+class DeleteAccountRequest(BaseModel):
+    # Asked again so an unattended, logged-in browser can't delete the account.
+    password: str

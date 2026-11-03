@@ -25,9 +25,10 @@ def test_same_password_hashes_differently() -> None:
 
 
 def test_decode_token_returns_subject() -> None:
-    token = create_token("user-123", "access")
+    token = create_token("user-123", "access", version=3)
 
-    assert decode_token(token, expected_type="access") == "user-123"
+    claims = decode_token(token, expected_type="access")
+    assert (claims.subject, claims.version) == ("user-123", 3)
 
 
 def test_decode_token_rejects_wrong_type() -> None:

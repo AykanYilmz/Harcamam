@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Literal
 
@@ -23,7 +24,7 @@ def verify_password(password: str, hashed: str) -> bool:
     return password_hash.verify(password, hashed)
 
 
-def create_token(subject: str, token_type: TokenType) -> str:
+def create_token(subject: str, token_type: TokenType, version: int = 0) -> str:
     settings = get_settings()
     now = datetime.now(UTC)
     if token_type == "access":
@@ -34,6 +35,7 @@ def create_token(subject: str, token_type: TokenType) -> str:
     payload = {
         "sub": subject,
         "type": token_type,
+        "ver": version,
         "iat": now,
         "exp": expires_at,
         "jti": uuid.uuid4().hex,
@@ -41,8 +43,14 @@ def create_token(subject: str, token_type: TokenType) -> str:
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
 
-def decode_token(token: str, expected_type: TokenType) -> str:
-    """Return the token's subject. Raises jwt.InvalidTokenError if it is invalid or of the wrong type."""
+@dataclass(frozen=True)
+class TokenClaims:
+    subject: str
+    version: int
+
+
+def decode_token(token: str, expected_type: TokenType) -> TokenClaims:
+    """Raises jwt.InvalidTokenError if the token is invalid, expired or of the wrong type."""
     settings = get_settings()
     payload = jwt.decode(
         token,
@@ -52,4 +60,5 @@ def decode_token(token: str, expected_type: TokenType) -> str:
     )
     if payload["type"] != expected_type:
         raise jwt.InvalidTokenError(f"Expected a {expected_type} token")
-    return payload["sub"]
+    # Tokens issued before versioning existed count as version 0.
+    return TokenClaims(subject=payload["sub"], version=payload.get("ver", 0))
