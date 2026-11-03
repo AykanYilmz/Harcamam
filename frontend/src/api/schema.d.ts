@@ -327,6 +327,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/transactions/uncategorized": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Uncategorized */
+        get: operations["get_uncategorized_transactions_uncategorized_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/transactions/bulk": {
         parameters: {
             query?: never;
@@ -756,6 +773,8 @@ export interface components {
             imported: number;
             /** Skipped Duplicates */
             skipped_duplicates: number;
+            /** Uncategorized */
+            uncategorized: number;
         };
         /** StatementRead */
         StatementRead: {
@@ -880,6 +899,24 @@ export interface components {
         TrendReportRead: {
             /** Months */
             months: components["schemas"]["MonthTotalsRead"][];
+        };
+        /** UncategorizedMerchantRead */
+        UncategorizedMerchantRead: {
+            /** Name */
+            name: string;
+            /** Keyword */
+            keyword: string;
+            /** Amount */
+            amount: string;
+            /** Transactions */
+            transactions: components["schemas"]["TransactionRead"][];
+        };
+        /** UncategorizedReport */
+        UncategorizedReport: {
+            /** Transaction Count */
+            transaction_count: number;
+            /** Merchants */
+            merchants: components["schemas"]["UncategorizedMerchantRead"][];
         };
         /** UserCreate */
         UserCreate: {
@@ -1613,6 +1650,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_uncategorized_transactions_uncategorized_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UncategorizedReport"];
                 };
             };
         };

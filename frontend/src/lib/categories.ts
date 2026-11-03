@@ -1,4 +1,11 @@
-import type { CategoryKind } from '../api/types.ts'
+import type { Category, CategoryKind } from '../api/types.ts'
+
+/** The built-in fallback for transactions no rule recognizes (backend OTHER_CATEGORY). */
+export const OTHER_CATEGORY = 'Diğer'
+
+export function isOtherCategory(category: Category): boolean {
+  return category.is_default && category.name === OTHER_CATEGORY
+}
 
 export const KIND_LABELS: Record<CategoryKind, string> = {
   expense: 'Harcama',

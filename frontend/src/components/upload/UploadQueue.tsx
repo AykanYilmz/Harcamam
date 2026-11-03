@@ -1,5 +1,7 @@
 import { CircleAlert, CircleCheck, FileText } from 'lucide-react'
+import { Link } from 'react-router'
 import type { StatementImportResult } from '../../api/types.ts'
+import { UNCATEGORIZED_PATH } from '../navigation.ts'
 import { Spinner } from '../ui/Spinner.tsx'
 
 export type UploadItem =
@@ -13,6 +15,15 @@ function ResultText({ result }: { result: StatementImportResult }) {
     <>
       {result.imported} işlem eklendi
       {skipped > 0 && `, ${skipped} işlem zaten kayıtlı olduğu için atlandı`}.
+      {result.uncategorized > 0 && (
+        <>
+          {' '}
+          {result.uncategorized} işlem tanınmadı.{' '}
+          <Link to={UNCATEGORIZED_PATH} className="font-medium text-accent-fg hover:underline">
+            Kategorize et
+          </Link>
+        </>
+      )}
     </>
   )
 }

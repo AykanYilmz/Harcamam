@@ -9,6 +9,7 @@ import { MonthPicker } from '../components/dashboard/MonthPicker.tsx'
 import { StatTile } from '../components/dashboard/StatTile.tsx'
 import { TopMerchantsList } from '../components/dashboard/TopMerchantsList.tsx'
 import { TrendChart } from '../components/dashboard/TrendChart.tsx'
+import { UncategorizedHint } from '../components/UncategorizedHint.tsx'
 import { ErrorAlert } from '../components/ui/Alert.tsx'
 import { Card } from '../components/ui/Card.tsx'
 import { PageLoader } from '../components/ui/Spinner.tsx'
@@ -135,6 +136,7 @@ export function DashboardPage() {
           <div className="mt-4">
             <CategoryBreakdown categories={data.categories} month={data.month} />
           </div>
+          <UncategorizedHint className="mt-4" />
         </>
       )}
     </>

@@ -3,7 +3,26 @@ import { filtersToApiQuery, type TransactionFilters } from '../lib/transactionFi
 import { invalidateCategorization } from './categories.ts'
 import { api } from './index.ts'
 import { TRANSACTIONS_KEY } from './statements.ts'
-import type { BulkCategoryResult, TransactionCorrectionResult, TransactionPage } from './types.ts'
+import type {
+  BulkCategoryResult,
+  TransactionCorrectionResult,
+  TransactionPage,
+  UncategorizedReport,
+} from './types.ts'
+
+/**
+ * Outside TRANSACTIONS_KEY on purpose: saving a rule from the list must not refetch it, or
+ * the merchant just categorized would vanish before the user sees it confirmed. It is
+ * fetched fresh whenever a page using it opens.
+ */
+export const UNCATEGORIZED_KEY = ['uncategorized'] as const
+
+export function useUncategorized() {
+  return useQuery({
+    queryKey: UNCATEGORIZED_KEY,
+    queryFn: () => api.get<UncategorizedReport>('/transactions/uncategorized'),
+  })
+}
 
 export function useTransactions(filters: TransactionFilters) {
   return useQuery({

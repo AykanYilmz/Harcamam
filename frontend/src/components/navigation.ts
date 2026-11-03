@@ -2,6 +2,7 @@ import {
   CalendarDays,
   ChartColumn,
   CircleHelp,
+  GraduationCap,
   LayoutDashboard,
   List,
   Settings,
@@ -17,6 +18,8 @@ export interface NavItem {
 }
 
 /** Sidebar sections, separated by a divider. A page is listed only once it is built. */
+export const UNCATEGORIZED_PATH = '/kategori-egitimi'
+
 export const NAV_SECTIONS: NavItem[][] = [
   [
     { to: '/', label: 'Özet', icon: LayoutDashboard },
@@ -25,6 +28,7 @@ export const NAV_SECTIONS: NavItem[][] = [
     { to: '/raporlar', label: 'Raporlar', icon: ChartColumn },
     { to: '/yukle', label: 'Ekstre Yükle', icon: Upload },
     { to: '/kategoriler', label: 'Kategoriler', icon: Tags },
+    { to: UNCATEGORIZED_PATH, label: 'Kategori Eğitimi', icon: GraduationCap },
   ],
   [
     { to: '/ayarlar', label: 'Ayarlar', icon: Settings },

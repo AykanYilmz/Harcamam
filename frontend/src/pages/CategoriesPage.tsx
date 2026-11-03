@@ -1,6 +1,7 @@
 import { useCategories } from '../api/categories.ts'
 import { CategoriesSection } from '../components/categories/CategoriesSection.tsx'
 import { RulesSection } from '../components/categories/RulesSection.tsx'
+import { UncategorizedHint } from '../components/UncategorizedHint.tsx'
 import { ErrorAlert } from '../components/ui/Alert.tsx'
 import { PageLoader } from '../components/ui/Spinner.tsx'
 import { errorMessage } from '../lib/errors.ts'
@@ -13,6 +14,7 @@ export function CategoriesPage() {
 
   return (
     <div className="grid items-start gap-4 lg:grid-cols-2">
+      <UncategorizedHint className="lg:col-span-2" />
       <CategoriesSection categories={categories.data} />
       <RulesSection categories={categories.data} />
     </div>
