@@ -38,9 +38,7 @@ export function Sidebar({ mobileOpen, desktopOpen, onNavigate }: SidebarProps) {
     <aside
       id={SIDEBAR_ID}
       aria-label="Kenar çubuğu"
-      // `dark` makes the sidebar a dark-theme island: every color token inside it takes its
-      // dark value, so it stays dark (and readable) while the page is in the light theme.
-      className={`dark fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-sidebar text-fg transition-[translate,visibility] duration-300 ease-drawer ${mobileState} ${desktopState}`}
+      className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-surface transition-[translate,visibility] duration-300 ease-drawer ${mobileState} ${desktopState}`}
     >
       <div className="flex h-14 shrink-0 items-center border-b border-line px-4">
         <Logo />

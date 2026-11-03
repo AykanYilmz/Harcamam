@@ -1,4 +1,4 @@
-import { Monitor, Moon, Sun, type LucideIcon } from 'lucide-react'
+import { Monitor, Moon, Pause, Sparkles, Sun, type LucideIcon } from 'lucide-react'
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '../auth/useAuth.ts'
@@ -10,17 +10,63 @@ import { Dialog } from '../components/ui/Dialog.tsx'
 import { SuccessNotice } from '../components/ui/Notice.tsx'
 import { TextField } from '../components/ui/TextField.tsx'
 import { errorMessage } from '../lib/errors.ts'
-import type { ThemePreference } from '../theme/ThemeContext.ts'
+import type { MotionPreference, ThemePreference } from '../theme/ThemeContext.ts'
 import { useTheme } from '../theme/useTheme.ts'
 
 const MIN_PASSWORD_LENGTH = 8
 const WRONG_PASSWORD = { 400: 'Şifre hatalı.' }
 
-const THEMES: { value: ThemePreference; label: string; icon: LucideIcon }[] = [
+interface Choice<T> {
+  value: T
+  label: string
+  icon: LucideIcon
+}
+
+const THEMES: Choice<ThemePreference>[] = [
   { value: 'light', label: 'Açık', icon: Sun },
   { value: 'dark', label: 'Koyu', icon: Moon },
   { value: 'system', label: 'Sistem', icon: Monitor },
 ]
+
+const MOTIONS: Choice<MotionPreference>[] = [
+  { value: 'on', label: 'Açık', icon: Sparkles },
+  { value: 'off', label: 'Kapalı', icon: Pause },
+  { value: 'system', label: 'Sistem', icon: Monitor },
+]
+
+function ChoiceGroup<T extends string>({
+  label,
+  choices,
+  selected,
+  onSelect,
+}: {
+  label: string
+  choices: Choice<T>[]
+  selected: T
+  onSelect(value: T): void
+}) {
+  return (
+    <div role="radiogroup" aria-label={label} className="grid grid-cols-3 gap-3">
+      {choices.map(({ value, label: choiceLabel, icon: Icon }) => (
+        <button
+          key={value}
+          type="button"
+          role="radio"
+          aria-checked={selected === value}
+          onClick={() => onSelect(value)}
+          className={`flex flex-col items-center gap-2 rounded-xl px-3 py-4 text-sm font-medium ring-1 transition-colors ${
+            selected === value
+              ? 'bg-accent-soft text-accent-fg ring-emerald-500'
+              : 'text-fg-muted ring-line-strong hover:bg-surface-muted'
+          }`}
+        >
+          <Icon aria-hidden className="size-5" />
+          {choiceLabel}
+        </button>
+      ))}
+    </div>
+  )
+}
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -32,30 +78,18 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 function ThemeSection() {
-  const { preference, setPreference } = useTheme()
+  const { preference, setPreference, motion, setMotion, reducedMotion } = useTheme()
   return (
     <Section title="Görünüm">
-      <div role="radiogroup" aria-label="Tema" className="grid grid-cols-3 gap-3">
-        {THEMES.map(({ value, label, icon: Icon }) => (
-          <button
-            key={value}
-            type="button"
-            role="radio"
-            aria-checked={preference === value}
-            onClick={() => setPreference(value)}
-            className={`flex flex-col items-center gap-2 rounded-xl px-3 py-4 text-sm font-medium ring-1 transition-colors ${
-              preference === value
-                ? 'bg-accent-soft text-accent-fg ring-emerald-500'
-                : 'text-fg-muted ring-line-strong hover:bg-surface-muted'
-            }`}
-          >
-            <Icon aria-hidden className="size-5" />
-            {label}
-          </button>
-        ))}
-      </div>
+      <h3 className="mb-2 text-sm font-medium text-fg-secondary">Tema</h3>
+      <ChoiceGroup label="Tema" choices={THEMES} selected={preference} onSelect={setPreference} />
+
+      <h3 className="mt-6 mb-2 text-sm font-medium text-fg-secondary">Animasyonlar</h3>
+      <ChoiceGroup label="Animasyonlar" choices={MOTIONS} selected={motion} onSelect={setMotion} />
       <p className="mt-3 text-xs text-fg-subtle">
-        "Sistem", bilgisayarının ya da telefonunun ayarını izler.
+        {motion === 'system' && reducedMotion
+          ? 'Bilgisayarında animasyon efektleri kapalı olduğu için şu an animasyonlar kapalı. Görmek istersen "Açık"ı seç.'
+          : '"Sistem", bilgisayarının ya da telefonunun ayarlarını izler.'}
       </p>
     </Section>
   )
