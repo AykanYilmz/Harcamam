@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
-  MOTION_STORAGE_KEY,
   THEME_STORAGE_KEY,
   ThemeContext,
   type Theme,
@@ -32,17 +31,10 @@ function initialTheme(): Theme {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState(initialTheme)
-  const [animations, setAnimationsState] = useState(() => readStored(MOTION_STORAGE_KEY) !== 'off')
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
-
-  useEffect(() => {
-    // index.css switches every animation and transition off under this attribute.
-    if (animations) delete document.documentElement.dataset.motion
-    else document.documentElement.dataset.motion = 'reduce'
-  }, [animations])
 
   const value = useMemo<ThemeContextValue>(
     () => ({
@@ -51,13 +43,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setThemeState(next)
         store(THEME_STORAGE_KEY, next)
       },
-      animations,
-      setAnimations(on) {
-        setAnimationsState(on)
-        store(MOTION_STORAGE_KEY, on ? 'on' : 'off')
-      },
     }),
-    [theme, animations],
+    [theme],
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

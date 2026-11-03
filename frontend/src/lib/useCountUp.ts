@@ -1,24 +1,16 @@
-import { useContext, useEffect, useRef, useState } from 'react'
-import { ThemeContext } from '../theme/ThemeContext.ts'
-
-function osPrefersReducedMotion(): boolean {
-  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-}
+import { useEffect, useRef, useState } from 'react'
 
 /**
  * A number that counts up to `target` (from 0 on first render, then from wherever it is
- * when `target` changes), easing out over `durationMs`. Returns `target` right away when
- * animations are off (the app's motion setting, or the OS one outside a ThemeProvider).
+ * when `target` changes), easing out over `durationMs`.
  */
 export function useCountUp(target: number, durationMs = 800): number {
-  const theme = useContext(ThemeContext)
-  const reduced = theme ? !theme.animations : osPrefersReducedMotion()
   const [value, setValue] = useState(0)
   // What is on screen right now, so a new target continues from it instead of jumping.
   const shown = useRef(0)
 
   useEffect(() => {
-    if (reduced || typeof requestAnimationFrame === 'undefined') return
+    if (typeof requestAnimationFrame === 'undefined') return
     const from = shown.current
     const start = performance.now()
     let frame = 0
@@ -34,7 +26,7 @@ export function useCountUp(target: number, durationMs = 800): number {
     }
     frame = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(frame)
-  }, [target, durationMs, reduced])
+  }, [target, durationMs])
 
-  return reduced ? target : value
+  return value
 }

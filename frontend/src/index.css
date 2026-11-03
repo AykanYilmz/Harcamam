@@ -117,13 +117,3 @@ body {
   background-color: var(--canvas);
   color: var(--fg);
 }
-
-/*
- * Animations are decoration. ThemeProvider sets data-motion="reduce" when the user turned
- * them off in Settings.
- */
-[data-motion='reduce'] *,
-[data-motion='reduce'] ::backdrop {
-  animation: none !important;
-  transition: none !important;
-}

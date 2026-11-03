@@ -1,11 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { Switch } from '../components/ui/Switch.tsx'
-import { MOTION_STORAGE_KEY, THEME_STORAGE_KEY } from './ThemeContext.ts'
+import { THEME_STORAGE_KEY } from './ThemeContext.ts'
 import { ThemeProvider } from './ThemeProvider.tsx'
 import { ThemeSwitcher } from './ThemeSwitcher.tsx'
-import { useTheme } from './useTheme.ts'
 
 function mockSystemTheme(dark: boolean) {
   vi.stubGlobal(
@@ -63,52 +61,5 @@ describe('ThemeProvider', () => {
 
     expect(isDark()).toBe(true)
     expect(themeSwitch()).toBeChecked()
-  })
-})
-
-describe('ThemeProvider animations', () => {
-  function AnimationsSwitch() {
-    const { animations, setAnimations } = useTheme()
-    return <Switch checked={animations} onChange={setAnimations} label="Animasyonlar" />
-  }
-
-  function renderAnimations() {
-    render(
-      <ThemeProvider>
-        <AnimationsSwitch />
-      </ThemeProvider>,
-    )
-  }
-
-  const reduced = () => document.documentElement.dataset.motion === 'reduce'
-  const animationsSwitch = () => screen.getByRole('switch', { name: 'Animasyonlar' })
-
-  beforeEach(() => {
-    localStorage.clear()
-    delete document.documentElement.dataset.motion
-  })
-
-  it('is on by default', () => {
-    renderAnimations()
-
-    expect(animationsSwitch()).toBeChecked()
-    expect(reduced()).toBe(false)
-  })
-
-  it('can be turned off and remembers it', async () => {
-    renderAnimations()
-
-    await userEvent.click(animationsSwitch())
-
-    expect(reduced()).toBe(true)
-    expect(localStorage.getItem(MOTION_STORAGE_KEY)).toBe('off')
-  })
-
-  it('restores the saved choice', () => {
-    localStorage.setItem(MOTION_STORAGE_KEY, 'off')
-    renderAnimations()
-
-    expect(animationsSwitch()).not.toBeChecked()
-    expect(reduced()).toBe(true)
   })
 })

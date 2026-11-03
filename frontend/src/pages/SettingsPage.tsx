@@ -7,11 +7,9 @@ import { Button } from '../components/ui/Button.tsx'
 import { Card } from '../components/ui/Card.tsx'
 import { Dialog } from '../components/ui/Dialog.tsx'
 import { SuccessNotice } from '../components/ui/Notice.tsx'
-import { Switch } from '../components/ui/Switch.tsx'
 import { TextField } from '../components/ui/TextField.tsx'
 import { errorMessage } from '../lib/errors.ts'
 import { ThemeSwitcher } from '../theme/ThemeSwitcher.tsx'
-import { useTheme } from '../theme/useTheme.ts'
 
 const MIN_PASSWORD_LENGTH = 8
 const WRONG_PASSWORD = { 400: 'Şifre hatalı.' }
@@ -35,7 +33,7 @@ function SettingRow({
   children: ReactNode
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+    <div className="flex items-center justify-between gap-4">
       <div>
         <h3 className="text-sm font-medium text-fg">{title}</h3>
         <p className="mt-0.5 text-xs text-fg-subtle">{hint}</p>
@@ -46,20 +44,11 @@ function SettingRow({
 }
 
 function ThemeSection() {
-  const { animations, setAnimations } = useTheme()
   return (
     <Section title="Görünüm">
-      <div className="divide-y divide-line">
-        <SettingRow title="Koyu tema" hint="Açık ve koyu tema arasında geçiş yap.">
-          <ThemeSwitcher />
-        </SettingRow>
-        <SettingRow
-          title="Animasyonlar"
-          hint="Sayfa geçişleri, artarak gelen sayılar ve kayan menü."
-        >
-          <Switch checked={animations} onChange={setAnimations} label="Animasyonlar" />
-        </SettingRow>
-      </div>
+      <SettingRow title="Koyu tema" hint="Açık ve koyu tema arasında geçiş yap.">
+        <ThemeSwitcher />
+      </SettingRow>
     </Section>
   )
 }

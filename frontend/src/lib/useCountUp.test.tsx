@@ -4,22 +4,11 @@ import { AnimatedNumber } from '../components/ui/AnimatedNumber.tsx'
 
 const format = (value: number) => value.toFixed(2)
 
-function setReducedMotion(reduce: boolean) {
-  vi.stubGlobal(
-    'matchMedia',
-    vi.fn(() => ({ matches: reduce, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
-  )
-}
-
 describe('AnimatedNumber', () => {
   beforeEach(() => vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'performance'] }))
-  afterEach(() => {
-    vi.useRealTimers()
-    vi.unstubAllGlobals()
-  })
+  afterEach(() => vi.useRealTimers())
 
   it('counts up from zero and lands exactly on the value', () => {
-    setReducedMotion(false)
     const { container } = render(<AnimatedNumber value={45092.1} format={format} />)
     const visible = () => container.querySelector('[aria-hidden]')!.textContent
 
@@ -32,16 +21,8 @@ describe('AnimatedNumber', () => {
   })
 
   it('gives screen readers only the final value', () => {
-    setReducedMotion(false)
     render(<AnimatedNumber value={45092.1} format={format} />)
 
     expect(screen.getByText('45092.10')).toHaveClass('sr-only')
-  })
-
-  it('skips the animation when the user prefers reduced motion', () => {
-    setReducedMotion(true)
-    const { container } = render(<AnimatedNumber value={45092.1} format={format} />)
-
-    expect(container.querySelector('[aria-hidden]')!.textContent).toBe('45092.10')
   })
 })
