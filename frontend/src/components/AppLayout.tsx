@@ -1,27 +1,11 @@
-import { LayoutDashboard, List, LogOut, Tags, Upload, type LucideIcon } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
 import { useAuth } from '../auth/useAuth.ts'
+import { usePersistentState } from '../lib/usePersistentState.ts'
 import { ThemeSwitcher } from '../theme/ThemeSwitcher.tsx'
 import { Logo } from './Logo.tsx'
-
-interface NavItem {
-  to: string
-  label: string
-  icon: LucideIcon
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Özet', icon: LayoutDashboard },
-  { to: '/yukle', label: 'Ekstre Yükle', icon: Upload },
-  { to: '/islemler', label: 'İşlemler', icon: List },
-  { to: '/kategoriler', label: 'Kategoriler', icon: Tags },
-]
-
-function sidebarLinkClass({ isActive }: { isActive: boolean }) {
-  return `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-    isActive ? 'bg-accent-soft text-accent-fg' : 'text-fg-muted hover:bg-surface-muted'
-  }`
-}
+import { NAV_ITEMS } from './navigation.ts'
+import { Sidebar } from './Sidebar.tsx'
 
 function tabLinkClass({ isActive }: { isActive: boolean }) {
   return `flex flex-1 flex-col items-center gap-1 py-2 text-xs font-medium ${
@@ -30,36 +14,15 @@ function tabLinkClass({ isActive }: { isActive: boolean }) {
 }
 
 export function AppLayout() {
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
+  const [sidebarCollapsed, setSidebarCollapsed] = usePersistentState(
+    'harcamam.sidebarCollapsed',
+    false,
+  )
 
   return (
     <div className="min-h-screen bg-canvas">
-      {/* Desktop: fixed sidebar */}
-      <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col border-r border-line bg-surface px-4 py-6 md:flex">
-        <Logo className="px-2" />
-        <nav aria-label="Ana menü" className="mt-8 flex flex-1 flex-col gap-1">
-          {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
-            <NavLink key={to} to={to} end={to === '/'} className={sidebarLinkClass}>
-              <Icon aria-hidden className="size-5" />
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="border-t border-line pt-4">
-          <ThemeSwitcher className="mb-4 flex w-full" />
-          <p className="truncate px-3 text-sm text-fg-subtle" title={user?.email}>
-            {user?.email}
-          </p>
-          <button
-            type="button"
-            onClick={logout}
-            className="mt-2 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-fg-muted hover:bg-surface-muted"
-          >
-            <LogOut aria-hidden className="size-5" />
-            Çıkış yap
-          </button>
-        </div>
-      </aside>
+      <Sidebar collapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
 
       {/* Mobile: top bar */}
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-surface px-4 py-3 md:hidden">
@@ -77,7 +40,12 @@ export function AppLayout() {
         </div>
       </header>
 
-      <main className="px-4 pt-6 pb-24 md:ml-60 md:px-8 md:pb-10">
+      {/* The hover-expanded rail overlays the page, so the margin follows the pinned state only. */}
+      <main
+        className={`px-4 pt-6 pb-24 transition-[margin] duration-200 ease-out md:px-8 md:pb-10 ${
+          sidebarCollapsed ? 'md:ml-[4.5rem]' : 'md:ml-60'
+        }`}
+      >
         <div className="mx-auto max-w-6xl">
           <Outlet />
         </div>
