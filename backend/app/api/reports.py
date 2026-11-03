@@ -6,6 +6,8 @@ from app.core.dependencies import CurrentUser, DbSession
 from app.schemas.reports import (
     MONTH_PATTERN,
     CategorySpendingRead,
+    DailySpendingRead,
+    DaySpendingRead,
     MerchantSpendingRead,
     MonthlyReportRead,
     MonthTotalsRead,
@@ -101,5 +103,17 @@ def top_merchants(
                 category_name=merchant.category.name,
             )
             for merchant in merchants
+        ],
+    )
+
+
+@router.get("/daily", response_model=DailySpendingRead)
+def daily(current_user: CurrentUser, db: DbSession, month: MonthParam = None) -> DailySpendingRead:
+    selected = reports.parse_month(month) if month else reports.latest_month(db, current_user)
+    return DailySpendingRead(
+        month=reports.month_label(selected),
+        days=[
+            DaySpendingRead(date=day, amount=amount)
+            for day, amount in reports.daily_spending(db, current_user, selected)
         ],
     )

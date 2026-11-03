@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 from decimal import Decimal
 
 from pydantic import BaseModel
@@ -56,3 +57,14 @@ class MerchantSpendingRead(BaseModel):
 class TopMerchantsRead(BaseModel):
     month: str
     merchants: list[MerchantSpendingRead]
+
+
+class DaySpendingRead(BaseModel):
+    date: date
+    amount: Decimal
+
+
+class DailySpendingRead(BaseModel):
+    month: str
+    # Every day of the month, in order; days without spending are 0.
+    days: list[DaySpendingRead]

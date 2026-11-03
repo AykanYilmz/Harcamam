@@ -232,3 +232,26 @@ def top_merchants(
     ]
     merchants.sort(key=lambda merchant: (-merchant.amount, merchant.name))
     return merchants[:limit]
+
+
+def daily_spending(db: Session, user: User, month: dt.date) -> list[tuple[dt.date, Decimal]]:
+    """Spending for every day of `month` (days without spending as 0), same rules as above."""
+    rows = db.execute(
+        select(Transaction.date, func.sum(-_signed_amount))
+        .join(Category, Transaction.category_id == Category.id)
+        .where(
+            Transaction.user_id == user.id,
+            Category.kind == CategoryKind.EXPENSE,
+            Transaction.date >= month,
+            Transaction.date < add_months(month, 1),
+        )
+        .group_by(Transaction.date)
+    )
+    by_day = {day: Decimal(amount) for day, amount in rows}
+
+    days = []
+    day = month
+    while day < add_months(month, 1):
+        days.append((day, by_day.get(day, ZERO)))
+        day += dt.timedelta(days=1)
+    return days
