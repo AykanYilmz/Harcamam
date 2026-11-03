@@ -1,10 +1,28 @@
-import { Minus, TrendingDown, TrendingUp } from 'lucide-react'
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Minus,
+  PiggyBank,
+  TrendingDown,
+  TrendingUp,
+  type LucideIcon,
+} from 'lucide-react'
 import { formatCurrency, formatPercent } from '../../lib/format.ts'
 import { Card } from '../ui/Card.tsx'
+
+type Tone = 'income' | 'expense' | 'net'
+
+// Income and expense reuse the chart colors, so a hue means the same thing on the whole page.
+const TONES: Record<Tone, { icon: LucideIcon; chip: string }> = {
+  income: { icon: ArrowDownLeft, chip: 'bg-chart-income/15 text-chart-income' },
+  expense: { icon: ArrowUpRight, chip: 'bg-chart-expense/15 text-chart-expense' },
+  net: { icon: PiggyBank, chip: 'bg-accent-soft text-accent-fg' },
+}
 
 interface StatTileProps {
   label: string
   amount: string
+  tone: Tone
   /** Change against the previous month; null when there is nothing to compare with. */
   changePct: number | null
   /** Which direction is good news: more income is, more spending isn't. */
@@ -39,11 +57,22 @@ function ChangeBadge({ changePct, goodWhen }: Pick<StatTileProps, 'changePct' | 
   )
 }
 
-export function StatTile({ label, amount, changePct, goodWhen }: StatTileProps) {
+export function StatTile({ label, amount, tone, changePct, goodWhen }: StatTileProps) {
+  const { icon: Icon, chip } = TONES[tone]
+  const negative = Number(amount) < 0
+  const amountColor = tone === 'net' ? (negative ? 'text-danger-fg' : 'text-accent-fg') : 'text-fg'
+
   return (
     <Card>
-      <p className="text-sm font-medium text-fg-subtle">{label}</p>
-      <p className="mt-1 text-2xl font-semibold tracking-tight text-fg tabular-nums sm:text-3xl">
+      <div className="flex items-center gap-3">
+        <span className={`flex size-10 items-center justify-center rounded-xl ${chip}`}>
+          <Icon aria-hidden className="size-5" />
+        </span>
+        <p className="text-sm font-medium text-fg-subtle">{label}</p>
+      </div>
+      <p
+        className={`mt-3 text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl ${amountColor}`}
+      >
         {formatCurrency(amount)}
       </p>
       <ChangeBadge changePct={changePct} goodWhen={goodWhen} />

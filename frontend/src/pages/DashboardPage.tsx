@@ -1,7 +1,9 @@
 import { Upload } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
-import { useMonthlyReport, useTopMerchants, useTrend } from '../api/reports.ts'
+import { useDailySpending, useMonthlyReport, useTopMerchants, useTrend } from '../api/reports.ts'
 import { CategoryBreakdown } from '../components/dashboard/CategoryBreakdown.tsx'
+import { DailySpendingChart } from '../components/dashboard/DailySpendingChart.tsx'
+import { IncomeExpenseDonut } from '../components/dashboard/IncomeExpenseDonut.tsx'
 import { MonthPicker } from '../components/dashboard/MonthPicker.tsx'
 import { StatTile } from '../components/dashboard/StatTile.tsx'
 import { TopMerchantsList } from '../components/dashboard/TopMerchantsList.tsx'
@@ -12,6 +14,15 @@ import { PageLoader } from '../components/ui/Spinner.tsx'
 import { errorMessage } from '../lib/errors.ts'
 
 const MONTH_PARAM = 'ay'
+
+/** A card-sized placeholder while a section loads, or its error once it fails. */
+function Pending({ error, className = 'h-80' }: { error: unknown; className?: string }) {
+  return (
+    <Card className={className}>
+      {error ? <ErrorAlert>{errorMessage(error)}</ErrorAlert> : null}
+    </Card>
+  )
+}
 
 function EmptyState() {
   return (
@@ -40,6 +51,7 @@ export function DashboardPage() {
   const month = requestedMonth ?? report.data?.month
   const trend = useTrend(month)
   const merchants = useTopMerchants(month)
+  const daily = useDailySpending(month)
 
   if (report.isPending) return <PageLoader />
   if (report.isError) return <ErrorAlert>{errorMessage(report.error)}</ErrorAlert>
@@ -63,34 +75,53 @@ export function DashboardPage() {
           <section aria-label="Aylık özet" className="mt-6 grid gap-4 sm:grid-cols-3">
             <StatTile
               label="Gelir"
+              tone="income"
               amount={data.income}
               changePct={data.income_change_pct}
               goodWhen="up"
             />
             <StatTile
               label="Gider"
+              tone="expense"
               amount={data.expense}
               changePct={data.expense_change_pct}
               goodWhen="down"
             />
-            <StatTile label="Net" amount={data.net} changePct={data.net_change_pct} goodWhen="up" />
+            <StatTile
+              label="Net"
+              tone="net"
+              amount={data.net}
+              changePct={data.net_change_pct}
+              goodWhen="up"
+            />
           </section>
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-5">
+            <div className="lg:col-span-2">
+              <IncomeExpenseDonut income={data.income} expense={data.expense} net={data.net} />
+            </div>
+            <div className="lg:col-span-3">
+              {daily.data ? (
+                <DailySpendingChart days={daily.data.days} />
+              ) : (
+                <Pending error={daily.error} />
+              )}
+            </div>
+          </div>
 
           <div className="mt-4 grid gap-4 lg:grid-cols-5">
             <div className="lg:col-span-3">
               {trend.data ? (
                 <TrendChart months={trend.data.months} />
               ) : (
-                <Card className="h-80">
-                  {trend.isError && <ErrorAlert>{errorMessage(trend.error)}</ErrorAlert>}
-                </Card>
+                <Pending error={trend.error} />
               )}
             </div>
             <div className="lg:col-span-2">
               {merchants.data ? (
                 <TopMerchantsList merchants={merchants.data.merchants} />
               ) : (
-                <Card className="h-80" />
+                <Pending error={merchants.error} />
               )}
             </div>
           </div>

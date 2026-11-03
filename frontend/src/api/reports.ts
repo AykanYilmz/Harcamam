@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from './index.ts'
-import type { MonthlyReport, TopMerchants, TrendReport } from './types.ts'
+import type { DailySpending, MonthlyReport, TopMerchants, TrendReport } from './types.ts'
 
 /** Every report query starts with this key, so one invalidation refreshes them all. */
 export const REPORTS_KEY = ['reports'] as const
@@ -27,6 +27,14 @@ export function useTopMerchants(month: string | undefined, limit = 5) {
   return useQuery({
     queryKey: [...REPORTS_KEY, 'top-merchants', month, limit],
     queryFn: () => api.get<TopMerchants>('/reports/top-merchants', { month, limit }),
+    enabled: month !== undefined,
+  })
+}
+
+export function useDailySpending(month: string | undefined) {
+  return useQuery({
+    queryKey: [...REPORTS_KEY, 'daily', month],
+    queryFn: () => api.get<DailySpending>('/reports/daily', { month }),
     enabled: month !== undefined,
   })
 }
