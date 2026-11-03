@@ -34,7 +34,8 @@ def parse_date(value: str) -> date:
 
 
 def parse_amount(value: str) -> Decimal:
-    """Parse a signed amount such as `-1.234,56 TL`, `₺85,00`, `1.234,56-` or `(500,00)`."""
+    """Parse a signed amount such as `-1.234,56 TL`, `₺85,00`, `1.234,56-`, `1.234,56+`
+    or `(500,00)`."""
     text = _CURRENCY.sub("", value)
     text = _WHITESPACE.sub("", text)
 
@@ -45,6 +46,8 @@ def parse_amount(value: str) -> Decimal:
         negative, text = text[0] == "-", text[1:]
     elif text.endswith("-"):
         negative, text = True, text[:-1]
+    elif text.endswith("+"):
+        text = text[:-1]
 
     if _AMOUNT_TR.match(text):
         normalized = text.replace(".", "").replace(",", ".")
@@ -55,6 +58,18 @@ def parse_amount(value: str) -> Decimal:
 
     amount = Decimal(normalized)
     return -amount if negative else amount
+
+
+def parse_card_amount(value: str) -> Decimal:
+    """Parse an amount from a credit card statement, signed like `parse_amount`.
+
+    Card statements show what the card owes: purchases are unsigned and payments or refunds
+    carry a sign (`5.000,00+` or `-349,00`). So an unsigned amount is money going out.
+    """
+    text = _WHITESPACE.sub("", _CURRENCY.sub("", value))
+    marked = text[:1] in "+-(" or text[-1:] in "+-"
+    magnitude = abs(parse_amount(text))
+    return magnitude if marked else -magnitude
 
 
 def fold_turkish(value: str) -> str:

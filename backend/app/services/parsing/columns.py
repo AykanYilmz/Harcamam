@@ -1,6 +1,6 @@
 """Recognizes transaction columns in a header row; shared by the CSV and PDF parsers."""
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 
@@ -66,9 +66,15 @@ def _amount_or_zero(value: str) -> Decimal:
 
 
 def row_to_transaction(
-    row: Sequence[str | None], columns: ColumnMap, row_label: str
+    row: Sequence[str | None],
+    columns: ColumnMap,
+    row_label: str,
+    amount_parser: Callable[[str], Decimal] = parse_amount,
 ) -> ParsedTransaction | None:
-    """Convert a data row, or return None for rows that aren't transactions (totals, notes...)."""
+    """Convert a data row, or return None for rows that aren't transactions (totals, notes...).
+
+    `amount_parser` reads the single amount column (credit cards sign it differently).
+    """
     try:
         date = parse_date(_cell(row, columns.date))
     except ValueError:
@@ -76,7 +82,7 @@ def row_to_transaction(
 
     try:
         if columns.amount is not None:
-            amount = parse_amount(_cell(row, columns.amount))
+            amount = amount_parser(_cell(row, columns.amount))
         else:
             # Debit and credit are both written as positive numbers.
             debit = abs(_amount_or_zero(_cell(row, columns.debit)))

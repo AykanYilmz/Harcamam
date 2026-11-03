@@ -29,13 +29,14 @@ def table_pdf(header: tuple[str, ...], *pages: list[tuple[str, ...]]) -> bytes:
     return bytes(pdf.output())
 
 
-def text_pdf(lines: list[str]) -> bytes:
-    """Plain lines of text without table borders."""
+def text_pdf(lines: list[str], copies: int = 1) -> bytes:
+    """Plain lines of text without table borders, printed on `copies` identical pages."""
     pdf = _new_pdf()
-    pdf.add_page()
-    for line in lines:
-        pdf.cell(0, 8, line)
-        pdf.ln()
+    for _ in range(copies):
+        pdf.add_page()
+        for line in lines:
+            pdf.cell(0, 8, line)
+            pdf.ln()
     return bytes(pdf.output())
 
 

@@ -4,6 +4,7 @@ import pytest
 
 from app.models import TransactionType
 from app.services.categorization.categorizer import Categorizer, KeywordRule
+from app.services.categorization.default_rules import DEFAULT_KEYWORDS
 
 MARKET = uuid.uuid4()
 ONLINE_MARKET = uuid.uuid4()
@@ -98,3 +99,22 @@ def test_match_returns_the_deciding_rule() -> None:
     assert categorizer([user_rule]).match("MIGROS SANAL MARKET") == user_rule
     assert categorizer().match("ŞOK MARKET") == KeywordRule("SOK", MARKET)
     assert categorizer().match("BILINMEYEN DUKKAN") is None
+
+
+@pytest.mark.parametrize(
+    ("description", "category"),
+    [
+        ("ÖRNEK ECZANESİ", "Sağlık"),
+        ("OTOBAN ÖRNEK GİŞESİ", "Ulaşım"),
+        ("ÖRNEK GROSS MARKET", "Market"),
+        ("ÖRNEK KAFE REST", "Yemek"),
+        ("0000 ÖRNEK-KART Ödeme-teşekkür", "Transfer"),
+    ],
+)
+def test_built_in_keywords_cover_card_statement_merchants(description: str, category: str) -> None:
+    ids = {name: uuid.uuid4() for name in DEFAULT_KEYWORDS}
+    rules = [
+        KeywordRule(word, ids[name]) for name, words in DEFAULT_KEYWORDS.items() for word in words
+    ]
+
+    assert Categorizer([], rules, INCOME, OTHER).categorize(description, EXPENSE) == ids[category]

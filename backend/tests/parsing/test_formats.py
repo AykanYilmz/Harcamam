@@ -7,6 +7,7 @@ from app.services.parsing.formats import (
     normalize_description,
     normalize_text,
     parse_amount,
+    parse_card_amount,
     parse_date,
 )
 
@@ -41,6 +42,7 @@ def test_parse_date_rejects_invalid(value: str) -> None:
         ("₺85,00", Decimal("85.00")),
         ("+500,00", Decimal("500.00")),
         ("1.234,56-", Decimal("-1234.56")),
+        ("1.234,56+", Decimal("1234.56")),
         ("(500,00)", Decimal("-500.00")),
         ("1.250.000,00", Decimal("1250000.00")),
         ("85", Decimal("85")),
@@ -54,6 +56,23 @@ def test_parse_date_rejects_invalid(value: str) -> None:
 )
 def test_parse_amount(value: str, expected: Decimal) -> None:
     assert parse_amount(value) == expected
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        # Unsigned on a card statement: a purchase, so money going out.
+        ("402,75", Decimal("-402.75")),
+        ("1.208,23 TL", Decimal("-1208.23")),
+        # Marked: a payment or a refund.
+        ("12.345,67+", Decimal("12345.67")),
+        ("+500,00", Decimal("500.00")),
+        ("-349,00", Decimal("349.00")),
+        ("349,00-", Decimal("349.00")),
+    ],
+)
+def test_parse_card_amount(value: str, expected: Decimal) -> None:
+    assert parse_card_amount(value) == expected
 
 
 @pytest.mark.parametrize("value", ["", "TL", "abc", "1,2,3", "12.34.56", "1.23,45", "--5"])

@@ -15,6 +15,7 @@ DEFAULT_KEYWORDS: dict[str, tuple[str, ...]] = {
         "FILE MARKET",
         "HAKMAR",
         "GETIR",
+        "GROSS",
     ),
     "Yemek": (
         "YEMEKSEPETI",
@@ -27,6 +28,9 @@ DEFAULT_KEYWORDS: dict[str, tuple[str, ...]] = {
         "SIMIT SARAYI",
         "RESTORAN",
         "RESTAURANT",
+        "REST",
+        "KAFE",
+        "CAFE",
     ),
     "Ulaşım": (
         "SHELL",
@@ -40,6 +44,10 @@ DEFAULT_KEYWORDS: dict[str, tuple[str, ...]] = {
         "THY",
         "TURK HAVA YOLLARI",
         "OTOPARK",
+        "OTOBAN",
+        "OTOYOL",
+        "HGS",
+        "OGS",
     ),
     "Faturalar": (
         "TURKCELL",
@@ -54,7 +62,7 @@ DEFAULT_KEYWORDS: dict[str, tuple[str, ...]] = {
     ),
     "Kira": ("KIRA",),
     "Eğlence": ("CINEMAXIMUM", "SINEMA", "STEAM", "BILETIX", "PASSO", "PLAYSTATION"),
-    "Sağlık": ("ECZANE", "HASTANE", "DIS HEKIMI", "KLINIK", "LABORATUVAR"),
+    "Sağlık": ("ECZANE", "ECZANESI", "HASTANE", "DIS HEKIMI", "KLINIK", "LABORATUVAR"),
     "Giyim": ("LC WAIKIKI", "ZARA", "KOTON", "MAVI", "DEFACTO", "H M", "BERSHKA"),
     "Alışveriş": (
         "TRENDYOL",
@@ -77,6 +85,12 @@ DEFAULT_KEYWORDS: dict[str, tuple[str, ...]] = {
         "ICLOUD",
     ),
     "Nakit Çekim": ("ATM", "NAKIT CEKIM"),
-    "Transfer": ("HAVALE", "EFT", "ONCEKI DONEM ODEMESI", "KREDI KARTI ODEMESI"),
+    "Transfer": (
+        "HAVALE",
+        "EFT",
+        "ONCEKI DONEM ODEMESI",
+        "KREDI KARTI ODEMESI",
+        "ODEME TESEKKUR",
+    ),
     "Gelir": ("MAAS", "FAIZ", "TEMETTU", "IKRAMIYE"),
 }
