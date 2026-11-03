@@ -79,11 +79,11 @@ harcamam/
 - [x] Testler: her parser için örnek dosyalarla birim testleri, bozuk dosya senaryosu
 
 ### Faz 3 — Kategorizasyon
-- [ ] Varsayılan kategoriler (seed): Market, Yemek, Ulaşım, Faturalar, Kira, Eğlence, Sağlık, Giyim, Abonelikler, Nakit Çekim, Gelir, Diğer
-- [ ] Kural tabanlı kategorizer: Türkiye'ye özgü anahtar kelimeler (ör. MIGROS, A101, BIM, SOK → Market; SHELL, OPET → Ulaşım; NETFLIX, SPOTIFY → Abonelikler)
-- [ ] Kullanıcı bir işlemin kategorisini değiştirince "bunu kural olarak kaydet" seçeneği sunulsun. Sonraki yüklemelerde bu kural öncelikli uygulansın.
-- [ ] `PATCH /transactions/{id}` (kategori düzeltme), toplu düzeltme endpoint'i
-- [ ] Testler: kural önceliği (kullanıcı kuralı > varsayılan kural), eşleşme olmayınca "Diğer"
+- [x] Varsayılan kategoriler (seed): Market, Yemek, Ulaşım, Faturalar, Kira, Eğlence, Sağlık, Giyim, Abonelikler, Nakit Çekim, Gelir, Diğer (+ sonradan eklenen: Alışveriş, Transfer)
+- [x] Kural tabanlı kategorizer: Türkiye'ye özgü anahtar kelimeler (ör. MIGROS, A101, BIM, SOK → Market; SHELL, OPET → Ulaşım; NETFLIX, SPOTIFY → Abonelikler)
+- [x] Kullanıcı bir işlemin kategorisini değiştirince "bunu kural olarak kaydet" seçeneği sunulsun. Sonraki yüklemelerde bu kural öncelikli uygulansın.
+- [x] `PATCH /transactions/{id}` (kategori düzeltme), toplu düzeltme endpoint'i
+- [x] Testler: kural önceliği (kullanıcı kuralı > varsayılan kural), eşleşme olmayınca "Diğer"
 
 ### Faz 4 — Raporlar ve API'nin tamamlanması
 - [ ] `/reports/monthly`: kategori bazlı toplam, gelir-gider, önceki aya göre değişim
