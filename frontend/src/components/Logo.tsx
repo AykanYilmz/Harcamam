@@ -12,7 +12,7 @@ export function Logo({ className = '' }: { className?: string }) {
   return (
     <span className={`inline-flex items-center gap-2 font-bold text-fg ${className}`}>
       <LogoMark />
-      Harcamam
+      HesapKitap
     </span>
   )
 }

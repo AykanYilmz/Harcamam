@@ -1,4 +1,4 @@
-# Harcamam — Kişisel Finans ve Harcama Analizi Uygulaması
+# HesapKitap (çalışma adı: Harcamam) — Kişisel Finans ve Harcama Analizi Uygulaması
 
 Bu dosya projenin ana talimatıdır. Her oturumda önce bunu oku ve buradaki plana göre ilerle.
 

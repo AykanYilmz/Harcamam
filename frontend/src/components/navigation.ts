@@ -35,5 +35,5 @@ export const NAV_SECTIONS: NavItem[][] = [
 /** The title shown in the app bar for the current page. */
 export function pageTitle(pathname: string): string {
   const item = NAV_SECTIONS.flat().find(({ to }) => to === pathname)
-  return item?.label ?? 'Harcamam'
+  return item?.label ?? 'HesapKitap'
 }

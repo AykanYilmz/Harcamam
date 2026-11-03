@@ -1,4 +1,4 @@
-# Harcamam
+# HesapKitap
 
 Banka hesap ekstrelerini (PDF / CSV) yükleyip harcamaları otomatik olarak kategorize eden, aylık özet ve grafikler sunan kişisel finans uygulaması.
 

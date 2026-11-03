@@ -11,7 +11,7 @@ ROOT_DIR = Path(__file__).resolve().parents[3]
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=ROOT_DIR / ".env", extra="ignore")
 
-    app_name: str = "Harcamam API"
+    app_name: str = "HesapKitap API"
     environment: str = "development"
     cors_origins: list[str] = ["http://localhost:5173"]
 
@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     smtp_username: str | None = None
     smtp_password: str | None = None
     smtp_use_tls: bool = False
-    email_from: str = "Harcamam <no-reply@harcamam.local>"
+    email_from: str = "HesapKitap <no-reply@hesapkitap.local>"
     email_verification_expire_hours: int = 24
     # Minimum wait between two verification emails to the same user.
     verification_resend_seconds: int = 60

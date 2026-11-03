@@ -60,14 +60,14 @@ def verification_email(to: str, link: str) -> OutgoingEmail:
     hours = get_settings().email_verification_expire_hours
     return OutgoingEmail(
         to=to,
-        subject="Harcamam: e-posta adresini doğrula",
+        subject="HesapKitap: e-posta adresini doğrula",
         body=(
             "Merhaba,\n\n"
-            "Harcamam hesabındaki e-posta adresini doğrulamak için aşağıdaki bağlantıyı aç:\n\n"
+            "HesapKitap hesabındaki e-posta adresini doğrulamak için aşağıdaki bağlantıyı aç:\n\n"
             f"{link}\n\n"
             f"Bağlantı {hours} saat geçerlidir. Bu isteği sen yapmadıysan bu e-postayı yok "
             "sayabilirsin.\n\n"
-            "Harcamam"
+            "HesapKitap"
         ),
     )
 
@@ -75,13 +75,13 @@ def verification_email(to: str, link: str) -> OutgoingEmail:
 def email_change_notice(to: str, new_email: str) -> OutgoingEmail:
     return OutgoingEmail(
         to=to,
-        subject="Harcamam: e-posta adresi değişikliği talebi",
+        subject="HesapKitap: e-posta adresi değişikliği talebi",
         body=(
             "Merhaba,\n\n"
-            f"Harcamam hesabının e-posta adresini {new_email} olarak değiştirme talebi alındı. "
+            f"HesapKitap hesabının e-posta adresini {new_email} olarak değiştirme talebi alındı. "
             "Değişiklik, yeni adres doğrulandığında geçerli olur.\n\n"
             "Bu talebi sen yapmadıysan hemen giriş yapıp şifreni değiştir ve Ayarlar'dan "
             "bekleyen değişikliği iptal et.\n\n"
-            "Harcamam"
+            "HesapKitap"
         ),
     )
