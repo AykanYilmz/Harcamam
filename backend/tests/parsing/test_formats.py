@@ -5,7 +5,7 @@ import pytest
 
 from app.services.parsing.formats import (
     normalize_description,
-    normalize_header,
+    normalize_text,
     parse_amount,
     parse_date,
 )
@@ -72,8 +72,8 @@ def test_parse_amount_rejects_invalid(value: str) -> None:
         ("  Borç / Alacak ", "borc alacak"),
     ],
 )
-def test_normalize_header(value: str, expected: str) -> None:
-    assert normalize_header(value) == expected
+def test_normalize_text(value: str, expected: str) -> None:
+    assert normalize_text(value) == expected
 
 
 def test_normalize_description_collapses_whitespace() -> None:

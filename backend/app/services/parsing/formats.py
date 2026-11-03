@@ -54,8 +54,8 @@ def parse_amount(value: str) -> Decimal:
     return -amount if negative else amount
 
 
-def normalize_header(value: str) -> str:
-    """Lowercase ASCII form of a column header: `İşlem Tarihi` -> `islem tarihi`.
+def normalize_text(value: str) -> str:
+    """Lowercase ASCII words for matching: `İşlem Tarihi` -> `islem tarihi`, `ŞOK` -> `sok`.
 
     Translating Turkish letters before lowercasing avoids the `"I".lower() == "i"` vs `ı` trap.
     """

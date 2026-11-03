@@ -7,7 +7,7 @@ from decimal import Decimal
 from app.services.parsing.base import ParsedTransaction, StatementParseError
 from app.services.parsing.formats import (
     normalize_description,
-    normalize_header,
+    normalize_text,
     parse_amount,
     parse_date,
 )
@@ -41,7 +41,7 @@ def _find(headers: list[str], candidates: set[str]) -> int | None:
 
 def detect_columns(row: Sequence[str | None]) -> ColumnMap | None:
     """Return the column layout if `row` is a header row, otherwise None."""
-    headers = [normalize_header(cell or "") for cell in row]
+    headers = [normalize_text(cell or "") for cell in row]
     date = _find(headers, DATE_HEADERS)
     description = _find(headers, DESCRIPTION_HEADERS)
     amount = _find(headers, AMOUNT_HEADERS)
