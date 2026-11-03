@@ -1,4 +1,6 @@
 import {
+  CalendarDays,
+  ChartColumn,
   CircleHelp,
   LayoutDashboard,
   List,
@@ -19,6 +21,8 @@ export const NAV_SECTIONS: NavItem[][] = [
   [
     { to: '/', label: 'Özet', icon: LayoutDashboard },
     { to: '/islemler', label: 'İşlemler', icon: List },
+    { to: '/takvim', label: 'Takvim', icon: CalendarDays },
+    { to: '/raporlar', label: 'Raporlar', icon: ChartColumn },
     { to: '/yukle', label: 'Ekstre Yükle', icon: Upload },
     { to: '/kategoriler', label: 'Kategoriler', icon: Tags },
   ],

@@ -31,3 +31,6 @@ export type TransactionType = Schemas['TransactionType']
 export type TransactionSort = Schemas['TransactionSort']
 export type TransactionCorrectionResult = Schemas['TransactionCorrectionResult']
 export type BulkCategoryResult = Schemas['BulkCategoryResult']
+
+export type CategoryTrendReport = Schemas['CategoryTrendReportRead']
+export type CategoryTrend = Schemas['CategoryTrendRead']

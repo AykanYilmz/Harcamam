@@ -428,6 +428,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/reports/category-trend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Category Trend */
+        get: operations["category_trend_reports_category_trend_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -536,6 +553,31 @@ export interface components {
             previous_amount: string;
             /** Change Pct */
             change_pct: number | null;
+        };
+        /** CategoryTrendRead */
+        CategoryTrendRead: {
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /** Name */
+            name: string;
+            /** Color */
+            color: string;
+            /** Icon */
+            icon: string;
+            /** Amounts */
+            amounts: string[];
+            /** Total */
+            total: string;
+        };
+        /** CategoryTrendReportRead */
+        CategoryTrendReportRead: {
+            /** Months */
+            months: string[];
+            /** Categories */
+            categories: components["schemas"]["CategoryTrendRead"][];
         };
         /** CategoryUpdate */
         CategoryUpdate: {
@@ -1696,6 +1738,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DailySpendingRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    category_trend_reports_category_trend_get: {
+        parameters: {
+            query?: {
+                months?: number;
+                /** @description YYYY-MM; defaults to the latest month with data */
+                end?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryTrendReportRead"];
                 };
             };
             /** @description Validation Error */
