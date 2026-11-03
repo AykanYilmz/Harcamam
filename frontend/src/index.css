@@ -1,1 +1,70 @@
 @import 'tailwindcss';
+
+/* `dark:` follows the .dark class on <html> (set from the user's theme choice), not only the OS. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Semantic colors: components use `bg-surface`, `text-fg`... and never pick a light or dark
+ * shade themselves, so every page works in both themes. Values are switched below.
+ */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-fg-faint: var(--fg-faint);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger-fg: var(--danger-fg);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-line: var(--danger-line);
+}
+
+:root {
+  color-scheme: light;
+  --canvas: var(--color-slate-50);
+  --surface: var(--color-white);
+  --surface-muted: var(--color-slate-100);
+  --line: var(--color-slate-200);
+  --line-strong: var(--color-slate-300);
+  --fg: var(--color-slate-900);
+  --fg-secondary: var(--color-slate-700);
+  --fg-muted: var(--color-slate-600);
+  --fg-subtle: var(--color-slate-500);
+  --fg-faint: var(--color-slate-400);
+  --accent-fg: var(--color-emerald-700);
+  --accent-soft: var(--color-emerald-50);
+  --danger-fg: var(--color-rose-700);
+  --danger-soft: var(--color-rose-50);
+  --danger-line: var(--color-rose-200);
+}
+
+.dark {
+  /* Native controls (scrollbars, date pickers) follow the theme too. */
+  color-scheme: dark;
+  --canvas: var(--color-slate-950);
+  --surface: var(--color-slate-900);
+  --surface-muted: var(--color-slate-800);
+  --line: var(--color-slate-800);
+  --line-strong: var(--color-slate-700);
+  --fg: var(--color-slate-100);
+  --fg-secondary: var(--color-slate-300);
+  --fg-muted: var(--color-slate-400);
+  --fg-subtle: var(--color-slate-400);
+  --fg-faint: var(--color-slate-500);
+  --accent-fg: var(--color-emerald-400);
+  --accent-soft: color-mix(in oklab, var(--color-emerald-500) 12%, transparent);
+  --danger-fg: var(--color-rose-300);
+  --danger-soft: color-mix(in oklab, var(--color-rose-500) 12%, transparent);
+  --danger-line: color-mix(in oklab, var(--color-rose-500) 35%, transparent);
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--fg);
+}

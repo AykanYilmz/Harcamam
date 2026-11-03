@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { ThemeSwitcher } from '../theme/ThemeSwitcher.tsx'
 import { Logo } from './Logo.tsx'
 import { Card } from './ui/Card.tsx'
 
@@ -15,14 +16,15 @@ export function AuthCard({
   footer: ReactNode
 }) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 py-10">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-canvas px-4 py-10">
+      <ThemeSwitcher className="absolute top-4 right-4" />
       <Logo className="mb-8 text-xl" />
       <Card className="w-full max-w-sm p-6 sm:p-8">
-        <h1 className="text-xl font-semibold text-slate-900">{title}</h1>
-        <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
+        <h1 className="text-xl font-semibold text-fg">{title}</h1>
+        <p className="mt-1 text-sm text-fg-subtle">{subtitle}</p>
         <div className="mt-6">{children}</div>
       </Card>
-      <p className="mt-6 text-sm text-slate-600">{footer}</p>
+      <p className="mt-6 text-sm text-fg-muted">{footer}</p>
     </div>
   )
 }

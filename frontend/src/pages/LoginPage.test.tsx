@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import { ApiError } from '../api/client.ts'
 import { AuthContext, type AuthContextValue } from '../auth/AuthContext.ts'
+import { ThemeProvider } from '../theme/ThemeProvider.tsx'
 import { LoginPage } from './LoginPage.tsx'
 
 function renderLogin(login: AuthContextValue['login']) {
@@ -15,14 +16,16 @@ function renderLogin(login: AuthContextValue['login']) {
     logout: vi.fn(),
   }
   render(
-    <AuthContext.Provider value={auth}>
-      <MemoryRouter initialEntries={['/giris']}>
-        <Routes>
-          <Route path="/giris" element={<LoginPage />} />
-          <Route path="/" element={<p>Ana sayfa</p>} />
-        </Routes>
-      </MemoryRouter>
-    </AuthContext.Provider>,
+    <ThemeProvider>
+      <AuthContext.Provider value={auth}>
+        <MemoryRouter initialEntries={['/giris']}>
+          <Routes>
+            <Route path="/giris" element={<LoginPage />} />
+            <Route path="/" element={<p>Ana sayfa</p>} />
+          </Routes>
+        </MemoryRouter>
+      </AuthContext.Provider>
+    </ThemeProvider>,
   )
 }
 

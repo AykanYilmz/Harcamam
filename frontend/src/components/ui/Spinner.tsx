@@ -6,7 +6,7 @@ export function Spinner({ className = 'size-5' }: { className?: string }) {
 
 export function PageLoader() {
   return (
-    <div role="status" className="flex min-h-[50vh] items-center justify-center text-slate-500">
+    <div role="status" className="flex min-h-[50vh] items-center justify-center text-fg-subtle">
       <Spinner className="size-8" />
       <span className="sr-only">Yükleniyor…</span>
     </div>

@@ -38,7 +38,7 @@ export function LoginPage() {
       footer={
         <>
           Hesabın yok mu?{' '}
-          <Link to="/kayit" className="font-medium text-emerald-700 hover:underline">
+          <Link to="/kayit" className="font-medium text-accent-fg hover:underline">
             Kayıt ol
           </Link>
         </>

@@ -12,22 +12,22 @@ export function TextField({ label, error, hint, className = '', ...props }: Text
 
   return (
     <div className={className}>
-      <label htmlFor={id} className="mb-1 block text-sm font-medium text-slate-700">
+      <label htmlFor={id} className="mb-1 block text-sm font-medium text-fg-secondary">
         {label}
       </label>
       <input
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
-        className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 focus:outline-none aria-invalid:border-rose-500"
+        className="block w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-fg shadow-sm placeholder:text-fg-faint focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 focus:outline-none aria-invalid:border-rose-500"
         {...props}
       />
       {error ? (
-        <p id={`${id}-error`} className="mt-1 text-sm text-rose-600">
+        <p id={`${id}-error`} className="mt-1 text-sm text-danger-fg">
           {error}
         </p>
       ) : hint ? (
-        <p id={`${id}-hint`} className="mt-1 text-sm text-slate-500">
+        <p id={`${id}-hint`} className="mt-1 text-sm text-fg-subtle">
           {hint}
         </p>
       ) : null}

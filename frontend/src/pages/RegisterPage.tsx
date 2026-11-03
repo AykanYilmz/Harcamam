@@ -63,7 +63,7 @@ export function RegisterPage() {
       footer={
         <>
           Zaten hesabın var mı?{' '}
-          <Link to="/giris" className="font-medium text-emerald-700 hover:underline">
+          <Link to="/giris" className="font-medium text-accent-fg hover:underline">
             Giriş yap
           </Link>
         </>
