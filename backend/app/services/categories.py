@@ -178,6 +178,14 @@ def list_rules(db: Session, user: User) -> list[CategoryRule]:
     )
 
 
+def validate_keyword(keyword: str) -> str:
+    """Return the cleaned keyword, or raise InvalidKeywordError if it can never match."""
+    keyword = normalize_description(keyword)
+    if not normalize_text(keyword):
+        raise InvalidKeywordError
+    return keyword
+
+
 def save_rule(
     db: Session,
     user: User,
@@ -190,10 +198,8 @@ def save_rule(
     Returns the rule and how many existing transactions it re-categorized. The caller is
     responsible for committing, so a correction and its rule are saved together.
     """
-    keyword = normalize_description(keyword)
+    keyword = validate_keyword(keyword)
     matching_key = normalize_text(keyword)
-    if not matching_key:
-        raise InvalidKeywordError
     if get_accessible_category(db, user, category_id) is None:
         raise CategoryNotFoundError
 

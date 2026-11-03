@@ -68,8 +68,12 @@ def db(engine: Engine) -> Iterator[Session]:
     """A session whose changes are rolled back after each test, even if the code commits."""
     connection = engine.connect()
     transaction = connection.begin()
+    # Same autoflush/expire settings as SessionLocal, so tests see the app's real behavior.
     session = Session(
-        bind=connection, join_transaction_mode="create_savepoint", expire_on_commit=False
+        bind=connection,
+        join_transaction_mode="create_savepoint",
+        autoflush=False,
+        expire_on_commit=False,
     )
 
     yield session
