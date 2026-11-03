@@ -1,15 +1,18 @@
+import math
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 
 from app.models import CategoryRule, Transaction, User
+from app.schemas.transactions import TransactionFilters, TransactionSort
 from app.services.categories import (
     CategoryNotFoundError,
     get_accessible_category,
     save_rule,
     validate_keyword,
 )
+from app.services.parsing.formats import ASCII_LETTERS, TURKISH_LETTERS, fold_turkish
 
 
 class TransactionNotFoundError(Exception):
@@ -73,3 +76,50 @@ def bulk_set_category(
         transaction.is_manually_categorized = True
     db.commit()
     return len(transactions)
+
+
+_SORT_ORDER = {
+    TransactionSort.DATE_DESC: (Transaction.date.desc(),),
+    TransactionSort.DATE_ASC: (Transaction.date.asc(),),
+    TransactionSort.AMOUNT_DESC: (Transaction.amount.desc(), Transaction.date.desc()),
+    TransactionSort.AMOUNT_ASC: (Transaction.amount.asc(), Transaction.date.desc()),
+}
+
+
+def escape_like(value: str) -> str:
+    """Make `%` and `_` typed by the user match literally instead of acting as wildcards."""
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def _description_contains(text: str) -> ColumnElement[bool]:
+    # Fold Turkish letters on both sides so "sok" finds "ŞOK"; ILIKE handles ASCII case.
+    folded_description = func.translate(Transaction.description, TURKISH_LETTERS, ASCII_LETTERS)
+    return folded_description.ilike(f"%{escape_like(fold_turkish(text))}%", escape="\\")
+
+
+def list_transactions(
+    db: Session, user: User, filters: TransactionFilters
+) -> tuple[list[Transaction], int, int]:
+    """One page of the user's transactions; returns (items, total, pages)."""
+    conditions = [Transaction.user_id == user.id]
+    if filters.date_from:
+        conditions.append(Transaction.date >= filters.date_from)
+    if filters.date_to:
+        conditions.append(Transaction.date <= filters.date_to)
+    if filters.category_id:
+        conditions.append(Transaction.category_id.in_(filters.category_id))
+    if filters.type:
+        conditions.append(Transaction.type == filters.type)
+    if filters.q and filters.q.strip():
+        conditions.append(_description_contains(filters.q.strip()))
+
+    total = db.scalar(select(func.count()).select_from(Transaction).where(*conditions)) or 0
+    items = db.scalars(
+        select(Transaction)
+        .where(*conditions)
+        # id last: rows with equal dates/amounts keep a stable order across pages.
+        .order_by(*_SORT_ORDER[filters.sort], Transaction.id)
+        .offset((filters.page - 1) * filters.page_size)
+        .limit(filters.page_size)
+    ).all()
+    return list(items), total, math.ceil(total / filters.page_size)

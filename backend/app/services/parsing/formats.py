@@ -13,7 +13,10 @@ _AMOUNT_TR = re.compile(r"^\d{1,3}(\.\d{3})*(,\d{1,2})?$|^\d+(,\d{1,2})?$")
 # English, accepted only when unambiguous -> 1234.56 or 1,234.56
 _AMOUNT_EN = re.compile(r"^\d+\.\d{1,2}$|^\d{1,3}(,\d{3})+\.\d{1,2}$")
 
-_TR_CHARS = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
+# Turkish letters and their ASCII look-alikes; also used in SQL by translate().
+TURKISH_LETTERS = "çğıöşüÇĞİÖŞÜ"
+ASCII_LETTERS = "cgiosuCGIOSU"
+_TR_CHARS = str.maketrans(TURKISH_LETTERS, ASCII_LETTERS)
 _NON_ALNUM = re.compile(r"[^a-z0-9]+")
 _WHITESPACE = re.compile(r"\s+")
 
@@ -54,12 +57,17 @@ def parse_amount(value: str) -> Decimal:
     return -amount if negative else amount
 
 
+def fold_turkish(value: str) -> str:
+    """Replace Turkish letters with ASCII ones, keeping everything else: `ŞOK.com` -> `SOK.com`."""
+    return value.translate(_TR_CHARS)
+
+
 def normalize_text(value: str) -> str:
     """Lowercase ASCII words for matching: `İşlem Tarihi` -> `islem tarihi`, `ŞOK` -> `sok`.
 
     Translating Turkish letters before lowercasing avoids the `"I".lower() == "i"` vs `ı` trap.
     """
-    ascii_text = value.translate(_TR_CHARS).lower()
+    ascii_text = fold_turkish(value).lower()
     return _NON_ALNUM.sub(" ", ascii_text).strip()
 
 

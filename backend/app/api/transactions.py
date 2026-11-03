@@ -1,6 +1,7 @@
 import uuid
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 
 from app.core.dependencies import CurrentUser, DbSession
 from app.schemas.categories import RuleRead
@@ -9,6 +10,8 @@ from app.schemas.transactions import (
     BulkCategoryUpdate,
     TransactionCategoryUpdate,
     TransactionCorrectionResult,
+    TransactionFilters,
+    TransactionPage,
     TransactionRead,
 )
 from app.services.categories import CategoryNotFoundError, InvalidKeywordError
@@ -16,11 +19,26 @@ from app.services.transactions import (
     TransactionNotFoundError,
     bulk_set_category,
     correct_category,
+    list_transactions,
 )
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
 CATEGORY_NOT_FOUND = HTTPException(status.HTTP_404_NOT_FOUND, detail="Category not found")
+
+
+@router.get("", response_model=TransactionPage)
+def get_transactions(
+    filters: Annotated[TransactionFilters, Query()], current_user: CurrentUser, db: DbSession
+) -> TransactionPage:
+    items, total, pages = list_transactions(db, current_user, filters)
+    return TransactionPage(
+        items=[TransactionRead.model_validate(item) for item in items],
+        total=total,
+        page=filters.page,
+        page_size=filters.page_size,
+        pages=pages,
+    )
 
 
 # Declared before /{transaction_id} so "bulk" isn't parsed as a transaction id.
