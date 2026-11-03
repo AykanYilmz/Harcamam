@@ -282,9 +282,16 @@ def top_merchants(
     return merchants[:limit]
 
 
-def daily_spending(db: Session, user: User, month: dt.date) -> list[tuple[dt.date, Decimal]]:
-    """Spending for every day of `month` (days without spending as 0), same rules as above."""
-    period = period_calendar(user).period(month)
+def daily_spending(
+    db: Session, user: User, month: dt.date, calendar_month: bool = False
+) -> list[tuple[dt.date, Decimal]]:
+    """Spending for every day of `month` (days without spending as 0), same rules as above.
+
+    `calendar_month` covers the 1st to the last day whatever the user's closing day, for
+    views that are a calendar.
+    """
+    periods = PeriodCalendar(None) if calendar_month else period_calendar(user)
+    period = periods.period(month)
     rows = db.execute(
         select(Transaction.date, func.sum(-_signed_amount))
         .join(Category, Transaction.category_id == Category.id)

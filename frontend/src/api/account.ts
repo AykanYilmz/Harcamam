@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from './index.ts'
+import { REPORTS_KEY } from './reports.ts'
 import type { User } from './types.ts'
 
 /** The logged-in user (`/auth/me`); refreshed whenever the account's email changes. */
@@ -20,6 +21,19 @@ export function useChangeEmail() {
         password: values.password,
       }),
     onSuccess: (user) => queryClient.setQueryData(ME_QUERY_KEY, user),
+  })
+}
+
+/** Account settings; every report is recalculated when the closing day changes. */
+export function useUpdateSettings() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (settings: { periodEndDay: number | null }) =>
+      api.patch<User>('/auth/me', { period_end_day: settings.periodEndDay }),
+    onSuccess: async (user) => {
+      queryClient.setQueryData(ME_QUERY_KEY, user)
+      await queryClient.invalidateQueries({ queryKey: REPORTS_KEY })
+    },
   })
 }
 

@@ -84,7 +84,8 @@ export function CalendarPage() {
   // Without ?ay=, start at the latest month with data, like the dashboard (same cached query).
   const latest = useMonthlyReport(undefined)
   const month = requestedMonth ?? latest.data?.month
-  const daily = useDailySpending(month)
+  // A calendar shows calendar months, whatever the user's statement closing day.
+  const daily = useDailySpending(month, true)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
 
   if (!month) {

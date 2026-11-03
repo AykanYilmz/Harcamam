@@ -114,13 +114,20 @@ def top_merchants(
 
 
 @router.get("/daily", response_model=DailySpendingRead)
-def daily(current_user: CurrentUser, db: DbSession, month: MonthParam = None) -> DailySpendingRead:
+def daily(
+    current_user: CurrentUser,
+    db: DbSession,
+    month: MonthParam = None,
+    calendar_month: Annotated[
+        bool, Query(description="Use the calendar month even if the user has a closing day")
+    ] = False,
+) -> DailySpendingRead:
     selected = reports.parse_month(month) if month else reports.latest_month(db, current_user)
     return DailySpendingRead(
         month=reports.month_label(selected),
         days=[
             DaySpendingRead(date=day, amount=amount)
-            for day, amount in reports.daily_spending(db, current_user, selected)
+            for day, amount in reports.daily_spending(db, current_user, selected, calendar_month)
         ],
     )
 

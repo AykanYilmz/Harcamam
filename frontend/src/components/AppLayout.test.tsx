@@ -18,6 +18,7 @@ const auth: AuthContextValue = {
     created_at: '2026-11-01T00:00:00Z',
     email_verified: true,
     pending_email: null,
+    period_end_day: null,
   },
   login: vi.fn(),
   register: vi.fn(),

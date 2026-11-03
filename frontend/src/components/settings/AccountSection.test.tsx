@@ -31,6 +31,7 @@ const USER: User = {
   created_at: '2026-11-01T10:00:00Z',
   email_verified: true,
   pending_email: null,
+  period_end_day: null,
 }
 
 describe('AccountSection', () => {

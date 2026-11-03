@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router'
@@ -21,6 +22,7 @@ function renderSettings(overrides: Partial<AuthContextValue> = {}) {
       created_at: '2026-11-01T10:00:00Z',
       email_verified: true,
       pending_email: null,
+      period_end_day: null,
     },
     login: vi.fn(),
     register: vi.fn(),
@@ -30,16 +32,18 @@ function renderSettings(overrides: Partial<AuthContextValue> = {}) {
     ...overrides,
   }
   render(
-    <ThemeProvider>
-      <AuthContext.Provider value={auth}>
-        <MemoryRouter initialEntries={['/ayarlar']}>
-          <Routes>
-            <Route path="/ayarlar" element={<SettingsPage />} />
-            <Route path="/giris" element={<LoginStub />} />
-          </Routes>
-        </MemoryRouter>
-      </AuthContext.Provider>
-    </ThemeProvider>,
+    <QueryClientProvider client={new QueryClient()}>
+      <ThemeProvider>
+        <AuthContext.Provider value={auth}>
+          <MemoryRouter initialEntries={['/ayarlar']}>
+            <Routes>
+              <Route path="/ayarlar" element={<SettingsPage />} />
+              <Route path="/giris" element={<LoginStub />} />
+            </Routes>
+          </MemoryRouter>
+        </AuthContext.Provider>
+      </ThemeProvider>
+    </QueryClientProvider>,
   )
   return auth
 }

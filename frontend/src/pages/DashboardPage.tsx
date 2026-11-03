@@ -1,6 +1,7 @@
 import { Upload } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 import { useDailySpending, useMonthlyReport, useTopMerchants, useTrend } from '../api/reports.ts'
+import { useAuth } from '../auth/useAuth.ts'
 import { CategoryBreakdown } from '../components/dashboard/CategoryBreakdown.tsx'
 import { DailySpendingChart } from '../components/dashboard/DailySpendingChart.tsx'
 import { IncomeExpenseDonut } from '../components/dashboard/IncomeExpenseDonut.tsx'
@@ -12,6 +13,7 @@ import { ErrorAlert } from '../components/ui/Alert.tsx'
 import { Card } from '../components/ui/Card.tsx'
 import { PageLoader } from '../components/ui/Spinner.tsx'
 import { errorMessage } from '../lib/errors.ts'
+import { periodMonthOf } from '../lib/periods.ts'
 
 const MONTH_PARAM = 'ay'
 
@@ -43,6 +45,8 @@ function EmptyState() {
 }
 
 export function DashboardPage() {
+  const { user } = useAuth()
+  const endDay = user?.period_end_day ?? null
   const [searchParams, setSearchParams] = useSearchParams()
   // Without ?ay= the API picks the latest month with data; the URL keeps a chosen month
   // so a reload or a shared link shows the same month.
@@ -65,6 +69,8 @@ export function DashboardPage() {
         <MonthPicker
           month={data.month}
           onChange={(next) => setSearchParams({ [MONTH_PARAM]: next })}
+          latest={periodMonthOf(new Date(), endDay)}
+          range={endDay ? { start: data.start, end: data.end } : undefined}
         />
       </div>
 

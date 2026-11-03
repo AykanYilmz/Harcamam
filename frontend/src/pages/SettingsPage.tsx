@@ -2,6 +2,7 @@ import { useState, type FormEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '../auth/useAuth.ts'
 import { AccountSection } from '../components/settings/AccountSection.tsx'
+import { PeriodSection } from '../components/settings/PeriodSection.tsx'
 import { ErrorAlert } from '../components/ui/Alert.tsx'
 import { Button } from '../components/ui/Button.tsx'
 import { Card } from '../components/ui/Card.tsx'
@@ -201,6 +202,7 @@ export function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       {user && <AccountSection user={user} />}
+      {user && <PeriodSection user={user} />}
       <ThemeSection />
       <PasswordSection />
       <DeleteAccountSection />

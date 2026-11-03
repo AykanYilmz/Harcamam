@@ -90,7 +90,8 @@ export interface paths {
         delete: operations["remove_account_auth_me_delete"];
         options?: never;
         head?: never;
-        patch?: never;
+        /** Update Settings */
+        patch: operations["update_settings_auth_me_patch"];
         trace?: never;
     };
     "/auth/change-password": {
@@ -653,6 +654,16 @@ export interface components {
         MonthTotalsRead: {
             /** Month */
             month: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
             /** Income */
             income: string;
             /** Expense */
@@ -664,6 +675,16 @@ export interface components {
         MonthlyReportRead: {
             /** Month */
             month: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
             /** Income */
             income: string;
             /** Expense */
@@ -891,6 +912,16 @@ export interface components {
             email_verified: boolean;
             /** Pending Email */
             pending_email: string | null;
+            /** Period End Day */
+            period_end_day: number | null;
+        };
+        /**
+         * UserSettingsUpdate
+         * @description Fields left out are not changed.
+         */
+        UserSettingsUpdate: {
+            /** Period End Day */
+            period_end_day?: number | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -1087,6 +1118,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_settings_auth_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserSettingsUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserRead"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -1724,6 +1788,8 @@ export interface operations {
             query?: {
                 /** @description YYYY-MM; defaults to the latest month with data */
                 month?: string | null;
+                /** @description Use the calendar month even if the user has a closing day */
+                calendar_month?: boolean;
             };
             header?: never;
             path?: never;

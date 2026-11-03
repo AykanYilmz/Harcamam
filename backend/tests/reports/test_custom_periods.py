@@ -92,3 +92,16 @@ def test_top_merchants_within_the_period(client: TestClient, auth_headers: dict[
     merchants = get(client, auth_headers, "/reports/top-merchants", month="2026-10")["merchants"]
 
     assert {m["name"]: m["amount"] for m in merchants} == {"MIGROS": "200.00", "NETFLIX": "50.00"}
+
+
+@pytest.mark.usefixtures("data")
+def test_daily_can_ask_for_the_calendar_month(
+    client: TestClient, auth_headers: dict[str, str]
+) -> None:
+    days = get(client, auth_headers, "/reports/daily", month="2026-10", calendar_month=True)["days"]
+
+    assert (days[0]["date"], days[-1]["date"]) == ("2026-10-01", "2026-10-31")
+    assert {d["date"]: d["amount"] for d in days if d["amount"] != "0.00"} == {
+        "2026-10-06": "50.00",
+        "2026-10-07": "400.00",
+    }

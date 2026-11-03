@@ -16,6 +16,7 @@ const shortDate = new Intl.DateTimeFormat('tr-TR', {
   month: 'short',
   year: 'numeric',
 })
+const dayMonth = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' })
 
 /** "1129.00" -> "₺1.129,00" */
 export function formatCurrency(amount: string | number): string {
@@ -55,8 +56,21 @@ export function formatMonthShort(month: string): string {
   return shortMonth.format(parseMonth(month))
 }
 
+function localDate(isoDate: string): Date {
+  const [year, month, day] = isoDate.slice(0, 10).split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
 /** "2026-10-05" -> "5 Eki 2026". Parsed as a local date, so no timezone shifts a day. */
 export function formatDate(isoDate: string): string {
-  const [year, month, day] = isoDate.slice(0, 10).split('-').map(Number)
-  return shortDate.format(new Date(year, month - 1, day))
+  return shortDate.format(localDate(isoDate))
+}
+
+/** "2026-09-07", "2026-10-06" -> "7 Eyl – 6 Eki"; years are shown only when they differ. */
+export function formatDateRange(start: string | Date, end: string | Date): string {
+  const [from, to] = [start, end].map((value) =>
+    typeof value === 'string' ? localDate(value) : value,
+  )
+  const format = from.getFullYear() === to.getFullYear() ? dayMonth : shortDate
+  return `${format.format(from)} – ${format.format(to)}`
 }

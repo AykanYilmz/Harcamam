@@ -13,6 +13,9 @@ import { formatCurrency, formatCurrencyCompact, formatDate } from '../../lib/for
 import { Card } from '../ui/Card.tsx'
 
 interface ChartPoint {
+  // 1-based position in the month: with a closing day the month runs e.g. 7 Sep - 6 Oct,
+  // so day-of-month numbers repeat and can't be the axis.
+  index: number
   day: number
   date: string
   amount: number
@@ -31,7 +34,8 @@ function DayTooltip({ active, payload }: TooltipContentProps) {
 
 /** One column per day of the month. Single series: the title names it, so no legend. */
 export function DailySpendingChart({ days }: { days: DaySpending[] }) {
-  const data: ChartPoint[] = days.map((day) => ({
+  const data: ChartPoint[] = days.map((day, position) => ({
+    index: position + 1,
     day: Number(day.date.slice(8, 10)),
     date: day.date,
     amount: Number(day.amount),
@@ -65,8 +69,9 @@ export function DailySpendingChart({ days }: { days: DaySpending[] }) {
           <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
             <CartesianGrid vertical={false} stroke="var(--line)" />
             <XAxis
-              dataKey="day"
+              dataKey="index"
               ticks={[1, 5, 10, 15, 20, 25, lastDay]}
+              tickFormatter={(index: number) => String(data[index - 1]?.day ?? '')}
               axisLine={false}
               tickLine={false}
               tick={{ fill: 'var(--fg-subtle)', fontSize: 12 }}

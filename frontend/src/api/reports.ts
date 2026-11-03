@@ -37,10 +37,12 @@ export function useTopMerchants(month: string | undefined, limit = 5) {
   })
 }
 
-export function useDailySpending(month: string | undefined) {
+/** `calendarMonth`: the 1st to the last day, even when the user's months end on another day. */
+export function useDailySpending(month: string | undefined, calendarMonth = false) {
   return useQuery({
-    queryKey: [...REPORTS_KEY, 'daily', month],
-    queryFn: () => api.get<DailySpending>('/reports/daily', { month }),
+    queryKey: [...REPORTS_KEY, 'daily', month, calendarMonth],
+    queryFn: () =>
+      api.get<DailySpending>('/reports/daily', { month, calendar_month: calendarMonth }),
     enabled: month !== undefined,
   })
 }
