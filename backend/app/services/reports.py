@@ -113,13 +113,59 @@ def monthly_totals(db: Session, user: User, first: dt.date, last: dt.date) -> li
     )
     by_month = {row_month: (income, expense) for row_month, income, expense in rows}
 
-    result = []
+    totals = []
+    for month in month_range(first, last):
+        income, expense = by_month.get(month, (ZERO, ZERO))
+        totals.append(MonthTotals(month, Decimal(income), Decimal(expense)))
+    return totals
+
+
+def month_range(first: dt.date, last: dt.date) -> list[dt.date]:
+    months = []
     current = first
     while current <= last:
-        income, expense = by_month.get(current, (ZERO, ZERO))
-        result.append(MonthTotals(current, Decimal(income), Decimal(expense)))
+        months.append(current)
         current = add_months(current, 1)
-    return result
+    return months
+
+
+@dataclass(frozen=True)
+class CategoryTrend:
+    category: Category
+    # One amount per month, in the same order as the months asked for.
+    amounts: list[Decimal]
+
+    @property
+    def total(self) -> Decimal:
+        return sum(self.amounts, ZERO)
+
+
+def category_trend(db: Session, user: User, first: dt.date, last: dt.date) -> list[CategoryTrend]:
+    """Spending per expense category for every month from `first` to `last`, largest total
+    first. Categories without spending in the period are left out."""
+    month = func.date_trunc("month", Transaction.date).cast(Date).label("month")
+    rows = db.execute(
+        select(Category, month, func.sum(-_signed_amount))
+        .join(Transaction, Transaction.category_id == Category.id)
+        .where(
+            Transaction.user_id == user.id,
+            Category.kind == CategoryKind.EXPENSE,
+            Transaction.date >= first,
+            Transaction.date < add_months(last, 1),
+        )
+        .group_by(Category.id, month)
+    )
+    by_category: dict[Category, dict[dt.date, Decimal]] = {}
+    for category, row_month, amount in rows:
+        by_category.setdefault(category, {})[row_month] = Decimal(amount)
+
+    months = month_range(first, last)
+    trends = [
+        CategoryTrend(category, [amounts.get(m, ZERO) for m in months])
+        for category, amounts in by_category.items()
+    ]
+    trends.sort(key=lambda trend: (-trend.total, trend.category.name))
+    return trends
 
 
 def _spending_by_category(db: Session, user: User, month: dt.date) -> dict[Category, Decimal]:

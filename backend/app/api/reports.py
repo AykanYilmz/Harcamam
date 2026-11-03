@@ -6,6 +6,8 @@ from app.core.dependencies import CurrentUser, DbSession
 from app.schemas.reports import (
     MONTH_PATTERN,
     CategorySpendingRead,
+    CategoryTrendRead,
+    CategoryTrendReportRead,
     DailySpendingRead,
     DaySpendingRead,
     MerchantSpendingRead,
@@ -115,5 +117,30 @@ def daily(current_user: CurrentUser, db: DbSession, month: MonthParam = None) ->
         days=[
             DaySpendingRead(date=day, amount=amount)
             for day, amount in reports.daily_spending(db, current_user, selected)
+        ],
+    )
+
+
+@router.get("/category-trend", response_model=CategoryTrendReportRead)
+def category_trend(
+    current_user: CurrentUser,
+    db: DbSession,
+    months: Annotated[int, Query(ge=MIN_TREND_MONTHS, le=MAX_TREND_MONTHS)] = 12,
+    end: MonthParam = None,
+) -> CategoryTrendReportRead:
+    last = reports.parse_month(end) if end else reports.latest_month(db, current_user)
+    first = reports.add_months(last, -(months - 1))
+    return CategoryTrendReportRead(
+        months=[reports.month_label(month) for month in reports.month_range(first, last)],
+        categories=[
+            CategoryTrendRead(
+                category_id=trend.category.id,
+                name=trend.category.name,
+                color=trend.category.color,
+                icon=trend.category.icon,
+                amounts=trend.amounts,
+                total=trend.total,
+            )
+            for trend in reports.category_trend(db, current_user, first, last)
         ],
     )

@@ -68,3 +68,18 @@ class DailySpendingRead(BaseModel):
     month: str
     # Every day of the month, in order; days without spending are 0.
     days: list[DaySpendingRead]
+
+
+class CategoryTrendRead(BaseModel):
+    category_id: uuid.UUID
+    name: str
+    color: str
+    icon: str
+    # Aligned with CategoryTrendReportRead.months.
+    amounts: list[Decimal]
+    total: Decimal
+
+
+class CategoryTrendReportRead(BaseModel):
+    months: list[str]
+    categories: list[CategoryTrendRead]
