@@ -77,6 +77,8 @@ harcamam/
 - [x] Aynı ekstre iki kez yüklenirse mükerrer işlem oluşmasın
 - [x] `sample_data/` içine 2–3 **sahte** örnek ekstre (CSV + PDF) oluştur
 - [x] Testler: her parser için örnek dosyalarla birim testleri, bozuk dosya senaryosu
+- [x] Kredi kartı ekstresi tanıma ("Son Ödeme Tarihi", "Asgari Ödeme" vb.): işaretsiz tutar harcama, `+`/`-` işaretli tutar ödeme/iade. Birebir kopya sayfalar bir kez okunur. Gerçek bir Ziraat kart ekstresiyle (repoya girmeden) doğrulandı.
+- [ ] Başka bankaların gerçek ekstreleriyle deneme; gerekirse banka bazlı parser
 
 ### Faz 3 — Kategorizasyon
 - [x] Varsayılan kategoriler (seed): Market, Yemek, Ulaşım, Faturalar, Kira, Eğlence, Sağlık, Giyim, Abonelikler, Nakit Çekim, Gelir, Diğer (+ sonradan eklenen: Alışveriş, Transfer)
@@ -84,6 +86,8 @@ harcamam/
 - [x] Kullanıcı bir işlemin kategorisini değiştirince "bunu kural olarak kaydet" seçeneği sunulsun. Sonraki yüklemelerde bu kural öncelikli uygulansın.
 - [x] `PATCH /transactions/{id}` (kategori düzeltme), toplu düzeltme endpoint'i
 - [x] Testler: kural önceliği (kullanıcı kuralı > varsayılan kural), eşleşme olmayınca "Diğer"
+- [x] İadeler (ör. "Satış İade") gelir sayılmaz, harcamayı azaltır. Hesaptan kart borcu ödemesi Transfer'dir (çift sayılmaz).
+- [x] Kategori Eğitimi sayfası: tanınmayan işlemler işyerine göre gruplanır (PAYTR/, taksit, şehir adı vb. temizlenir), tek seçimle bütün grup kural olarak öğretilir. `GET /transactions/uncategorized`
 
 ### Faz 4 — Raporlar ve API'nin tamamlanması
 - [x] `/reports/monthly`: kategori bazlı toplam, gelir-gider, önceki aya göre değişim (+ ay, kullanıcının hesap kesim gününe göre bölünebilir)
@@ -103,6 +107,8 @@ harcamam/
 - [x] Yardım sayfası: desteklenen dosya formatları, sık sorulan sorular
 - [x] Raporlar sayfası (uzun dönem grafikler, kategori trendleri) ve Takvim sayfası (harcamalar takvimde)
 - [x] E-posta doğrulama (kayıt ve değişiklikte) ve e-posta değiştirme
+- [x] Ayarlar → Dönem: ay, kullanıcının hesap kesim gününe göre bölünür (ör. 6 → "Ekim" = 7 Eyl – 6 Eki). Takvim sayfası takvim ayı kalır.
+- [x] Yan menü sayfanın üzerine açılır (sabitlenmez), üst çubukta ortada uygulama adı, animasyonlar herkes için açık (ayar yok), tema açık/koyu switch
 - Kenar menüsünde yalnızca sayfası hazır olan sekmeler görünür.
 
 ### Faz 6 — Kalite ve altyapı
@@ -115,6 +121,8 @@ harcamam/
 ### Faz 7 — Opsiyonel geliştirmeler (vakit kalırsa)
 Not: Bütçeler, Abonelikler ve Dışa aktarma kenar menüsüne sekme olarak eklenecek; Faz 5'ten sonra öne çekildi.
 - [ ] ML tabanlı kategorizer: kullanıcının düzelttiği işlemlerle eğitilen TF-IDF + Logistic Regression. Kural eşleşmeyince devreye girsin, güven skoru düşükse "Diğer".
+- [ ] (Değerlendirilecek) Yapay zekâ ile kategori tahmini: yalnızca işyeri adları bir LLM'e gönderilir, kullanıcı onayıyla açılır. Hiç görülmemiş işyerlerinde ML'den iyi; gizlilik ve maliyet tartışılacak.
+- [ ] Ekstre bazlı kart takibi: her ekstrenin toplamı / dönemi (kart bazlı kesim günü gerekirse "Kartlar" yapısı)
 - [ ] Bütçe hedefleri: kategori bazlı aylık limit, aşılınca uyarı
 - [ ] Abonelik tespiti: her ay tekrar eden ödemeleri otomatik bul
 - [ ] Rapor dışa aktarma (Excel/PDF)
@@ -126,6 +134,7 @@ Not: Bütçeler, Abonelikler ve Dışa aktarma kenar menüsüne sekme olarak ekl
 ---
 
 ## Çalışma kuralları
+- **Gerçek ekstre verisi (işyeri adları, açıklama satırları, tutarlar) kod, test, yorum, docstring veya commit mesajına asla yazılmaz.** Testlerde yapısı benzeyen ama tamamen uydurma ("ÖRNEK ...") veri kullanılır.
 - Kod (değişken, fonksiyon, sınıf isimleri, commit mesajları) **İngilizce**. Arayüz metinleri ve bana yaptığın açıklamalar **Türkçe**.
 - Büyük bir değişiklikten önce kısa bir plan sun, onayımı al.
 - Her yeni özellik için test yaz. Testler geçmeden "bitti" deme.
