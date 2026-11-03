@@ -13,6 +13,8 @@ from app.schemas.transactions import (
     TransactionFilters,
     TransactionPage,
     TransactionRead,
+    UncategorizedMerchantRead,
+    UncategorizedReport,
 )
 from app.services.categories import CategoryNotFoundError, InvalidKeywordError
 from app.services.transactions import (
@@ -20,6 +22,7 @@ from app.services.transactions import (
     bulk_set_category,
     correct_category,
     list_transactions,
+    uncategorized_merchants,
 )
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
@@ -38,6 +41,23 @@ def get_transactions(
         page=filters.page,
         page_size=filters.page_size,
         pages=pages,
+    )
+
+
+@router.get("/uncategorized", response_model=UncategorizedReport)
+def get_uncategorized(current_user: CurrentUser, db: DbSession) -> UncategorizedReport:
+    merchants = uncategorized_merchants(db, current_user)
+    return UncategorizedReport(
+        transaction_count=sum(len(merchant.transactions) for merchant in merchants),
+        merchants=[
+            UncategorizedMerchantRead(
+                name=merchant.name,
+                keyword=merchant.name,
+                amount=merchant.amount,
+                transactions=[TransactionRead.model_validate(t) for t in merchant.transactions],
+            )
+            for merchant in merchants
+        ],
     )
 
 

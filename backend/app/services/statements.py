@@ -32,6 +32,8 @@ class ImportResult:
     statement: Statement
     imported: int
     skipped_duplicates: int
+    # Imported transactions no rule recognized (left in "Diğer").
+    uncategorized: int
 
 
 def safe_file_name(file_name: str | None) -> str:
@@ -149,6 +151,7 @@ def import_statement(
         statement=statement,
         imported=len(new),
         skipped_duplicates=len(parsed.transactions) - len(new),
+        uncategorized=sum(t.category_id == categorizer.other_category_id for t in transactions),
     )
 
 

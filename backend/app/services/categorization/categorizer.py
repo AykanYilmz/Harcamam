@@ -47,6 +47,11 @@ class Categorizer:
         # Stable sort: equally long keywords keep the order they were given in.
         return sorted(prepared, key=lambda item: len(item[0]), reverse=True)
 
+    @property
+    def other_category_id(self) -> uuid.UUID:
+        """The fallback category: what lands here is waiting for the user to categorize it."""
+        return self._other_category_id
+
     def match(self, description: str) -> KeywordRule | None:
         """The rule that decides this description's category, if any."""
         text = _padded(description)

@@ -80,3 +80,16 @@ class TransactionPage(BaseModel):
     page: int
     page_size: int
     pages: int
+
+
+class UncategorizedMerchantRead(BaseModel):
+    name: str
+    # Saving a rule with this keyword categorizes every transaction below.
+    keyword: str
+    amount: Decimal
+    transactions: list[TransactionRead]
+
+
+class UncategorizedReport(BaseModel):
+    transaction_count: int
+    merchants: list[UncategorizedMerchantRead]

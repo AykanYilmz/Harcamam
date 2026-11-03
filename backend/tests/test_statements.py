@@ -56,6 +56,8 @@ def test_upload_csv_imports_transactions(
     body = response.json()
     assert body["imported"] == 26
     assert body["skipped_duplicates"] == 0
+    # The sample is built from known merchants; nothing is left for the user to sort out.
+    assert body["uncategorized"] == 0
     assert body["statement"]["file_name"] == SEPTEMBER_CSV
     assert body["statement"]["bank_name"] == "Örnek Bank"
     assert body["statement"]["period_start"] == "2026-09-01"
@@ -241,3 +243,18 @@ def test_cannot_delete_another_users_statement(
 
     assert response.status_code == 404
     assert len(client.get("/statements", headers=auth_headers).json()) == 1
+
+
+def test_upload_reports_how_many_transactions_no_rule_recognized(
+    client: TestClient, auth_headers: dict[str, str]
+) -> None:
+    content = "Tarih;Açıklama;Tutar\n01.10.2026;MIGROS;-100,00\n02.10.2026;ÖRNEK KASAP;-50,00\n"
+
+    response = client.post(
+        "/statements/upload",
+        headers=auth_headers,
+        files={"file": ("ekstre.csv", content.encode(), "text/csv")},
+    )
+
+    assert response.status_code == 201, response.text
+    assert (response.json()["imported"], response.json()["uncategorized"]) == (2, 1)

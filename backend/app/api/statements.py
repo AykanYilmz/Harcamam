@@ -65,6 +65,7 @@ def upload_statement(
         statement=to_read(result.statement, result.imported),
         imported=result.imported,
         skipped_duplicates=result.skipped_duplicates,
+        uncategorized=result.uncategorized,
     )
 
 

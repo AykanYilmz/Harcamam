@@ -1,18 +1,27 @@
 import math
 import uuid
+from dataclasses import dataclass, field
+from decimal import Decimal
 
 from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 
-from app.models import CategoryRule, Transaction, User
+from app.models import CategoryRule, Transaction, TransactionType, User
 from app.schemas.transactions import TransactionFilters, TransactionSort
 from app.services.categories import (
     CategoryNotFoundError,
+    build_categorizer,
     get_accessible_category,
     save_rule,
     validate_keyword,
 )
-from app.services.parsing.formats import ASCII_LETTERS, TURKISH_LETTERS, fold_turkish
+from app.services.merchants import merchant_name
+from app.services.parsing.formats import (
+    ASCII_LETTERS,
+    TURKISH_LETTERS,
+    fold_turkish,
+    normalize_text,
+)
 
 
 class TransactionNotFoundError(Exception):
@@ -123,3 +132,37 @@ def list_transactions(
         .limit(filters.page_size)
     ).all()
     return list(items), total, math.ceil(total / filters.page_size)
+
+
+@dataclass
+class UncategorizedMerchant:
+    # Also the keyword to save a rule under: it matches all of these transactions.
+    name: str
+    # Spending, refunds subtracted; negative if the merchant only paid money back.
+    amount: Decimal = Decimal("0.00")
+    transactions: list[Transaction] = field(default_factory=list)
+
+
+def uncategorized_merchants(db: Session, user: User) -> list[UncategorizedMerchant]:
+    """Transactions no rule recognized, grouped by merchant, where the most money went first.
+
+    Ones the user put in "Diğer" by hand are left out: that was a choice, not a gap.
+    """
+    other_id = build_categorizer(db, user).other_category_id
+    rows = db.scalars(
+        select(Transaction)
+        .where(
+            Transaction.user_id == user.id,
+            Transaction.category_id == other_id,
+            Transaction.is_manually_categorized.is_(False),
+        )
+        .order_by(Transaction.date.desc(), Transaction.id)
+    )
+    groups: dict[str, UncategorizedMerchant] = {}
+    for transaction in rows:
+        name = merchant_name(transaction.description)
+        group = groups.setdefault(normalize_text(name), UncategorizedMerchant(name=name))
+        is_expense = transaction.type is TransactionType.EXPENSE
+        group.amount += transaction.amount if is_expense else -transaction.amount
+        group.transactions.append(transaction)
+    return sorted(groups.values(), key=lambda g: (-g.amount, -len(g.transactions), g.name))

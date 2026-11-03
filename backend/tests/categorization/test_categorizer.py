@@ -120,8 +120,12 @@ def test_match_returns_the_deciding_rule() -> None:
         ("ÖRNEK GROSS MARKET", "Market"),
         ("ÖRNEK KAFE REST", "Yemek"),
         ("0000 ÖRNEK-KART Ödeme-teşekkür", "Transfer"),
+        # The account side of paying the card bill: already counted as card purchases.
+        ("KREDİ KARTI BORÇ ÖDEMESİ", "Transfer"),
+        ("ÖRNEK KART ÖDEME 1234", "Transfer"),
+        ("KART BORCU TAHSİLAT", "Transfer"),
         ("ÖRNEK PETROL ANKARA", "Ulaşım"),
-        ("S/OBİLET.COM İSTANBUL", "Ulaşım"),
+        ("OBİLET.COM", "Ulaşım"),
         ("ÖRNEK KAHVE", "Yemek"),
         ("ÖRNEK ÇİĞKÖFTE", "Yemek"),
         ("ÖRNEK GIDA SANAYİ", "Market"),

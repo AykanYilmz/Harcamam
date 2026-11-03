@@ -18,3 +18,5 @@ class StatementImportResult(BaseModel):
     statement: StatementRead
     imported: int
     skipped_duplicates: int
+    # How many of the imported transactions no rule recognized.
+    uncategorized: int
