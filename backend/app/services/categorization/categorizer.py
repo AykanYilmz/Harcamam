@@ -12,6 +12,10 @@ class KeywordRule:
     category_id: uuid.UUID
 
 
+# A refund is money back from a purchase, not income: it should lower spending.
+_REFUND_WORDS = (" iade ", " iadesi ", " refund ")
+
+
 def _padded(text: str) -> str:
     # Surrounding spaces turn a substring check into a whole-word check:
     # " sok " is in " sok market " but not in " sokak lezzetleri ".
@@ -22,8 +26,8 @@ class Categorizer:
     """Picks a category for a transaction description. Pure logic: no database access.
 
     Order: the user's rules, then the default rules; within each, the longest keyword wins
-    because it is the most specific. With no match, income goes to the income category and
-    expenses to the fallback ("Diğer").
+    because it is the most specific. With no match, expenses and refunds go to the fallback
+    ("Diğer"), where a refund lowers spending, and other income to the income category.
     """
 
     def __init__(
@@ -55,6 +59,7 @@ class Categorizer:
     def categorize(self, description: str, transaction_type: TransactionType) -> uuid.UUID:
         if rule := self.match(description):
             return rule.category_id
-        if transaction_type is TransactionType.INCOME:
+        is_refund = any(word in _padded(description) for word in _REFUND_WORDS)
+        if transaction_type is TransactionType.INCOME and not is_refund:
             return self._income_category_id
         return self._other_category_id

@@ -55,6 +55,17 @@ def test_unmatched_expense_goes_to_other() -> None:
     assert categorizer().categorize("BILINMEYEN DUKKAN", EXPENSE) == OTHER
 
 
+@pytest.mark.parametrize("description", ["ÖRNEK.COM Satis Iade", "ÖRNEK MAĞAZA İADESİ"])
+def test_unmatched_refund_lowers_spending_instead_of_counting_as_income(
+    description: str,
+) -> None:
+    assert categorizer().categorize(description, TransactionType.INCOME) == OTHER
+
+
+def test_matched_refund_goes_to_the_merchants_category() -> None:
+    assert categorizer().categorize("MIGROS IADE", TransactionType.INCOME) == MARKET
+
+
 def test_unmatched_income_goes_to_income() -> None:
     assert categorizer().categorize("BILINMEYEN ODEME", TransactionType.INCOME) == INCOME
 
@@ -109,6 +120,15 @@ def test_match_returns_the_deciding_rule() -> None:
         ("ÖRNEK GROSS MARKET", "Market"),
         ("ÖRNEK KAFE REST", "Yemek"),
         ("0000 ÖRNEK-KART Ödeme-teşekkür", "Transfer"),
+        ("ÖRNEK PETROL ANKARA", "Ulaşım"),
+        ("S/OBİLET.COM İSTANBUL", "Ulaşım"),
+        ("ÖRNEK KAHVE", "Yemek"),
+        ("ÖRNEK ÇİĞKÖFTE", "Yemek"),
+        ("ÖRNEK GIDA SANAYİ", "Market"),
+        ("ÖRNEK TEKEL BAYİİ", "Market"),
+        ("FLO MAĞAZACILIK", "Giyim"),
+        ("ÖRNEK KİTAP", "Alışveriş"),
+        ("T.C.SAĞLIK BAKANLIĞI", "Sağlık"),
     ],
 )
 def test_built_in_keywords_cover_card_statement_merchants(description: str, category: str) -> None:
