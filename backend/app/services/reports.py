@@ -8,7 +8,8 @@ Rules shared by every report:
 """
 
 import datetime as dt
-from dataclasses import dataclass
+from collections import Counter
+from dataclasses import dataclass, field
 from decimal import Decimal
 
 from sqlalchemy import Date, case, func, select
@@ -22,7 +23,8 @@ from app.models import (
     TransactionType,
     User,
 )
-from app.services.categories import get_default_category
+from app.services.categories import build_categorizer, get_default_category
+from app.services.parsing.formats import normalize_text
 
 ZERO = Decimal("0.00")
 
@@ -184,3 +186,68 @@ def monthly_report(db: Session, user: User, month: dt.date | None = None) -> Mon
         transaction_count=transaction_count or 0,
         categories=category_rows,
     )
+
+
+@dataclass(frozen=True)
+class MerchantSpending:
+    name: str
+    amount: Decimal
+    transaction_count: int
+    # The category most of this merchant's transactions are in.
+    category: Category
+
+
+@dataclass
+class _MerchantGroup:
+    name: str
+    amount: Decimal = ZERO
+    transaction_count: int = 0
+    categories: Counter[Category] = field(default_factory=Counter)
+
+
+def top_merchants(
+    db: Session, user: User, month: dt.date | None = None, limit: int = 10
+) -> list[MerchantSpending]:
+    """Where the money went in `month`, grouped by the keyword that categorized each transaction.
+
+    "MIGROS KADIKOY" and "MIGROS SANAL MARKET" both match the keyword MIGROS, so they form one
+    merchant. Transactions no keyword matches are grouped by their own description. Refunds
+    lower their merchant's total, the same way they lower category spending.
+    """
+    month = month or latest_month(db, user)
+    categories = _ReportCategories(db)
+    rows = db.execute(
+        select(Transaction, Category)
+        .join(Category, Transaction.category_id == Category.id)
+        .where(
+            Transaction.user_id == user.id,
+            Transaction.category_id.not_in([categories.income_id, categories.transfer_id]),
+            Transaction.date >= month,
+            Transaction.date < add_months(month, 1),
+        )
+    )
+
+    categorizer = build_categorizer(db, user)
+    groups: dict[str, _MerchantGroup] = {}
+    for transaction, category in rows:
+        rule = categorizer.match(transaction.description)
+        name = rule.keyword if rule else transaction.description
+        group = groups.setdefault(normalize_text(name), _MerchantGroup(name=name))
+        is_expense = transaction.type is TransactionType.EXPENSE
+        group.amount += transaction.amount if is_expense else -transaction.amount
+        group.transaction_count += 1
+        group.categories[category] += 1
+
+    merchants = [
+        MerchantSpending(
+            name=group.name,
+            amount=group.amount,
+            transaction_count=group.transaction_count,
+            category=group.categories.most_common(1)[0][0],
+        )
+        for group in groups.values()
+        # A merchant with only refunds this month isn't somewhere money went.
+        if group.amount > 0
+    ]
+    merchants.sort(key=lambda merchant: (-merchant.amount, merchant.name))
+    return merchants[:limit]

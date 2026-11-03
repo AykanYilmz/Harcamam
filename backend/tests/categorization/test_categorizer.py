@@ -90,3 +90,11 @@ def test_rules_without_letters_or_digits_are_ignored() -> None:
     user_rules = [KeywordRule(" - ", HOBBY)]
 
     assert categorizer(user_rules).categorize("A - B", EXPENSE) == OTHER
+
+
+def test_match_returns_the_deciding_rule() -> None:
+    user_rule = KeywordRule("MIGROS SANAL", ONLINE_MARKET)
+
+    assert categorizer([user_rule]).match("MIGROS SANAL MARKET") == user_rule
+    assert categorizer().match("ŞOK MARKET") == KeywordRule("SOK", MARKET)
+    assert categorizer().match("BILINMEYEN DUKKAN") is None

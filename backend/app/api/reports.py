@@ -6,8 +6,10 @@ from app.core.dependencies import CurrentUser, DbSession
 from app.schemas.reports import (
     MONTH_PATTERN,
     CategorySpendingRead,
+    MerchantSpendingRead,
     MonthlyReportRead,
     MonthTotalsRead,
+    TopMerchantsRead,
     TrendReportRead,
 )
 from app.services import reports
@@ -22,6 +24,7 @@ MonthParam = Annotated[
 
 MIN_TREND_MONTHS = 3
 MAX_TREND_MONTHS = 24
+MAX_MERCHANTS = 50
 
 
 def to_totals_read(totals: reports.MonthTotals) -> MonthTotalsRead:
@@ -75,3 +78,27 @@ def trend(
     first = reports.add_months(last, -(months - 1))
     totals = reports.monthly_totals(db, current_user, first, last)
     return TrendReportRead(months=[to_totals_read(month) for month in totals])
+
+
+@router.get("/top-merchants", response_model=TopMerchantsRead)
+def top_merchants(
+    current_user: CurrentUser,
+    db: DbSession,
+    month: MonthParam = None,
+    limit: Annotated[int, Query(ge=1, le=MAX_MERCHANTS)] = 10,
+) -> TopMerchantsRead:
+    selected = reports.parse_month(month) if month else reports.latest_month(db, current_user)
+    merchants = reports.top_merchants(db, current_user, selected, limit)
+    return TopMerchantsRead(
+        month=reports.month_label(selected),
+        merchants=[
+            MerchantSpendingRead(
+                name=merchant.name,
+                amount=merchant.amount,
+                transaction_count=merchant.transaction_count,
+                category_id=merchant.category.id,
+                category_name=merchant.category.name,
+            )
+            for merchant in merchants
+        ],
+    )

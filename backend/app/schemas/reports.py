@@ -42,3 +42,16 @@ class MonthlyReportRead(BaseModel):
 class TrendReportRead(BaseModel):
     # Oldest first; months without data are included with zeros.
     months: list[MonthTotalsRead]
+
+
+class MerchantSpendingRead(BaseModel):
+    name: str
+    amount: Decimal
+    transaction_count: int
+    category_id: uuid.UUID
+    category_name: str
+
+
+class TopMerchantsRead(BaseModel):
+    month: str
+    merchants: list[MerchantSpendingRead]

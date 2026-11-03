@@ -38,21 +38,23 @@ class Categorizer:
         self._other_category_id = other_category_id
 
     @staticmethod
-    def _prepare(rules: Iterable[KeywordRule]) -> list[tuple[str, uuid.UUID]]:
-        prepared = [
-            (_padded(rule.keyword), rule.category_id)
-            for rule in rules
-            if normalize_text(rule.keyword)
-        ]
+    def _prepare(rules: Iterable[KeywordRule]) -> list[tuple[str, KeywordRule]]:
+        prepared = [(_padded(rule.keyword), rule) for rule in rules if normalize_text(rule.keyword)]
         # Stable sort: equally long keywords keep the order they were given in.
         return sorted(prepared, key=lambda item: len(item[0]), reverse=True)
 
-    def categorize(self, description: str, transaction_type: TransactionType) -> uuid.UUID:
+    def match(self, description: str) -> KeywordRule | None:
+        """The rule that decides this description's category, if any."""
         text = _padded(description)
         for rules in self._rule_groups:
-            for keyword, category_id in rules:
+            for keyword, rule in rules:
                 if keyword in text:
-                    return category_id
+                    return rule
+        return None
+
+    def categorize(self, description: str, transaction_type: TransactionType) -> uuid.UUID:
+        if rule := self.match(description):
+            return rule.category_id
         if transaction_type is TransactionType.INCOME:
             return self._income_category_id
         return self._other_category_id
