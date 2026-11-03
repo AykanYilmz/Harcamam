@@ -5,6 +5,7 @@ import { AppLayout } from './components/AppLayout.tsx'
 import { LoginPage } from './pages/LoginPage.tsx'
 import { NotFoundPage } from './pages/NotFoundPage.tsx'
 import { RegisterPage } from './pages/RegisterPage.tsx'
+import { TransactionsPage } from './pages/TransactionsPage.tsx'
 import { UploadPage } from './pages/UploadPage.tsx'
 import { PageLoader } from './components/ui/Spinner.tsx'
 
@@ -30,6 +31,7 @@ function App() {
               </Suspense>
             }
           />
+          <Route path="/islemler" element={<TransactionsPage />} />
           <Route path="/yukle" element={<UploadPage />} />
         </Route>
       </Route>

@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import type { CategorySpending } from '../../api/types.ts'
 import { formatCurrency, formatPercent } from '../../lib/format.ts'
+import { categoryMonthLink } from '../../lib/transactionFilters.ts'
 import { CategoryIcon } from '../CategoryIcon.tsx'
 import { Card } from '../ui/Card.tsx'
 
@@ -20,7 +22,13 @@ function ChangeText({ changePct }: { changePct: number | null }) {
  * Spending per category as ranked bars on one baseline (easier to compare than pie slices).
  * The bars share one hue; the category's own color sits on its icon, beside its name.
  */
-export function CategoryBreakdown({ categories }: { categories: CategorySpending[] }) {
+export function CategoryBreakdown({
+  categories,
+  month,
+}: {
+  categories: CategorySpending[]
+  month: string
+}) {
   const [showAll, setShowAll] = useState(false)
   const spent = categories.filter((category) => Number(category.amount) > 0)
   const largest = Math.max(...spent.map((category) => Number(category.amount)), 0)
@@ -38,7 +46,13 @@ export function CategoryBreakdown({ categories }: { categories: CategorySpending
               <CategoryIcon icon={category.icon} color={category.color} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="truncate text-sm font-medium text-fg">{category.name}</span>
+                  <Link
+                    to={categoryMonthLink(category.category_id, month)}
+                    title="Bu ayın işlemlerini göster"
+                    className="truncate text-sm font-medium text-fg hover:text-accent-fg hover:underline"
+                  >
+                    {category.name}
+                  </Link>
                   <span className="text-sm font-semibold text-fg tabular-nums">
                     {formatCurrency(category.amount)}
                   </span>

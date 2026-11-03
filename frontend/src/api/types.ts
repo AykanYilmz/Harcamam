@@ -17,3 +17,17 @@ export type DaySpending = Schemas['DaySpendingRead']
 
 export type Statement = Schemas['StatementRead']
 export type StatementImportResult = Schemas['StatementImportResult']
+
+export type Category = Schemas['CategoryRead']
+export type CategoryKind = Schemas['CategoryKind']
+export type CategoryCreate = Schemas['CategoryCreate']
+export type CategoryUpdate = Schemas['CategoryUpdate']
+export type Rule = Schemas['RuleRead']
+export type RuleSaveResult = Schemas['RuleSaveResult']
+
+export type Transaction = Schemas['TransactionRead']
+export type TransactionPage = Schemas['TransactionPage']
+export type TransactionType = Schemas['TransactionType']
+export type TransactionSort = Schemas['TransactionSort']
+export type TransactionCorrectionResult = Schemas['TransactionCorrectionResult']
+export type BulkCategoryResult = Schemas['BulkCategoryResult']

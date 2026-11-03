@@ -127,7 +127,7 @@ export function DashboardPage() {
           </div>
 
           <div className="mt-4">
-            <CategoryBreakdown categories={data.categories} />
+            <CategoryBreakdown categories={data.categories} month={data.month} />
           </div>
         </>
       )}
