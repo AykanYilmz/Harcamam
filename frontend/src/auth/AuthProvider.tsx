@@ -59,6 +59,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [login],
   )
 
+  const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
+    const pair = await api.post<TokenPair>('/auth/change-password', {
+      current_password: currentPassword,
+      new_password: newPassword,
+    })
+    tokenStore.setTokens(pair.access_token, pair.refresh_token)
+  }, [])
+
+  const deleteAccount = useCallback(async (password: string) => {
+    await api.request('/auth/me', { method: 'DELETE', json: { password } })
+  }, [])
+
   let status: AuthStatus
   if (!hasSession || me.isError) status = 'anonymous'
   else if (me.isSuccess) status = 'authenticated'
@@ -70,9 +82,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user: status === 'authenticated' ? (me.data ?? null) : null,
       login,
       register,
+      changePassword,
+      deleteAccount,
       logout: endSession,
     }),
-    [status, me.data, login, register, endSession],
+    [status, me.data, login, register, changePassword, deleteAccount, endSession],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

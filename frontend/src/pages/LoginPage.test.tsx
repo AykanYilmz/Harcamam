@@ -13,6 +13,8 @@ function renderLogin(login: AuthContextValue['login']) {
     user: null,
     login,
     register: vi.fn(),
+    changePassword: vi.fn(),
+    deleteAccount: vi.fn(),
     logout: vi.fn(),
   }
   render(

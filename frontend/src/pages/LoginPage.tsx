@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../auth/useAuth.ts'
 import { AuthCard } from '../components/AuthCard.tsx'
 import { ErrorAlert } from '../components/ui/Alert.tsx'
+import { SuccessNotice } from '../components/ui/Notice.tsx'
 import { Button } from '../components/ui/Button.tsx'
 import { TextField } from '../components/ui/TextField.tsx'
 import { errorMessage } from '../lib/errors.ts'
@@ -15,6 +16,10 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  // A message handed over by the page that sent the user here (e.g. after deleting the account).
+  const [notice, setNotice] = useState(
+    () => (location.state as { notice?: string } | null)?.notice ?? null,
+  )
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -45,6 +50,7 @@ export function LoginPage() {
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        {notice && <SuccessNotice onDismiss={() => setNotice(null)}>{notice}</SuccessNotice>}
         {error && <ErrorAlert>{error}</ErrorAlert>}
         <TextField
           label="E-posta"

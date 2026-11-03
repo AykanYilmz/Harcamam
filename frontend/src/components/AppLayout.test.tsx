@@ -11,6 +11,8 @@ const auth: AuthContextValue = {
   user: { id: '1', email: 'ayse@example.com', created_at: '2026-11-01T00:00:00Z' },
   login: vi.fn(),
   register: vi.fn(),
+  changePassword: vi.fn(),
+  deleteAccount: vi.fn(),
   logout: vi.fn(),
 }
 
