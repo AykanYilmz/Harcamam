@@ -14,6 +14,7 @@ from app.schemas.auth import (
     TokenPair,
     UserCreate,
     UserRead,
+    UserSettingsUpdate,
     VerifyEmailRequest,
     VerifyEmailResult,
 )
@@ -83,6 +84,14 @@ def refresh(payload: RefreshRequest, db: DbSession) -> TokenPair:
 
 @router.get("/me", response_model=UserRead)
 def me(current_user: CurrentUser) -> User:
+    return current_user
+
+
+@router.patch("/me", response_model=UserRead)
+def update_settings(payload: UserSettingsUpdate, current_user: CurrentUser, db: DbSession) -> User:
+    for name, value in payload.model_dump(exclude_unset=True).items():
+        setattr(current_user, name, value)
+    db.commit()
     return current_user
 
 

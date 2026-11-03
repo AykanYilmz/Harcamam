@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Integer, String, func
+from sqlalchemy import CheckConstraint, DateTime, Integer, SmallInteger, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -20,6 +20,12 @@ class User(Base):
     # A requested new address; it replaces `email` once its verification link is opened.
     pending_email: Mapped[str | None] = mapped_column(String(320))
     verification_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Statement closing day that reports split months on; None means calendar months.
+    period_end_day: Mapped[int | None] = mapped_column(SmallInteger)
+
+    __table_args__ = (
+        CheckConstraint("period_end_day BETWEEN 1 AND 31", name="users_period_end_day_check"),
+    )
 
     @property
     def email_verified(self) -> bool:

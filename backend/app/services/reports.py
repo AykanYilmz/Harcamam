@@ -5,19 +5,23 @@ Rules shared by every report, based on each category's kind:
 - Income is the net of the income categories.
 - Spending in an expense category is its expenses minus its income, so a refund lowers the
   spending of the category it belongs to instead of counting as income.
+
+"Month" means the user's reporting period (see app.services.periods): the calendar month, or
+the month that ends on their statement closing day. Months are named by their first day.
 """
 
 import datetime as dt
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from decimal import Decimal
 
-from sqlalchemy import Date, case, func, select
+from sqlalchemy import ColumnElement, case, func, select
 from sqlalchemy.orm import Session
 
 from app.models import Category, CategoryKind, Transaction, TransactionType, User
 from app.services.categories import build_categorizer
 from app.services.parsing.formats import normalize_text
+from app.services.periods import Period, PeriodCalendar, add_months
 
 ZERO = Decimal("0.00")
 
@@ -27,13 +31,13 @@ _signed_amount = case(
 )
 
 
-def month_start(day: dt.date) -> dt.date:
-    return day.replace(day=1)
+def period_calendar(user: User) -> PeriodCalendar:
+    return PeriodCalendar(user.period_end_day)
 
 
-def add_months(month: dt.date, count: int) -> dt.date:
-    index = month.year * 12 + month.month - 1 + count
-    return dt.date(index // 12, index % 12 + 1, 1)
+def _within(first: Period, last: Period) -> tuple[ColumnElement[bool], ColumnElement[bool]]:
+    """Filter for transactions from the start of `first` to the end of `last`."""
+    return Transaction.date >= first.start, Transaction.date < last.end_exclusive
 
 
 def month_label(month: dt.date) -> str:
@@ -63,14 +67,18 @@ def share_pct(amount: Decimal, total: Decimal) -> float | None:
 def latest_month(db: Session, user: User) -> dt.date:
     """The most recent month with transactions, or the current month if there are none."""
     latest = db.scalar(select(func.max(Transaction.date)).where(Transaction.user_id == user.id))
-    return month_start(latest or dt.date.today())
+    return period_calendar(user).month_of(latest or dt.date.today())
 
 
 @dataclass(frozen=True)
 class MonthTotals:
-    month: dt.date
+    period: Period
     income: Decimal
     expense: Decimal
+
+    @property
+    def month(self) -> dt.date:
+        return self.period.month
 
     @property
     def net(self) -> Decimal:
@@ -92,41 +100,39 @@ class MonthlyReport:
     categories: list[CategorySpending]
 
 
+def month_range(user: User, first: dt.date, last: dt.date) -> list[Period]:
+    """The user's periods for every month from `first` to `last`."""
+    return period_calendar(user).periods(first, last)
+
+
 def monthly_totals(db: Session, user: User, first: dt.date, last: dt.date) -> list[MonthTotals]:
     """Income and expense for every month from `first` to `last`, months without data as 0."""
-    month = func.date_trunc("month", Transaction.date).cast(Date).label("month")
+    periods = period_calendar(user)
+    months = periods.periods(first, last)
     is_income = Category.kind == CategoryKind.INCOME
+    # Summed per day in SQL, then per period here: a period need not start on the 1st.
     rows = db.execute(
         select(
-            month,
-            func.coalesce(func.sum(case((is_income, _signed_amount), else_=0)), 0),
-            func.coalesce(func.sum(case((is_income, 0), else_=-_signed_amount)), 0),
+            Transaction.date,
+            func.sum(case((is_income, _signed_amount), else_=0)),
+            func.sum(case((is_income, 0), else_=-_signed_amount)),
         )
         .join(Category, Transaction.category_id == Category.id)
         .where(
             Transaction.user_id == user.id,
             Category.kind != CategoryKind.TRANSFER,
-            Transaction.date >= first,
-            Transaction.date < add_months(last, 1),
+            *_within(months[0], months[-1]),
         )
-        .group_by(month)
+        .group_by(Transaction.date)
     )
-    by_month = {row_month: (income, expense) for row_month, income, expense in rows}
+    income: defaultdict[dt.date, Decimal] = defaultdict(lambda: ZERO)
+    expense: defaultdict[dt.date, Decimal] = defaultdict(lambda: ZERO)
+    for day, day_income, day_expense in rows:
+        month = periods.month_of(day)
+        income[month] += day_income
+        expense[month] += day_expense
 
-    totals = []
-    for month in month_range(first, last):
-        income, expense = by_month.get(month, (ZERO, ZERO))
-        totals.append(MonthTotals(month, Decimal(income), Decimal(expense)))
-    return totals
-
-
-def month_range(first: dt.date, last: dt.date) -> list[dt.date]:
-    months = []
-    current = first
-    while current <= last:
-        months.append(current)
-        current = add_months(current, 1)
-    return months
+    return [MonthTotals(period, income[period.month], expense[period.month]) for period in months]
 
 
 @dataclass(frozen=True)
@@ -143,40 +149,40 @@ class CategoryTrend:
 def category_trend(db: Session, user: User, first: dt.date, last: dt.date) -> list[CategoryTrend]:
     """Spending per expense category for every month from `first` to `last`, largest total
     first. Categories without spending in the period are left out."""
-    month = func.date_trunc("month", Transaction.date).cast(Date).label("month")
+    periods = period_calendar(user)
+    months = periods.periods(first, last)
     rows = db.execute(
-        select(Category, month, func.sum(-_signed_amount))
+        select(Category, Transaction.date, func.sum(-_signed_amount))
         .join(Transaction, Transaction.category_id == Category.id)
         .where(
             Transaction.user_id == user.id,
             Category.kind == CategoryKind.EXPENSE,
-            Transaction.date >= first,
-            Transaction.date < add_months(last, 1),
+            *_within(months[0], months[-1]),
         )
-        .group_by(Category.id, month)
+        .group_by(Category.id, Transaction.date)
     )
-    by_category: dict[Category, dict[dt.date, Decimal]] = {}
-    for category, row_month, amount in rows:
-        by_category.setdefault(category, {})[row_month] = Decimal(amount)
+    by_category: defaultdict[Category, defaultdict[dt.date, Decimal]] = defaultdict(
+        lambda: defaultdict(lambda: ZERO)
+    )
+    for category, day, amount in rows:
+        by_category[category][periods.month_of(day)] += amount
 
-    months = month_range(first, last)
     trends = [
-        CategoryTrend(category, [amounts.get(m, ZERO) for m in months])
+        CategoryTrend(category, [amounts[period.month] for period in months])
         for category, amounts in by_category.items()
     ]
     trends.sort(key=lambda trend: (-trend.total, trend.category.name))
     return trends
 
 
-def _spending_by_category(db: Session, user: User, month: dt.date) -> dict[Category, Decimal]:
+def _spending_by_category(db: Session, user: User, period: Period) -> dict[Category, Decimal]:
     rows = db.execute(
         select(Category, func.sum(-_signed_amount))
         .join(Transaction, Transaction.category_id == Category.id)
         .where(
             Transaction.user_id == user.id,
             Category.kind == CategoryKind.EXPENSE,
-            Transaction.date >= month,
-            Transaction.date < add_months(month, 1),
+            *_within(period, period),
         )
         .group_by(Category.id)
     )
@@ -185,11 +191,10 @@ def _spending_by_category(db: Session, user: User, month: dt.date) -> dict[Categ
 
 def monthly_report(db: Session, user: User, month: dt.date | None = None) -> MonthlyReport:
     month = month or latest_month(db, user)
-    previous_month = add_months(month, -1)
-    previous, current = monthly_totals(db, user, previous_month, month)
+    previous, current = monthly_totals(db, user, add_months(month, -1), month)
 
-    spending = _spending_by_category(db, user, month)
-    previous_spending = _spending_by_category(db, user, previous_month)
+    spending = _spending_by_category(db, user, current.period)
+    previous_spending = _spending_by_category(db, user, previous.period)
     category_rows = [
         CategorySpending(
             category=category,
@@ -203,9 +208,7 @@ def monthly_report(db: Session, user: User, month: dt.date | None = None) -> Mon
 
     transaction_count = db.scalar(
         select(func.count()).where(
-            Transaction.user_id == user.id,
-            Transaction.date >= month,
-            Transaction.date < add_months(month, 1),
+            Transaction.user_id == user.id, *_within(current.period, current.period)
         )
     )
     return MonthlyReport(
@@ -242,15 +245,14 @@ def top_merchants(
     merchant. Transactions no keyword matches are grouped by their own description. Refunds
     lower their merchant's total, the same way they lower category spending.
     """
-    month = month or latest_month(db, user)
+    period = period_calendar(user).period(month or latest_month(db, user))
     rows = db.execute(
         select(Transaction, Category)
         .join(Category, Transaction.category_id == Category.id)
         .where(
             Transaction.user_id == user.id,
             Category.kind == CategoryKind.EXPENSE,
-            Transaction.date >= month,
-            Transaction.date < add_months(month, 1),
+            *_within(period, period),
         )
     )
 
@@ -282,22 +284,16 @@ def top_merchants(
 
 def daily_spending(db: Session, user: User, month: dt.date) -> list[tuple[dt.date, Decimal]]:
     """Spending for every day of `month` (days without spending as 0), same rules as above."""
+    period = period_calendar(user).period(month)
     rows = db.execute(
         select(Transaction.date, func.sum(-_signed_amount))
         .join(Category, Transaction.category_id == Category.id)
         .where(
             Transaction.user_id == user.id,
             Category.kind == CategoryKind.EXPENSE,
-            Transaction.date >= month,
-            Transaction.date < add_months(month, 1),
+            *_within(period, period),
         )
         .group_by(Transaction.date)
     )
     by_day = {day: Decimal(amount) for day, amount in rows}
-
-    days = []
-    day = month
-    while day < add_months(month, 1):
-        days.append((day, by_day.get(day, ZERO)))
-        day += dt.timedelta(days=1)
-    return days
+    return [(day, by_day.get(day, ZERO)) for day in period.days()]

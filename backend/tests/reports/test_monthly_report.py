@@ -67,6 +67,8 @@ def test_comparison_with_previous_month(client: TestClient, auth_headers: dict[s
 
     assert report["previous"] == {
         "month": "2026-09",
+        "start": "2026-09-01",
+        "end": "2026-09-30",
         "income": "10000.00",
         "expense": "2000.00",
         "net": "8000.00",

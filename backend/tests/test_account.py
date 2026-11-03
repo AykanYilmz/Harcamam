@@ -2,6 +2,7 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import jwt
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -150,3 +151,43 @@ def test_deleted_users_tokens_stop_working(
     client.request("DELETE", "/auth/me", headers=auth_headers, json={"password": PASSWORD})
 
     assert client.get("/auth/me", headers=auth_headers).status_code == 401
+
+
+# --- settings ---
+
+
+def test_new_users_use_calendar_months(client: TestClient, auth_headers: dict[str, str]) -> None:
+    assert client.get("/auth/me", headers=auth_headers).json()["period_end_day"] is None
+
+
+def test_set_and_clear_the_closing_day(client: TestClient, auth_headers: dict[str, str]) -> None:
+    response = client.patch("/auth/me", headers=auth_headers, json={"period_end_day": 6})
+    assert response.status_code == 200, response.text
+    assert response.json()["period_end_day"] == 6
+    assert client.get("/auth/me", headers=auth_headers).json()["period_end_day"] == 6
+
+    response = client.patch("/auth/me", headers=auth_headers, json={"period_end_day": None})
+    assert response.json()["period_end_day"] is None
+
+
+def test_settings_left_out_are_not_changed(
+    client: TestClient, auth_headers: dict[str, str], user: User
+) -> None:
+    user.period_end_day = 15
+
+    response = client.patch("/auth/me", headers=auth_headers, json={})
+
+    assert response.json()["period_end_day"] == 15
+
+
+@pytest.mark.parametrize("day", [0, 32, -1, "altı"])
+def test_closing_day_must_be_a_day_of_the_month(
+    client: TestClient, auth_headers: dict[str, str], day: object
+) -> None:
+    response = client.patch("/auth/me", headers=auth_headers, json={"period_end_day": day})
+
+    assert response.status_code == 422
+
+
+def test_settings_require_login(client: TestClient) -> None:
+    assert client.patch("/auth/me", json={"period_end_day": 6}).status_code == 401

@@ -10,6 +10,9 @@ MONTH_PATTERN = r"^\d{4}-(0[1-9]|1[0-2])$"
 
 class MonthTotalsRead(BaseModel):
     month: str
+    # The days the month covers, both inclusive; not the 1st to the 31st with a closing day.
+    start: date
+    end: date
     income: Decimal
     expense: Decimal
     net: Decimal
@@ -29,6 +32,8 @@ class CategorySpendingRead(BaseModel):
 
 class MonthlyReportRead(BaseModel):
     month: str
+    start: date
+    end: date
     income: Decimal
     expense: Decimal
     net: Decimal

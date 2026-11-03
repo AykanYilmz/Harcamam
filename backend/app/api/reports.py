@@ -34,6 +34,8 @@ MAX_MERCHANTS = 50
 def to_totals_read(totals: reports.MonthTotals) -> MonthTotalsRead:
     return MonthTotalsRead(
         month=reports.month_label(totals.month),
+        start=totals.period.start,
+        end=totals.period.end,
         income=totals.income,
         expense=totals.expense,
         net=totals.net,
@@ -48,6 +50,8 @@ def monthly(
     current, previous = report.current, report.previous
     return MonthlyReportRead(
         month=reports.month_label(current.month),
+        start=current.period.start,
+        end=current.period.end,
         income=current.income,
         expense=current.expense,
         net=current.net,
@@ -131,7 +135,10 @@ def category_trend(
     last = reports.parse_month(end) if end else reports.latest_month(db, current_user)
     first = reports.add_months(last, -(months - 1))
     return CategoryTrendReportRead(
-        months=[reports.month_label(month) for month in reports.month_range(first, last)],
+        months=[
+            reports.month_label(period.month)
+            for period in reports.month_range(current_user, first, last)
+        ],
         categories=[
             CategoryTrendRead(
                 category_id=trend.category.id,

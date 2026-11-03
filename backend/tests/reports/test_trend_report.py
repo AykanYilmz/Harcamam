@@ -35,13 +35,16 @@ def test_months_are_contiguous_and_empty_months_are_zero(
 ) -> None:
     months = get_trend(client, auth_headers, months=4, end="2026-11")
 
-    assert months == [
+    assert [
+        {key: month[key] for key in ("month", "income", "expense", "net")} for month in months
+    ] == [
         {"month": "2026-08", "income": "0.00", "expense": "0.00", "net": "0.00"},
         # Refund lowers spending (1.500 - 300); the card payment is a transfer.
         {"month": "2026-09", "income": "10000.00", "expense": "1200.00", "net": "8800.00"},
         {"month": "2026-10", "income": "12000.00", "expense": "2200.00", "net": "9800.00"},
         {"month": "2026-11", "income": "0.00", "expense": "0.00", "net": "0.00"},
     ]
+    assert (months[0]["start"], months[0]["end"]) == ("2026-08-01", "2026-08-31")
 
 
 @pytest.mark.usefixtures("data")

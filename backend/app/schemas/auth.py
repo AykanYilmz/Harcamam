@@ -26,6 +26,14 @@ class UserRead(BaseModel):
     email_verified: bool
     # A new address waiting for its verification link to be opened.
     pending_email: EmailStr | None
+    # Statement closing day that reports split months on; None means calendar months.
+    period_end_day: int | None
+
+
+class UserSettingsUpdate(BaseModel):
+    """Fields left out are not changed."""
+
+    period_end_day: Annotated[int, Field(ge=1, le=31)] | None = None
 
 
 class TokenPair(BaseModel):
