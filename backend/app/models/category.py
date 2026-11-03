@@ -1,7 +1,8 @@
+import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint, func
+from sqlalchemy import DateTime, Enum, ForeignKey, String, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -11,6 +12,15 @@ OTHER_CATEGORY = "Diğer"
 INCOME_CATEGORY = "Gelir"
 # Money moved between the user's own accounts; excluded from income and expense reports.
 TRANSFER_CATEGORY = "Transfer"
+
+
+class CategoryKind(enum.StrEnum):
+    """How a category's transactions count in reports."""
+
+    INCOME = "income"
+    EXPENSE = "expense"
+    # Money moved between the user's own accounts: left out of income and spending.
+    TRANSFER = "transfer"
 
 
 class Category(Base):
@@ -26,6 +36,18 @@ class Category(Base):
     name: Mapped[str] = mapped_column(String(50))
     color: Mapped[str] = mapped_column(String(7))
     icon: Mapped[str] = mapped_column(String(50))
+    kind: Mapped[CategoryKind] = mapped_column(
+        Enum(
+            CategoryKind,
+            name="category_kind",
+            native_enum=False,
+            create_constraint=True,
+            length=10,
+            values_callable=lambda enum_cls: [member.value for member in enum_cls],
+        ),
+        default=CategoryKind.EXPENSE,
+        server_default=CategoryKind.EXPENSE.value,
+    )
 
     @property
     def is_default(self) -> bool:

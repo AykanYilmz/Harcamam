@@ -3,7 +3,15 @@ import uuid
 from sqlalchemy import ColumnElement, func, or_, select, update
 from sqlalchemy.orm import Session
 
-from app.models import INCOME_CATEGORY, OTHER_CATEGORY, Category, CategoryRule, Transaction, User
+from app.models import (
+    INCOME_CATEGORY,
+    OTHER_CATEGORY,
+    Category,
+    CategoryKind,
+    CategoryRule,
+    Transaction,
+    User,
+)
 from app.services.categorization.categorizer import Categorizer, KeywordRule
 from app.services.categorization.default_rules import DEFAULT_KEYWORDS
 from app.services.parsing.formats import normalize_description, normalize_text
@@ -124,9 +132,16 @@ def _ensure_name_available(
         raise CategoryNameTakenError
 
 
-def create_category(db: Session, user: User, name: str, color: str, icon: str) -> Category:
+def create_category(
+    db: Session,
+    user: User,
+    name: str,
+    color: str,
+    icon: str,
+    kind: CategoryKind = CategoryKind.EXPENSE,
+) -> Category:
     _ensure_name_available(db, user, name)
-    category = Category(user_id=user.id, name=name, color=color, icon=icon)
+    category = Category(user_id=user.id, name=name, color=color, icon=icon, kind=kind)
     db.add(category)
     db.commit()
     return category
@@ -139,6 +154,7 @@ def update_category(
     name: str | None = None,
     color: str | None = None,
     icon: str | None = None,
+    kind: CategoryKind | None = None,
 ) -> Category:
     category = _get_own_category(db, user, category_id)
     if name is not None:
@@ -148,6 +164,8 @@ def update_category(
         category.color = color
     if icon is not None:
         category.icon = icon
+    if kind is not None:
+        category.kind = kind
     db.commit()
     return category
 

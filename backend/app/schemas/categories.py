@@ -4,6 +4,8 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
+from app.models import CategoryKind
+
 CategoryName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50)]
 HexColor = Annotated[str, Field(pattern=r"^#[0-9a-fA-F]{6}$")]
 IconName = Annotated[str, Field(pattern=r"^[a-z0-9-]{1,50}$")]
@@ -16,6 +18,7 @@ class CategoryRead(BaseModel):
     name: str
     color: str
     icon: str
+    kind: CategoryKind
     is_default: bool
 
 
@@ -23,12 +26,14 @@ class CategoryCreate(BaseModel):
     name: CategoryName
     color: HexColor
     icon: IconName
+    kind: CategoryKind = CategoryKind.EXPENSE
 
 
 class CategoryUpdate(BaseModel):
     name: CategoryName | None = None
     color: HexColor | None = None
     icon: IconName | None = None
+    kind: CategoryKind | None = None
 
 
 class RuleRead(BaseModel):

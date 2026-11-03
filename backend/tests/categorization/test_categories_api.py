@@ -268,3 +268,40 @@ def test_cannot_delete_other_users_rule(
     response = client.delete(f"/category-rules/{rule['id']}", headers=auth_headers)
 
     assert response.status_code == 404
+
+
+# --- kind ---
+
+
+def test_default_category_kinds(client: TestClient, auth_headers: dict[str, str]) -> None:
+    kinds = {c["name"]: c["kind"] for c in client.get("/categories", headers=auth_headers).json()}
+
+    assert kinds["Gelir"] == "income"
+    assert kinds["Transfer"] == "transfer"
+    assert {kind for name, kind in kinds.items() if name not in ("Gelir", "Transfer")} == {
+        "expense"
+    }
+
+
+def test_new_category_is_expense_by_default(
+    client: TestClient, auth_headers: dict[str, str]
+) -> None:
+    assert create_category(client, auth_headers)["kind"] == "expense"
+
+
+def test_create_and_change_category_kind(client: TestClient, auth_headers: dict[str, str]) -> None:
+    category = create_category(client, auth_headers, name="Freelance", kind="income")
+    assert category["kind"] == "income"
+
+    response = client.patch(
+        f"/categories/{category['id']}", headers=auth_headers, json={"kind": "transfer"}
+    )
+
+    assert response.json()["kind"] == "transfer"
+    assert response.json()["name"] == "Freelance"
+
+
+def test_invalid_kind_returns_422(client: TestClient, auth_headers: dict[str, str]) -> None:
+    response = client.post("/categories", headers=auth_headers, json=NEW_CATEGORY | {"kind": "x"})
+
+    assert response.status_code == 422

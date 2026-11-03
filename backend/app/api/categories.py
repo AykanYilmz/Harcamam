@@ -31,7 +31,7 @@ def list_categories(current_user: CurrentUser, db: DbSession) -> list[Category]:
 @router.post("/categories", response_model=CategoryRead, status_code=status.HTTP_201_CREATED)
 def create_category(payload: CategoryCreate, current_user: CurrentUser, db: DbSession) -> Category:
     try:
-        return service.create_category(db, current_user, payload.name, payload.color, payload.icon)
+        return service.create_category(db, current_user, **payload.model_dump())
     except service.CategoryNameTakenError as exc:
         raise NAME_TAKEN from exc
 

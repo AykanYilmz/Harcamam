@@ -3,6 +3,7 @@ from app.models.category import (
     OTHER_CATEGORY,
     TRANSFER_CATEGORY,
     Category,
+    CategoryKind,
     CategoryRule,
 )
 from app.models.statement import Statement
@@ -14,6 +15,7 @@ __all__ = [
     "OTHER_CATEGORY",
     "TRANSFER_CATEGORY",
     "Category",
+    "CategoryKind",
     "CategoryRule",
     "Statement",
     "Transaction",
