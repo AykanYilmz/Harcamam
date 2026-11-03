@@ -1,4 +1,4 @@
-import { LayoutDashboard, List, Upload, type LucideIcon } from 'lucide-react'
+import { LayoutDashboard, List, Tags, Upload, type LucideIcon } from 'lucide-react'
 
 export interface NavItem {
   to: string
@@ -12,6 +12,7 @@ export const NAV_SECTIONS: NavItem[][] = [
     { to: '/', label: 'Özet', icon: LayoutDashboard },
     { to: '/islemler', label: 'İşlemler', icon: List },
     { to: '/yukle', label: 'Ekstre Yükle', icon: Upload },
+    { to: '/kategoriler', label: 'Kategoriler', icon: Tags },
   ],
 ]
 
