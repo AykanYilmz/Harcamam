@@ -481,6 +481,8 @@ export interface components {
             income_change_pct: number | null;
             /** Expense Change Pct */
             expense_change_pct: number | null;
+            /** Net Change Pct */
+            net_change_pct: number | null;
             /** Categories */
             categories: components["schemas"]["CategorySpendingRead"][];
         };
