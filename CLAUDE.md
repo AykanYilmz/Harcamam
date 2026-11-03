@@ -86,11 +86,11 @@ harcamam/
 - [x] Testler: kural önceliği (kullanıcı kuralı > varsayılan kural), eşleşme olmayınca "Diğer"
 
 ### Faz 4 — Raporlar ve API'nin tamamlanması
-- [ ] `/reports/monthly`: kategori bazlı toplam, gelir-gider, önceki aya göre değişim
-- [ ] `/reports/trend`: son 6–12 ayın aylık harcama trendi
-- [ ] `/reports/top-merchants`: en çok harcama yapılan yerler
-- [ ] İşlem listesi: sayfalama, tarih aralığı, kategori ve metin filtresi
-- [ ] Testler: rapor hesaplamalarının doğruluğu
+- [x] `/reports/monthly`: kategori bazlı toplam, gelir-gider, önceki aya göre değişim
+- [x] `/reports/trend`: son 6–12 ayın aylık harcama trendi
+- [x] `/reports/top-merchants`: en çok harcama yapılan yerler
+- [x] İşlem listesi: sayfalama, tarih aralığı, kategori ve metin filtresi
+- [x] Testler: rapor hesaplamalarının doğruluğu
 
 ### Faz 5 — Frontend
 - [ ] Giriş/kayıt sayfaları, token yönetimi, korumalı route'lar

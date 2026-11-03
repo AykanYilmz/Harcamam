@@ -99,7 +99,7 @@ pre-commit run --all-files   # tüm dosyalarda elle çalıştırmak için
 - [x] Faz 1 — Kimlik doğrulama (JWT access + refresh token)
 - [x] Faz 2 — Ekstre yükleme ve ayrıştırma (CSV + PDF, mükerrer kontrolü)
 - [x] Faz 3 — Kategorizasyon (anahtar kelime + kullanıcı kuralları)
-- [ ] Faz 4 — Raporlar
+- [x] Faz 4 — Raporlar (aylık özet, trend, en çok harcama yapılan yerler, işlem listesi)
 - [ ] Faz 5 — Frontend arayüzü
 - [ ] Faz 6 — CI, test kapsamı ve deploy
 - [ ] Faz 7 — Opsiyonel geliştirmeler (ML kategorizer, bütçe, abonelik tespiti)
