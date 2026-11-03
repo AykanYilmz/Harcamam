@@ -11,6 +11,7 @@
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
+  --color-sidebar: var(--sidebar);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
   --color-fg: var(--fg);
@@ -30,8 +31,11 @@
   --color-chart-expense: var(--chart-expense);
 
   --animate-page-in: page-in 220ms ease-out both;
+  /* Fast start, long gentle finish, like native drawers. */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --animate-fade-in: fade-in 150ms ease-out both;
   --animate-dialog-in: dialog-in 160ms ease-out both;
+  --animate-bar-grow: bar-grow 700ms var(--ease-drawer) both;
 
   @keyframes page-in {
     from {
@@ -42,6 +46,11 @@
   @keyframes fade-in {
     from {
       opacity: 0;
+    }
+  }
+  @keyframes bar-grow {
+    from {
+      transform: scaleX(0);
     }
   }
   @keyframes dialog-in {
@@ -58,6 +67,8 @@
   --canvas: #f3f0ea;
   --surface: #fbfaf7;
   --surface-muted: #ece8e0;
+  /* A shade darker than the page, so the menu reads as its own soft panel. */
+  --sidebar: #ece7df;
   --line: #e2ddd4;
   --line-strong: #d3cdc2;
   --fg: var(--color-stone-900);
@@ -85,6 +96,7 @@
   --canvas: var(--color-slate-950);
   --surface: var(--color-slate-900);
   --surface-muted: var(--color-slate-800);
+  --sidebar: var(--color-slate-900);
   --line: var(--color-slate-800);
   --line-strong: var(--color-slate-700);
   --fg: var(--color-slate-100);

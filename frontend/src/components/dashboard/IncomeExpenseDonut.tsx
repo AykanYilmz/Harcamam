@@ -1,5 +1,6 @@
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 import { formatCurrency, formatPercent } from '../../lib/format.ts'
+import { AnimatedNumber } from '../ui/AnimatedNumber.tsx'
 import { Card } from '../ui/Card.tsx'
 
 interface IncomeExpenseDonutProps {
@@ -55,7 +56,7 @@ export function IncomeExpenseDonut({ income, expense, net }: IncomeExpenseDonutP
             <span
               className={`text-lg font-semibold tabular-nums ${netNegative ? 'text-danger-fg' : 'text-accent-fg'}`}
             >
-              {formatCurrency(net)}
+              <AnimatedNumber value={Number(net)} format={formatCurrency} />
             </span>
           </div>
         </div>
@@ -70,7 +71,7 @@ export function IncomeExpenseDonut({ income, expense, net }: IncomeExpenseDonutP
               />
               <span className="text-fg-muted">{slice.label}</span>
               <span className="ml-auto font-semibold text-fg tabular-nums">
-                {formatCurrency(values[slice.key])}
+                <AnimatedNumber value={values[slice.key]} format={formatCurrency} />
               </span>
             </div>
           ))}

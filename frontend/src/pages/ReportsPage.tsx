@@ -3,6 +3,7 @@ import type { MonthTotals } from '../api/types.ts'
 import { TrendChart } from '../components/dashboard/TrendChart.tsx'
 import { CategoryHeatmap } from '../components/reports/CategoryHeatmap.tsx'
 import { ErrorAlert } from '../components/ui/Alert.tsx'
+import { AnimatedNumber } from '../components/ui/AnimatedNumber.tsx'
 import { Card } from '../components/ui/Card.tsx'
 import { PageLoader } from '../components/ui/Spinner.tsx'
 import { errorMessage } from '../lib/errors.ts'
@@ -17,12 +18,13 @@ function PeriodSummary({ months }: { months: MonthTotals[] }) {
   const expense = months.reduce((sum, month) => sum + Number(month.expense), 0)
   const net = income - expense
   const tiles = [
-    { label: 'Toplam gelir', value: formatCurrency(income) },
-    { label: 'Toplam gider', value: formatCurrency(expense) },
-    { label: 'Aylık ortalama gider', value: formatCurrency(expense / months.length) },
+    { label: 'Toplam gelir', value: income, format: formatCurrency },
+    { label: 'Toplam gider', value: expense, format: formatCurrency },
+    { label: 'Aylık ortalama gider', value: expense / months.length, format: formatCurrency },
     {
       label: 'Tasarruf oranı',
-      value: income > 0 ? formatPercent((net / income) * 100) : '–',
+      value: income > 0 ? (net / income) * 100 : null,
+      format: formatPercent,
       hint: 'Gelirin harcanmayan kısmı',
     },
   ]
@@ -32,7 +34,9 @@ function PeriodSummary({ months }: { months: MonthTotals[] }) {
       {tiles.map((tile) => (
         <Card key={tile.label}>
           <p className="text-sm font-medium text-fg-subtle">{tile.label}</p>
-          <p className="mt-1 text-xl font-semibold text-fg tabular-nums">{tile.value}</p>
+          <p className="mt-1 text-xl font-semibold text-fg tabular-nums">
+            {tile.value === null ? '–' : <AnimatedNumber value={tile.value} format={tile.format} />}
+          </p>
           {tile.hint && <p className="mt-1 text-xs text-fg-subtle">{tile.hint}</p>}
         </Card>
       ))}

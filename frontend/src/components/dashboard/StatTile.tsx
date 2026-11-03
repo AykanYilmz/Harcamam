@@ -8,6 +8,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { formatCurrency, formatPercent } from '../../lib/format.ts'
+import { AnimatedNumber } from '../ui/AnimatedNumber.tsx'
 import { Card } from '../ui/Card.tsx'
 
 type Tone = 'income' | 'expense' | 'net'
@@ -73,7 +74,7 @@ export function StatTile({ label, amount, tone, changePct, goodWhen }: StatTileP
       <p
         className={`mt-3 text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl ${amountColor}`}
       >
-        {formatCurrency(amount)}
+        <AnimatedNumber value={Number(amount)} format={formatCurrency} />
       </p>
       <ChangeBadge changePct={changePct} goodWhen={goodWhen} />
     </Card>

@@ -41,16 +41,18 @@ export function AppLayout() {
         onNavigate={() => setMobileOpen(false)}
       />
 
-      {/* Phone drawer backdrop */}
-      {mobileOpen && (
-        <div
-          aria-hidden
-          onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-30 animate-fade-in bg-slate-950/50 md:hidden"
-        />
-      )}
+      {/* Phone drawer backdrop: always rendered so it can fade out as well as in. */}
+      <div
+        aria-hidden
+        onClick={() => setMobileOpen(false)}
+        className={`fixed inset-0 z-30 bg-slate-950/50 transition-opacity duration-300 ease-drawer md:hidden ${
+          mobileOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+      />
 
-      <div className={`transition-[margin] duration-200 ease-out ${desktopOpen ? 'md:ml-64' : ''}`}>
+      <div
+        className={`transition-[margin] duration-300 ease-drawer ${desktopOpen ? 'md:ml-64' : ''}`}
+      >
         <header className="sticky top-0 z-20 flex h-14 items-center gap-3 bg-emerald-600 px-4 text-white shadow-sm dark:bg-emerald-700">
           <button
             type="button"

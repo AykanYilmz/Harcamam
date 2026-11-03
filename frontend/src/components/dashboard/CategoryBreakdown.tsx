@@ -60,7 +60,7 @@ export function CategoryBreakdown({
                 <div className="mt-1.5 flex items-center gap-3">
                   <div className="h-2 flex-1 rounded-r bg-surface-muted">
                     <div
-                      className="h-2 rounded-r bg-chart-expense"
+                      className="h-2 origin-left animate-bar-grow rounded-r bg-chart-expense"
                       style={{ width: `${(Number(category.amount) / largest) * 100}%` }}
                     />
                   </div>
