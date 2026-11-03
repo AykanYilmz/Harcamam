@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { AuthContext, type AuthContextValue } from '../auth/AuthContext.ts'
 import { ThemeProvider } from '../theme/ThemeProvider.tsx'
 import { AppLayout } from './AppLayout.tsx'
@@ -26,17 +26,6 @@ const auth: AuthContextValue = {
   logout: vi.fn(),
 }
 
-function setScreen(desktop: boolean) {
-  vi.stubGlobal(
-    'matchMedia',
-    vi.fn((query: string) => ({
-      matches: desktop && query.includes('min-width'),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    })),
-  )
-}
-
 function renderLayout(value: AuthContextValue = auth) {
   render(
     <ThemeProvider>
@@ -59,44 +48,27 @@ function renderLayout(value: AuthContextValue = auth) {
 }
 
 describe('AppLayout', () => {
-  beforeEach(() => localStorage.clear())
-  afterEach(() => vi.unstubAllGlobals())
-
   it('shows the current page title in the app bar', () => {
-    setScreen(true)
     renderLayout()
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Ekstre Yükle')
   })
 
-  it('hides and shows the sidebar on wide screens and remembers it', async () => {
-    setScreen(true)
-    const { sidebar, toggle } = renderLayout()
-    expect(sidebar).toHaveClass('md:visible')
-    expect(toggle()).toHaveAttribute('aria-expanded', 'true')
-
-    await userEvent.click(toggle())
-
-    expect(sidebar).toHaveClass('md:invisible')
-    expect(toggle()).toHaveAttribute('aria-expanded', 'false')
-    expect(localStorage.getItem('harcamam.sidebarOpen')).toBe('false')
-  })
-
-  it('opens the phone drawer and closes it after navigating', async () => {
-    setScreen(false)
+  it('opens the menu over the page and closes it after navigating', async () => {
     const { sidebar, toggle } = renderLayout()
     expect(sidebar).toHaveClass('invisible')
+    expect(toggle()).toHaveAttribute('aria-expanded', 'false')
 
     await userEvent.click(toggle())
     expect(sidebar).toHaveClass('visible')
+    expect(toggle()).toHaveAttribute('aria-expanded', 'true')
 
     await userEvent.click(screen.getByRole('link', { name: 'Özet' }))
     expect(sidebar).toHaveClass('invisible')
     expect(screen.getByText('Özet sayfası')).toBeInTheDocument()
   })
 
-  it('closes the phone drawer with Escape', async () => {
-    setScreen(false)
+  it('closes the menu with Escape', async () => {
     const { sidebar, toggle } = renderLayout()
 
     await userEvent.click(toggle())
@@ -104,12 +76,15 @@ describe('AppLayout', () => {
 
     expect(sidebar).toHaveClass('invisible')
   })
+
+  it('shows the app name in the middle of the app bar, linking home', () => {
+    renderLayout()
+
+    expect(screen.getByRole('link', { name: 'HesapKitap' })).toHaveAttribute('href', '/')
+  })
 })
 
 describe('AppLayout email verification banner', () => {
-  beforeEach(() => setScreen(true))
-  afterEach(() => vi.unstubAllGlobals())
-
   it('reminds an unverified user, who can dismiss it', async () => {
     renderLayout({ ...auth, user: { ...auth.user!, email_verified: false } })
 

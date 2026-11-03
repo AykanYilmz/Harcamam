@@ -8,11 +8,9 @@ import { NAV_SECTIONS } from './navigation.ts'
 export const SIDEBAR_ID = 'app-sidebar'
 
 interface SidebarProps {
-  /** Shown on phones (as a drawer over the page). */
-  mobileOpen: boolean
-  /** Shown on wider screens (next to the page). */
-  desktopOpen: boolean
-  /** Called after a link is chosen, so the phone drawer can close. */
+  /** Slides in over the page. */
+  open: boolean
+  /** Called after a link is chosen, so the menu can close. */
   onNavigate(): void
 }
 
@@ -25,20 +23,17 @@ function linkClass({ isActive }: { isActive: boolean }) {
   }`
 }
 
-export function Sidebar({ mobileOpen, desktopOpen, onNavigate }: SidebarProps) {
+export function Sidebar({ open, onNavigate }: SidebarProps) {
   const { user, logout } = useAuth()
 
   // `invisible` also takes the closed sidebar out of the keyboard tab order.
-  const mobileState = mobileOpen ? 'visible translate-x-0' : 'invisible -translate-x-full'
-  const desktopState = desktopOpen
-    ? 'md:visible md:translate-x-0'
-    : 'md:invisible md:-translate-x-full'
+  const state = open ? 'visible translate-x-0 shadow-xl' : 'invisible -translate-x-full'
 
   return (
     <aside
       id={SIDEBAR_ID}
       aria-label="Kenar çubuğu"
-      className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-surface transition-[translate,visibility] duration-300 ease-drawer ${mobileState} ${desktopState}`}
+      className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-surface transition-[translate,visibility] duration-300 ease-drawer ${state}`}
     >
       <div className="flex h-14 shrink-0 items-center border-b border-line px-4">
         <Logo />

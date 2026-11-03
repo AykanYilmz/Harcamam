@@ -47,7 +47,9 @@ describe('StatTile', () => {
 
 describe('StatTile net amount', () => {
   it('colors a negative net as bad news', () => {
-    render(<StatTile label="Net" tone="net" amount="-1500.00" changePct={null} goodWhen="up" />)
+    render(
+      <StatTile label="Elde kalan" tone="net" amount="-1500.00" changePct={null} goodWhen="up" />,
+    )
 
     expect(screen.getByText('-₺1.500,00').closest('p')).toHaveClass('text-danger-fg')
   })

@@ -52,7 +52,7 @@ export function IncomeExpenseDonut({ income, expense, net }: IncomeExpenseDonutP
             </ResponsiveContainer>
           )}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <span className="text-xs text-fg-subtle">Net</span>
+            <span className="text-xs text-fg-subtle">Elde kalan</span>
             <span
               className={`text-lg font-semibold tabular-nums ${netNegative ? 'text-danger-fg' : 'text-accent-fg'}`}
             >

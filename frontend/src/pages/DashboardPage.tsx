@@ -88,7 +88,7 @@ export function DashboardPage() {
               goodWhen="down"
             />
             <StatTile
-              label="Net"
+              label="Elde kalan"
               tone="net"
               amount={data.net}
               changePct={data.net_change_pct}

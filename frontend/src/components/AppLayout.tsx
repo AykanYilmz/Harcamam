@@ -1,83 +1,75 @@
-import { Menu } from 'lucide-react'
+import { Menu, Wallet } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Outlet, useLocation } from 'react-router'
+import { Link, Outlet, useLocation } from 'react-router'
 import { useAuth } from '../auth/useAuth.ts'
-import { usePersistentState } from '../lib/usePersistentState.ts'
 import { pageTitle } from './navigation.ts'
 import { SIDEBAR_ID, Sidebar } from './Sidebar.tsx'
 import { VerifyEmailBanner } from './VerifyEmailBanner.tsx'
 
-const DESKTOP_QUERY = '(min-width: 768px)'
-
 export function AppLayout() {
   const { pathname } = useLocation()
-  // Wide screens remember the choice; on phones the drawer always starts closed.
-  const [desktopOpen, setDesktopOpen] = usePersistentState('harcamam.sidebarOpen', true)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const { user } = useAuth()
   // Hidden for the rest of this visit once dismissed; it comes back on the next one.
   const [bannerDismissed, setBannerDismissed] = useState(false)
 
-  const isDesktop = () => window.matchMedia?.(DESKTOP_QUERY).matches ?? true
-  const sidebarOpen = () => (isDesktop() ? desktopOpen : mobileOpen)
-
-  function toggleSidebar() {
-    if (isDesktop()) setDesktopOpen(!desktopOpen)
-    else setMobileOpen(!mobileOpen)
-  }
-
   useEffect(() => {
-    if (!mobileOpen) return
-    const closeOnEscape = (event: KeyboardEvent) => event.key === 'Escape' && setMobileOpen(false)
+    if (!menuOpen) return
+    const closeOnEscape = (event: KeyboardEvent) => event.key === 'Escape' && setMenuOpen(false)
     window.addEventListener('keydown', closeOnEscape)
     return () => window.removeEventListener('keydown', closeOnEscape)
-  }, [mobileOpen])
+  }, [menuOpen])
 
   return (
     <div className="min-h-screen bg-canvas">
-      <Sidebar
-        mobileOpen={mobileOpen}
-        desktopOpen={desktopOpen}
-        onNavigate={() => setMobileOpen(false)}
-      />
+      <Sidebar open={menuOpen} onNavigate={() => setMenuOpen(false)} />
 
-      {/* Phone drawer backdrop: always rendered so it can fade out as well as in. */}
+      {/* Backdrop: a click anywhere on the page closes the menu. Always rendered so it can
+          fade out as well as in. */}
       <div
         aria-hidden
-        onClick={() => setMobileOpen(false)}
-        className={`fixed inset-0 z-30 bg-slate-950/50 transition-opacity duration-300 ease-drawer md:hidden ${
-          mobileOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+        onClick={() => setMenuOpen(false)}
+        className={`fixed inset-0 z-30 bg-slate-950/40 transition-opacity duration-300 ease-drawer ${
+          menuOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       />
 
-      <div
-        className={`transition-[margin] duration-300 ease-drawer ${desktopOpen ? 'md:ml-64' : ''}`}
-      >
-        <header className="sticky top-0 z-20 flex h-14 items-center gap-3 bg-emerald-600 px-4 text-white shadow-sm dark:bg-emerald-700">
+      <header className="sticky top-0 z-20 grid h-14 grid-cols-[1fr_auto_1fr] items-center gap-3 bg-emerald-600 px-4 text-white shadow-sm dark:bg-emerald-700">
+        <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
-            onClick={toggleSidebar}
-            aria-label={sidebarOpen() ? 'Menüyü kapat' : 'Menüyü aç'}
-            aria-expanded={sidebarOpen()}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? 'Menüyü kapat' : 'Menüyü aç'}
+            aria-expanded={menuOpen}
             aria-controls={SIDEBAR_ID}
-            className="rounded-lg p-2 hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white"
+            className="shrink-0 rounded-lg p-2 hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white"
           >
             <Menu aria-hidden className="size-5" />
           </button>
-          <h1 className="text-lg font-semibold">{pageTitle(pathname)}</h1>
-        </header>
+          {/* On phones only the app name fits; the title stays for screen readers. */}
+          <h1 className="sr-only truncate text-lg font-semibold sm:not-sr-only">
+            {pageTitle(pathname)}
+          </h1>
+        </div>
+        <Link
+          to="/"
+          className="flex items-center gap-2 rounded-lg px-2 py-1 font-bold focus-visible:outline-2 focus-visible:outline-white"
+        >
+          <Wallet aria-hidden className="size-5" />
+          HesapKitap
+        </Link>
+      </header>
 
-        {user && !user.email_verified && !bannerDismissed && (
-          <VerifyEmailBanner email={user.email} onDismiss={() => setBannerDismissed(true)} />
-        )}
+      {user && !user.email_verified && !bannerDismissed && (
+        <VerifyEmailBanner email={user.email} onDismiss={() => setBannerDismissed(true)} />
+      )}
 
-        <main className="px-4 py-6 md:px-8">
-          {/* Keyed by page (not by query string), so each page fades in once on arrival. */}
-          <div key={pathname} className="mx-auto max-w-6xl animate-page-in">
-            <Outlet />
-          </div>
-        </main>
-      </div>
+      <main className="px-4 py-6 md:px-8">
+        {/* Keyed by page (not by query string), so each page fades in once on arrival. */}
+        <div key={pathname} className="mx-auto max-w-6xl animate-page-in">
+          <Outlet />
+        </div>
+      </main>
     </div>
   )
 }

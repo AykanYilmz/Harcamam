@@ -64,7 +64,7 @@ function TrendTable({ months }: { months: MonthTotals[] }) {
             <th className="py-2 font-medium">Ay</th>
             <th className="py-2 text-right font-medium">Gelir</th>
             <th className="py-2 text-right font-medium">Gider</th>
-            <th className="py-2 text-right font-medium">Net</th>
+            <th className="py-2 text-right font-medium">Elde kalan</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-line text-fg tabular-nums">
