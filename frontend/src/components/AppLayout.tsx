@@ -1,9 +1,11 @@
 import { Menu } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
+import { useAuth } from '../auth/useAuth.ts'
 import { usePersistentState } from '../lib/usePersistentState.ts'
 import { pageTitle } from './navigation.ts'
 import { SIDEBAR_ID, Sidebar } from './Sidebar.tsx'
+import { VerifyEmailBanner } from './VerifyEmailBanner.tsx'
 
 const DESKTOP_QUERY = '(min-width: 768px)'
 
@@ -12,6 +14,9 @@ export function AppLayout() {
   // Wide screens remember the choice; on phones the drawer always starts closed.
   const [desktopOpen, setDesktopOpen] = usePersistentState('harcamam.sidebarOpen', true)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { user } = useAuth()
+  // Hidden for the rest of this visit once dismissed; it comes back on the next one.
+  const [bannerDismissed, setBannerDismissed] = useState(false)
 
   const isDesktop = () => window.matchMedia?.(DESKTOP_QUERY).matches ?? true
   const sidebarOpen = () => (isDesktop() ? desktopOpen : mobileOpen)
@@ -59,6 +64,10 @@ export function AppLayout() {
           </button>
           <h1 className="text-lg font-semibold">{pageTitle(pathname)}</h1>
         </header>
+
+        {user && !user.email_verified && !bannerDismissed && (
+          <VerifyEmailBanner email={user.email} onDismiss={() => setBannerDismissed(true)} />
+        )}
 
         <main className="px-4 py-6 md:px-8">
           <div className="mx-auto max-w-6xl">

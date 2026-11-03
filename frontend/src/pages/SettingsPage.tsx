@@ -2,6 +2,7 @@ import { Monitor, Moon, Sun, type LucideIcon } from 'lucide-react'
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '../auth/useAuth.ts'
+import { AccountSection } from '../components/settings/AccountSection.tsx'
 import { ErrorAlert } from '../components/ui/Alert.tsx'
 import { Button } from '../components/ui/Button.tsx'
 import { Card } from '../components/ui/Card.tsx'
@@ -9,7 +10,6 @@ import { Dialog } from '../components/ui/Dialog.tsx'
 import { SuccessNotice } from '../components/ui/Notice.tsx'
 import { TextField } from '../components/ui/TextField.tsx'
 import { errorMessage } from '../lib/errors.ts'
-import { formatDate } from '../lib/format.ts'
 import type { ThemePreference } from '../theme/ThemeContext.ts'
 import { useTheme } from '../theme/useTheme.ts'
 
@@ -208,14 +208,7 @@ export function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
-      <Section title="Hesap">
-        <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-          <dt className="text-fg-subtle">E-posta</dt>
-          <dd className="font-medium text-fg">{user?.email}</dd>
-          <dt className="text-fg-subtle">Üyelik tarihi</dt>
-          <dd className="text-fg">{user && formatDate(user.created_at)}</dd>
-        </dl>
-      </Section>
+      {user && <AccountSection user={user} />}
       <ThemeSection />
       <PasswordSection />
       <DeleteAccountSection />

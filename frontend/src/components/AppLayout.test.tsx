@@ -6,9 +6,19 @@ import { AuthContext, type AuthContextValue } from '../auth/AuthContext.ts'
 import { ThemeProvider } from '../theme/ThemeProvider.tsx'
 import { AppLayout } from './AppLayout.tsx'
 
+vi.mock('../api/account.ts', () => ({
+  useResendVerification: () => ({ mutate: vi.fn(), isPending: false, isSuccess: false }),
+}))
+
 const auth: AuthContextValue = {
   status: 'authenticated',
-  user: { id: '1', email: 'ayse@example.com', created_at: '2026-11-01T00:00:00Z' },
+  user: {
+    id: '1',
+    email: 'ayse@example.com',
+    created_at: '2026-11-01T00:00:00Z',
+    email_verified: true,
+    pending_email: null,
+  },
   login: vi.fn(),
   register: vi.fn(),
   changePassword: vi.fn(),
@@ -27,10 +37,10 @@ function setScreen(desktop: boolean) {
   )
 }
 
-function renderLayout() {
+function renderLayout(value: AuthContextValue = auth) {
   render(
     <ThemeProvider>
-      <AuthContext.Provider value={auth}>
+      <AuthContext.Provider value={value}>
         <MemoryRouter initialEntries={['/yukle']}>
           <Routes>
             <Route element={<AppLayout />}>
@@ -93,5 +103,25 @@ describe('AppLayout', () => {
     await userEvent.keyboard('{Escape}')
 
     expect(sidebar).toHaveClass('invisible')
+  })
+})
+
+describe('AppLayout email verification banner', () => {
+  beforeEach(() => setScreen(true))
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('reminds an unverified user, who can dismiss it', async () => {
+    renderLayout({ ...auth, user: { ...auth.user!, email_verified: false } })
+
+    expect(screen.getByText('E-posta adresini doğrula.')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Uyarıyı kapat' }))
+
+    expect(screen.queryByText('E-posta adresini doğrula.')).not.toBeInTheDocument()
+  })
+
+  it('stays out of the way for a verified user', () => {
+    renderLayout()
+
+    expect(screen.queryByText('E-posta adresini doğrula.')).not.toBeInTheDocument()
   })
 })

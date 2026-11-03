@@ -1,16 +1,17 @@
 import { ApiError, NetworkError } from '../api/client.ts'
 
 // The API answers in English; every message the user sees is chosen here, in Turkish.
-const NETWORK_MESSAGE = 'Sunucuya ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.'
-const GENERIC_MESSAGE = 'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.'
+const NETWORK_MESSAGE = 'Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.'
+const GENERIC_MESSAGE = 'Beklenmeyen bir hata oluştu. Lütfen tekrar dene.'
 
 const STATUS_MESSAGES: Record<number, string> = {
-  401: 'Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.',
-  403: 'Bu işlem için yetkiniz yok.',
-  404: 'Aradığınız kayıt bulunamadı.',
+  401: 'Oturumunun süresi doldu. Lütfen tekrar giriş yap.',
+  403: 'Bu işlem için yetkin yok.',
+  404: 'Aradığın kayıt bulunamadı.',
   413: 'Dosya çok büyük.',
-  422: 'Girdiğiniz bilgiler geçersiz.',
-  500: 'Sunucuda bir hata oluştu. Lütfen daha sonra tekrar deneyin.',
+  422: 'Girdiğin bilgiler geçersiz.',
+  429: 'Çok sık denedin. Biraz bekleyip tekrar dene.',
+  500: 'Sunucuda bir hata oluştu. Lütfen daha sonra tekrar dene.',
 }
 
 /**
@@ -23,4 +24,10 @@ export function errorMessage(error: unknown, byStatus: Record<number, string> = 
     return byStatus[error.status] ?? STATUS_MESSAGES[error.status] ?? GENERIC_MESSAGE
   }
   return GENERIC_MESSAGE
+}
+
+/** Resending a verification link. */
+export const RESEND_ERRORS = {
+  409: 'E-posta adresin zaten doğrulanmış.',
+  429: 'Az önce bir bağlantı gönderdik. Bir dakika sonra tekrar deneyebilirsin.',
 }

@@ -1,11 +1,10 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { ME_QUERY_KEY } from '../api/account.ts'
 import { api, onSessionExpired } from '../api/index.ts'
 import type { TokenPair, User } from '../api/types.ts'
 import { AuthContext, type AuthContextValue, type AuthStatus } from './AuthContext.ts'
 import { tokenStore } from './tokens.ts'
-
-const ME_QUERY_KEY = ['me']
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()

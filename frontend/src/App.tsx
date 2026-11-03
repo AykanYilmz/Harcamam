@@ -10,6 +10,7 @@ import { RegisterPage } from './pages/RegisterPage.tsx'
 import { SettingsPage } from './pages/SettingsPage.tsx'
 import { TransactionsPage } from './pages/TransactionsPage.tsx'
 import { UploadPage } from './pages/UploadPage.tsx'
+import { VerifyEmailPage } from './pages/VerifyEmailPage.tsx'
 import { PageLoader } from './components/ui/Spinner.tsx'
 
 // The dashboard pulls in the chart library; loading it on demand keeps the login page light.
@@ -41,6 +42,8 @@ function App() {
           <Route path="/yardim" element={<HelpPage />} />
         </Route>
       </Route>
+      {/* Opened from an email, logged in or not. */}
+      <Route path="/eposta-dogrula" element={<VerifyEmailPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )

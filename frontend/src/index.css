@@ -23,6 +23,9 @@
   --color-danger-fg: var(--danger-fg);
   --color-danger-soft: var(--danger-soft);
   --color-danger-line: var(--danger-line);
+  --color-warning-fg: var(--warning-fg);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-line: var(--warning-line);
   --color-chart-income: var(--chart-income);
   --color-chart-expense: var(--chart-expense);
 }
@@ -44,6 +47,9 @@
   --danger-fg: var(--color-rose-700);
   --danger-soft: var(--color-rose-50);
   --danger-line: var(--color-rose-200);
+  --warning-fg: var(--color-amber-800);
+  --warning-soft: var(--color-amber-50);
+  --warning-line: var(--color-amber-200);
   /* Chart series: slots 1-2 of the validated categorical palette (CVD-safe pair). */
   --chart-income: #2a78d6;
   --chart-expense: #eb6834;
@@ -67,6 +73,9 @@
   --danger-fg: var(--color-rose-300);
   --danger-soft: color-mix(in oklab, var(--color-rose-500) 12%, transparent);
   --danger-line: color-mix(in oklab, var(--color-rose-500) 35%, transparent);
+  --warning-fg: var(--color-amber-200);
+  --warning-soft: color-mix(in oklab, var(--color-amber-500) 12%, transparent);
+  --warning-line: color-mix(in oklab, var(--color-amber-500) 35%, transparent);
   /* Same hues, stepped for the dark surface. */
   --chart-income: #3987e5;
   --chart-expense: #d95926;

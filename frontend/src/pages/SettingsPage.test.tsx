@@ -15,7 +15,13 @@ function LoginStub() {
 function renderSettings(overrides: Partial<AuthContextValue> = {}) {
   const auth: AuthContextValue = {
     status: 'authenticated',
-    user: { id: '1', email: 'ayse@example.com', created_at: '2026-11-01T10:00:00Z' },
+    user: {
+      id: '1',
+      email: 'ayse@example.com',
+      created_at: '2026-11-01T10:00:00Z',
+      email_verified: true,
+      pending_email: null,
+    },
     login: vi.fn(),
     register: vi.fn(),
     changePassword: vi.fn().mockResolvedValue(undefined),

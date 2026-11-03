@@ -40,6 +40,7 @@ docker compose up --build
 | Backend API | http://localhost:8000 |
 | API dokümantasyonu (Swagger) | http://localhost:8000/docs |
 | PostgreSQL | `localhost:5432` |
+| Mailpit (geliştirmede gönderilen e-postalar) | http://localhost:8025 |
 
 ## Yerel geliştirme
 
