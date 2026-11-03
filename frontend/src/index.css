@@ -28,20 +28,44 @@
   --color-warning-line: var(--warning-line);
   --color-chart-income: var(--chart-income);
   --color-chart-expense: var(--chart-expense);
+
+  --animate-page-in: page-in 220ms ease-out both;
+  --animate-fade-in: fade-in 150ms ease-out both;
+  --animate-dialog-in: dialog-in 160ms ease-out both;
+
+  @keyframes page-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
 }
 
 :root {
   color-scheme: light;
-  --canvas: var(--color-slate-50);
-  --surface: var(--color-white);
-  --surface-muted: var(--color-slate-100);
-  --line: var(--color-slate-200);
-  --line-strong: var(--color-slate-300);
-  --fg: var(--color-slate-900);
-  --fg-secondary: var(--color-slate-700);
-  --fg-muted: var(--color-slate-600);
-  --fg-subtle: var(--color-slate-500);
-  --fg-faint: var(--color-slate-400);
+  /* Warm off-white instead of pure white, which is tiring on bright screens. */
+  --canvas: #f3f0ea;
+  --surface: #fbfaf7;
+  --surface-muted: #ece8e0;
+  --line: #e2ddd4;
+  --line-strong: #d3cdc2;
+  --fg: var(--color-stone-900);
+  --fg-secondary: var(--color-stone-700);
+  --fg-muted: var(--color-stone-600);
+  /* Darker than stone-500 so small text keeps 4.5:1 contrast on the off-white surfaces. */
+  --fg-subtle: #6b645d;
+  --fg-faint: var(--color-stone-400);
   --accent-fg: var(--color-emerald-700);
   --accent-soft: var(--color-emerald-50);
   --danger-fg: var(--color-rose-700);
@@ -84,4 +108,13 @@
 body {
   background-color: var(--canvas);
   color: var(--fg);
+}
+
+/* Animations are decoration: anyone who asked the OS to reduce motion gets none. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
 }

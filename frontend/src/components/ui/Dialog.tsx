@@ -31,7 +31,7 @@ export function Dialog({ open, title, onClose, children, footer }: DialogProps) 
         event.preventDefault()
         onClose()
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl bg-surface p-6 text-fg shadow-xl ring-1 ring-line backdrop:bg-slate-950/50"
+      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl bg-surface p-6 text-fg shadow-xl ring-1 ring-line open:animate-dialog-in backdrop:animate-fade-in backdrop:bg-slate-950/50"
     >
       {open && (
         <>

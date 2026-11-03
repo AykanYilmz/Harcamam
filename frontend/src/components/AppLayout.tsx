@@ -46,7 +46,7 @@ export function AppLayout() {
         <div
           aria-hidden
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-30 bg-slate-950/50 md:hidden"
+          className="fixed inset-0 z-30 animate-fade-in bg-slate-950/50 md:hidden"
         />
       )}
 
@@ -70,7 +70,8 @@ export function AppLayout() {
         )}
 
         <main className="px-4 py-6 md:px-8">
-          <div className="mx-auto max-w-6xl">
+          {/* Keyed by page (not by query string), so each page fades in once on arrival. */}
+          <div key={pathname} className="mx-auto max-w-6xl animate-page-in">
             <Outlet />
           </div>
         </main>

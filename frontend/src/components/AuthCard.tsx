@@ -19,7 +19,7 @@ export function AuthCard({
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-canvas px-4 py-10">
       <ThemeSwitcher className="absolute top-4 right-4" />
       <Logo className="mb-8 text-xl" />
-      <Card className="w-full max-w-sm p-6 sm:p-8">
+      <Card className="w-full max-w-sm animate-page-in p-6 sm:p-8">
         <h1 className="text-xl font-semibold text-fg">{title}</h1>
         <p className="mt-1 text-sm text-fg-subtle">{subtitle}</p>
         <div className="mt-6">{children}</div>

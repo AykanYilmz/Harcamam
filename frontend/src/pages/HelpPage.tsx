@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { Card } from '../components/ui/Card.tsx'
 
@@ -103,20 +103,32 @@ const QUESTIONS: Question[] = [
 ]
 
 export function HelpPage() {
+  // One answer open at a time: opening a question closes the previous one.
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+
   return (
     <div className="mx-auto max-w-3xl">
       <h2 className="text-lg font-semibold text-fg">Sık sorulan sorular</h2>
       <Card className="mt-4 divide-y divide-line p-0">
-        {QUESTIONS.map(({ question, answer }) => (
-          <details key={question} className="group">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium text-fg hover:bg-surface-muted/50">
+        {QUESTIONS.map(({ question, answer }, index) => (
+          <details key={question} open={openIndex === index} className="group">
+            <summary
+              onClick={(event) => {
+                // The browser would toggle <details> itself; React state decides instead.
+                event.preventDefault()
+                setOpenIndex(openIndex === index ? null : index)
+              }}
+              className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium text-fg hover:bg-surface-muted/50"
+            >
               {question}
               <ChevronDown
                 aria-hidden
                 className="size-5 shrink-0 text-fg-faint transition-transform group-open:rotate-180"
               />
             </summary>
-            <div className="px-5 pb-4 text-sm leading-relaxed text-fg-muted">{answer}</div>
+            <div className="animate-fade-in px-5 pb-4 text-sm leading-relaxed text-fg-muted">
+              {answer}
+            </div>
           </details>
         ))}
       </Card>
