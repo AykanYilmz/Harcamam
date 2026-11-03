@@ -17,7 +17,10 @@ export function AuthCard({
 }) {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-canvas px-4 py-10">
-      <ThemeSwitcher className="absolute top-4 right-4" />
+      {/* Positioned by a wrapper: the switch itself is `relative` for its sliding knob. */}
+      <div className="absolute top-4 right-4">
+        <ThemeSwitcher />
+      </div>
       <Logo className="mb-8 text-xl" />
       <Card className="w-full max-w-sm animate-page-in p-6 sm:p-8">
         <h1 className="text-xl font-semibold text-fg">{title}</h1>
