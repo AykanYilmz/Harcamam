@@ -4,6 +4,7 @@ Bu klasördeki **tüm dosyalar sahtedir.** Banka, müşteri, IBAN ve işlemler u
 
 | Dosya | Biçim | Neyi gösterir |
 |---|---|---|
+| `ornek_hesap_ekstresi_2026_05.csv` … `_08.csv` | UTF-8, `;` ayraç, tek tutar kolonu | Mayıs–Ağustos; maaş 30.000 → 40.000 → 45.000 TL, Temmuz'da tatil, bakiyeler Eylül'e bağlanır |
 | `ornek_hesap_ekstresi_2026_09.csv` | UTF-8, `;` ayraç, tek tutar kolonu | Tablonun üstünde hesap bilgisi satırları; aynı gün iki özdeş harcama |
 | `ornek_kredi_karti_2026_10.csv` | cp1254 (Windows Türkçe), Borç/Alacak kolonları | Kredi kartı ekstresi, iade ve ödeme satırları |
 | `ornek_hesap_ekstresi_2026_10.pdf` | Tablolu PDF, 2 sayfa | Başlık yalnızca ilk sayfada; Eylül CSV'siyle son 5 işlemi çakışıyor (mükerrer kontrolü) |
