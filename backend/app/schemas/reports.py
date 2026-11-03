@@ -37,3 +37,8 @@ class MonthlyReportRead(BaseModel):
     income_change_pct: float | None
     expense_change_pct: float | None
     categories: list[CategorySpendingRead]
+
+
+class TrendReportRead(BaseModel):
+    # Oldest first; months without data are included with zeros.
+    months: list[MonthTotalsRead]

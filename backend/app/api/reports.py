@@ -8,6 +8,7 @@ from app.schemas.reports import (
     CategorySpendingRead,
     MonthlyReportRead,
     MonthTotalsRead,
+    TrendReportRead,
 )
 from app.services import reports
 
@@ -17,6 +18,10 @@ MonthParam = Annotated[
     str | None,
     Query(pattern=MONTH_PATTERN, description="YYYY-MM; defaults to the latest month with data"),
 ]
+
+
+MIN_TREND_MONTHS = 3
+MAX_TREND_MONTHS = 24
 
 
 def to_totals_read(totals: reports.MonthTotals) -> MonthTotalsRead:
@@ -57,3 +62,16 @@ def monthly(
             for row in report.categories
         ],
     )
+
+
+@router.get("/trend", response_model=TrendReportRead)
+def trend(
+    current_user: CurrentUser,
+    db: DbSession,
+    months: Annotated[int, Query(ge=MIN_TREND_MONTHS, le=MAX_TREND_MONTHS)] = 6,
+    end: MonthParam = None,
+) -> TrendReportRead:
+    last = reports.parse_month(end) if end else reports.latest_month(db, current_user)
+    first = reports.add_months(last, -(months - 1))
+    totals = reports.monthly_totals(db, current_user, first, last)
+    return TrendReportRead(months=[to_totals_read(month) for month in totals])
