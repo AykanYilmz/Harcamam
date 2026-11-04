@@ -1,0 +1,70 @@
+# Serves the built site and forwards /api to the backend. ${BACKEND_URL} and ${DNS_RESOLVER}
+# are filled in by the nginx image at startup; $host, $uri etc. are left to nginx.
+
+# Look the backend up again every 10s instead of once at startup, so a recreated backend
+# container (new IP) doesn't leave nginx answering 502 until it is restarted too.
+resolver ${DNS_RESOLVER} valid=10s ipv6=off;
+
+# Requests that can guess passwords or send email, limited per client IP. Others get an empty
+# key, which nginx does not count.
+map "$request_method:$uri" $sensitive_client {
+    default "";
+    "~^POST:/api/auth/(login|register|change-password|change-email|resend-verification|verify-email)$" $binary_remote_addr;
+    "DELETE:/api/auth/me" $binary_remote_addr;
+}
+limit_req_zone $sensitive_client zone=sensitive:10m rate=10r/m;
+limit_req_status 429;
+
+server {
+    listen 80;
+    server_name _;
+    server_tokens off;
+
+    # Statements are at most 5 MB (checked again by the app); bigger uploads are refused here,
+    # before they reach the backend at all.
+    client_max_body_size 6m;
+
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+
+    root /usr/share/nginx/html;
+
+    location = /healthz {
+        access_log off;
+        return 200 "ok\n";
+    }
+
+    location /api/ {
+        # A short burst (a typo, then the right password) goes through; a stream does not.
+        limit_req zone=sensitive burst=5 nodelay;
+
+        # A variable makes nginx resolve the name per request (see `resolver`).
+        set $backend ${BACKEND_URL};
+        # /api/auth/login reaches the backend as /auth/login.
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass $backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # PDF parsing can take a few seconds.
+        proxy_read_timeout 60s;
+    }
+
+    # Vite puts a content hash in these file names, so they can be cached forever.
+    location /assets/ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        add_header X-Content-Type-Options nosniff always;
+        try_files $uri =404;
+    }
+
+    # Client-side routes (/islemler, /ayarlar...) all load the app.
+    location / {
+        add_header Cache-Control "no-cache";
+        add_header X-Content-Type-Options nosniff always;
+        add_header X-Frame-Options DENY always;
+        add_header Referrer-Policy strict-origin-when-cross-origin always;
+        try_files $uri /index.html;
+    }
+}

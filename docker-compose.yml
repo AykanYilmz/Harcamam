@@ -16,7 +16,9 @@ services:
       retries: 10
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      target: dev
     # Apply pending migrations before starting the dev server.
     command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     environment:
@@ -39,7 +41,9 @@ services:
         condition: service_started
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      target: dev
     environment:
       VITE_API_URL: http://localhost:8000
       VITE_USE_POLLING: "true"
