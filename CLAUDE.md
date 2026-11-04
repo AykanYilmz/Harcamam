@@ -124,7 +124,7 @@ Not: Bütçeler, Abonelikler ve Dışa aktarma kenar menüsüne sekme olarak ekl
 - [ ] ML tabanlı kategorizer: kullanıcının düzelttiği işlemlerle eğitilen TF-IDF + Logistic Regression. Kural eşleşmeyince devreye girsin, güven skoru düşükse "Diğer".
 - [ ] (Değerlendirilecek) Yapay zekâ ile kategori tahmini: yalnızca işyeri adları bir LLM'e gönderilir, kullanıcı onayıyla açılır. Hiç görülmemiş işyerlerinde ML'den iyi; gizlilik ve maliyet tartışılacak.
 - [ ] Ekstre bazlı kart takibi: her ekstrenin toplamı / dönemi (kart bazlı kesim günü gerekirse "Kartlar" yapısı)
-- [ ] Bütçe hedefleri: kategori bazlı aylık limit, aşılınca uyarı
+- [x] Bütçe hedefleri: kategori bazlı aylık limit, aşılınca uyarı (+ %80 uyarısı, ay sonu tahmini, Özet'te uyarı kartı)
 - [ ] Abonelik tespiti: her ay tekrar eden ödemeleri otomatik bul
 - [ ] Rapor dışa aktarma (Excel/PDF)
 
