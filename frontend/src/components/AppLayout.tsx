@@ -34,7 +34,7 @@ export function AppLayout() {
         }`}
       />
 
-      <header className="sticky top-0 z-20 grid h-14 grid-cols-[1fr_auto_1fr] items-center gap-3 bg-emerald-600 px-4 text-white shadow-sm dark:bg-emerald-700">
+      <header className="sticky top-0 z-20 grid h-14 print:hidden grid-cols-[1fr_auto_1fr] items-center gap-3 bg-emerald-600 px-4 text-white shadow-sm dark:bg-emerald-700">
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"

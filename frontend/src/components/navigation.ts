@@ -2,6 +2,7 @@ import {
   CalendarDays,
   ChartColumn,
   CircleHelp,
+  Download,
   GraduationCap,
   LayoutDashboard,
   List,
@@ -23,6 +24,7 @@ export interface NavItem {
 export const UNCATEGORIZED_PATH = '/kategori-egitimi'
 export const BUDGETS_PATH = '/butceler'
 export const SUBSCRIPTIONS_PATH = '/abonelikler'
+export const EXPORT_PATH = '/disa-aktar'
 
 export const NAV_SECTIONS: NavItem[][] = [
   [
@@ -32,6 +34,7 @@ export const NAV_SECTIONS: NavItem[][] = [
     { to: '/raporlar', label: 'Raporlar', icon: ChartColumn },
     { to: BUDGETS_PATH, label: 'Bütçeler', icon: Target },
     { to: SUBSCRIPTIONS_PATH, label: 'Abonelikler', icon: Repeat },
+    { to: EXPORT_PATH, label: 'Dışa Aktar', icon: Download },
     { to: '/yukle', label: 'Ekstre Yükle', icon: Upload },
     { to: '/kategoriler', label: 'Kategoriler', icon: Tags },
     { to: UNCATEGORIZED_PATH, label: 'Kategori Eğitimi', icon: GraduationCap },

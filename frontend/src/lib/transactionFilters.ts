@@ -86,7 +86,8 @@ export function hasActiveFilters(filters: TransactionFilters): boolean {
   )
 }
 
-function isoDate(date: Date): string {
+/** A local date as "2026-10-05". */
+export function isoDate(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0')
   return `${date.getFullYear()}-${month}-${String(date.getDate()).padStart(2, '0')}`
 }

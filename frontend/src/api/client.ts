@@ -113,7 +113,8 @@ export function createApiClient({
     }
   }
 
-  async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  /** Sends the request (refreshing the session if needed) and returns a successful response. */
+  async function fetchOk(path: string, options: RequestOptions = {}): Promise<Response> {
     const auth = options.auth ?? true
 
     // After a page reload only the refresh token is left: get an access token first.
@@ -134,8 +135,24 @@ export function createApiClient({
     }
 
     if (!response.ok) throw new ApiError(response.status, await readDetail(response))
+    return response
+  }
+
+  async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+    const response = await fetchOk(path, options)
     if (response.status === 204) return undefined as T
     return (await response.json()) as T
+  }
+
+  /** A file from the API, with the name the server suggests (Content-Disposition). */
+  async function download(
+    path: string,
+    query?: RequestOptions['query'],
+  ): Promise<{ blob: Blob; fileName: string | null }> {
+    const response = await fetchOk(path, { query })
+    const disposition = response.headers.get('Content-Disposition') ?? ''
+    const fileName = /filename="([^"]+)"/.exec(disposition)?.[1] ?? null
+    return { blob: await response.blob(), fileName }
   }
 
   return {
@@ -144,6 +161,7 @@ export function createApiClient({
     post: <T>(path: string, json?: unknown) => request<T>(path, { method: 'POST', json }),
     patch: <T>(path: string, json?: unknown) => request<T>(path, { method: 'PATCH', json }),
     delete: (path: string) => request<void>(path, { method: 'DELETE' }),
+    download,
   }
 }
 

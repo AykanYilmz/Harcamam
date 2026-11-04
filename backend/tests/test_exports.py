@@ -111,3 +111,11 @@ def test_other_users_transactions_are_not_exported(db: Session, client: TestClie
     lines = export(client, headers, format="csv").content.decode("utf-8").splitlines()
 
     assert len(lines) == 1
+
+
+def test_browsers_may_read_the_file_name_cross_origin(
+    client: TestClient, auth_headers: dict[str, str]
+) -> None:
+    response = export(client, {**auth_headers, "Origin": "http://localhost:5173"})
+
+    assert "content-disposition" in response.headers["access-control-expose-headers"].lower()

@@ -1,3 +1,4 @@
+import { Printer } from 'lucide-react'
 import { useCategoryTrend, useLongTrend, useMonthlyReport } from '../api/reports.ts'
 import type { MonthTotals } from '../api/types.ts'
 import { TrendChart } from '../components/dashboard/TrendChart.tsx'
@@ -59,29 +60,43 @@ export function ReportsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Only on paper, where the app bar with the page title isn't printed. */}
+      <h1 className="hidden text-xl font-semibold text-fg print:block">
+        HesapKitap raporu · {formatMonth(months[0].month)} – {formatMonth(end)}
+      </h1>
+      <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <p className="text-sm text-fg-subtle">
           {formatMonth(months[0].month)} – {formatMonth(end)}
         </p>
-        <div
-          role="radiogroup"
-          aria-label="Dönem"
-          className="inline-flex rounded-lg bg-surface-muted p-1"
-        >
-          {PERIODS.map((value) => (
-            <button
-              key={value}
-              type="button"
-              role="radio"
-              aria-checked={period === value}
-              onClick={() => setPeriod(value)}
-              className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
-                period === value ? 'bg-surface text-fg shadow-sm' : 'text-fg-subtle hover:text-fg'
-              }`}
-            >
-              {value} ay
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-fg-muted ring-1 ring-line-strong hover:bg-surface-muted hover:text-fg"
+          >
+            <Printer aria-hidden className="size-4" />
+            Yazdır / PDF
+          </button>
+          <div
+            role="radiogroup"
+            aria-label="Dönem"
+            className="inline-flex rounded-lg bg-surface-muted p-1"
+          >
+            {PERIODS.map((value) => (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={period === value}
+                onClick={() => setPeriod(value)}
+                className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
+                  period === value ? 'bg-surface text-fg shadow-sm' : 'text-fg-subtle hover:text-fg'
+                }`}
+              >
+                {value} ay
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

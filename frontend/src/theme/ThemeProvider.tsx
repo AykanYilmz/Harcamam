@@ -33,7 +33,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState(initialTheme)
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
+    const root = document.documentElement
+    root.classList.toggle('dark', theme === 'dark')
+    // Paper is white and browsers don't print backgrounds: print in the light theme, or the
+    // dark theme's light text would be nearly invisible.
+    const printLight = () => root.classList.remove('dark')
+    const restore = () => root.classList.toggle('dark', theme === 'dark')
+    window.addEventListener('beforeprint', printLight)
+    window.addEventListener('afterprint', restore)
+    return () => {
+      window.removeEventListener('beforeprint', printLight)
+      window.removeEventListener('afterprint', restore)
+    }
   }, [theme])
 
   const value = useMemo<ThemeContextValue>(

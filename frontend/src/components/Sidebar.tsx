@@ -32,7 +32,7 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
     <aside
       id={SIDEBAR_ID}
       aria-label="Kenar çubuğu"
-      className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-surface transition-[translate,visibility] duration-300 ease-drawer ${state}`}
+      className={`fixed inset-y-0 left-0 z-40 flex w-64 print:hidden flex-col border-r border-line bg-surface transition-[translate,visibility] duration-300 ease-drawer ${state}`}
     >
       {/* The app bar already names the app; the menu carries its motto. */}
       <div className="shrink-0 border-b border-line bg-linear-to-br from-accent-soft to-transparent px-5 pt-6 pb-5">

@@ -64,6 +64,27 @@ describe('createApiClient', () => {
     expect(tokens.getRefreshToken()).toBe('new-refresh')
   })
 
+  it('downloads a file with the name the server suggests, refreshing the session first', async () => {
+    tokens.setTokens('expired', 'refresh')
+    const server = fakeServer()
+    const fetchFn = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (!String(input).includes('/exports/')) return server(input, init)
+      if (new Headers(init?.headers).get('Authorization') !== 'Bearer new-access') {
+        return json(401, { detail: 'Not authenticated' })
+      }
+      return new Response('Tarih;Tutar', {
+        headers: { 'Content-Disposition': 'attachment; filename="hesapkitap_2026.csv"' },
+      })
+    })
+    const api = createApiClient({ baseUrl: 'http://api', tokens, fetchFn })
+
+    const { blob, fileName } = await api.download('/exports/transactions', { format: 'csv' })
+
+    expect(fileName).toBe('hesapkitap_2026.csv')
+    expect(await blob.text()).toBe('Tarih;Tutar')
+    expect(String(fetchFn.mock.calls.at(-1)?.[0])).toContain('format=csv')
+  })
+
   it('refreshes only once for concurrent requests', async () => {
     tokens.setTokens('expired', 'refresh')
     const fetchFn = fakeServer()

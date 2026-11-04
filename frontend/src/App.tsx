@@ -5,7 +5,13 @@ import { AppLayout } from './components/AppLayout.tsx'
 import { CalendarPage } from './pages/CalendarPage.tsx'
 import { CategoriesPage } from './pages/CategoriesPage.tsx'
 import { UncategorizedPage } from './pages/UncategorizedPage.tsx'
-import { BUDGETS_PATH, SUBSCRIPTIONS_PATH, UNCATEGORIZED_PATH } from './components/navigation.ts'
+import {
+  BUDGETS_PATH,
+  EXPORT_PATH,
+  SUBSCRIPTIONS_PATH,
+  UNCATEGORIZED_PATH,
+} from './components/navigation.ts'
+import { ExportPage } from './pages/ExportPage.tsx'
 import { BudgetsPage } from './pages/BudgetsPage.tsx'
 import { SubscriptionsPage } from './pages/SubscriptionsPage.tsx'
 import { HelpPage } from './pages/HelpPage.tsx'
@@ -58,6 +64,7 @@ function App() {
           <Route path={UNCATEGORIZED_PATH} element={<UncategorizedPage />} />
           <Route path={BUDGETS_PATH} element={<BudgetsPage />} />
           <Route path={SUBSCRIPTIONS_PATH} element={<SubscriptionsPage />} />
+          <Route path={EXPORT_PATH} element={<ExportPage />} />
           <Route path="/ayarlar" element={<SettingsPage />} />
           <Route path="/yardim" element={<HelpPage />} />
         </Route>
