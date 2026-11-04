@@ -53,7 +53,6 @@ DEFAULT_KEYWORDS: dict[str, tuple[str, ...]] = {
         "THY",
         "TURK HAVA YOLLARI",
         "OTOPARK",
-        "OBILET",
         "OTOBAN",
         "OTOYOL",
         "HGS",

@@ -125,7 +125,6 @@ def test_match_returns_the_deciding_rule() -> None:
         ("ÖRNEK KART ÖDEME 1234", "Transfer"),
         ("KART BORCU TAHSİLAT", "Transfer"),
         ("ÖRNEK PETROL ANKARA", "Ulaşım"),
-        ("OBİLET.COM", "Ulaşım"),
         ("ÖRNEK KAHVE", "Yemek"),
         ("ÖRNEK ÇİĞKÖFTE", "Yemek"),
         ("ÖRNEK GIDA SANAYİ", "Market"),
