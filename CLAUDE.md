@@ -112,11 +112,12 @@ harcamam/
 - Kenar menüsünde yalnızca sayfası hazır olan sekmeler görünür.
 
 ### Faz 6 — Kalite ve altyapı
-- [ ] GitHub Actions: lint + backend testleri + frontend build. Her push ve PR'da çalışsın.
-- [ ] Backend test coverage en az %80, README'ye coverage rozeti
-- [ ] Production için Dockerfile'lar (multi-stage build), docker-compose.prod.yml
-- [ ] Ortam değişkenleri ile config, gizli bilgiler asla kodda değil
-- [ ] Ücretsiz bir platforma deploy ve canlı demo linki. Demo kullanıcısı + sahte veriyle dolu hesap.
+- [x] GitHub Actions: lint + backend testleri + frontend build. Her push ve PR'da çalışsın. (+ `alembic check`, production imajlarının build'i)
+- [x] Backend test coverage en az %80, README'ye coverage rozeti (Codecov, OIDC ile token'sız; şu an ~%96)
+- [x] Production için Dockerfile'lar (multi-stage build), docker-compose.prod.yml (nginx: `/api` proxy, 6 MB istek sınırı, hassas uç noktalarda rate limit, güvenlik başlıkları)
+- [x] Ortam değişkenleri ile config, gizli bilgiler asla kodda değil (`.env.production.example`; `ENVIRONMENT=production` güvensiz ayarla açılmayı reddeder)
+- [x] Demo hesabı: `python -m app.demo` sahte verilerle oluşturur / sıfırlar (gece sıfırlama için hazır)
+- [ ] Ücretsiz bir platforma deploy ve canlı demo linki. (Proje deploy'a hazır; platform seçimi ve TLS bekliyor. Gerçek SMTP sağlayıcısı seçilecek.)
 
 ### Faz 7 — Opsiyonel geliştirmeler (vakit kalırsa)
 Not: Bütçeler, Abonelikler ve Dışa aktarma kenar menüsüne sekme olarak eklenecek; Faz 5'ten sonra öne çekildi.

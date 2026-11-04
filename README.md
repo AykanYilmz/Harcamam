@@ -1,15 +1,18 @@
 # HesapKitap
 
+[![CI](https://github.com/AykanYilmz/Harcamam/actions/workflows/ci.yml/badge.svg)](https://github.com/AykanYilmz/Harcamam/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/AykanYilmz/Harcamam/graph/badge.svg)](https://codecov.io/gh/AykanYilmz/Harcamam)
+
 Banka hesap ekstrelerini (PDF / CSV) yükleyip harcamaları otomatik olarak kategorize eden, aylık özet ve grafikler sunan kişisel finans uygulaması.
 
 > 🚧 Proje geliştirme aşamasında. Yol haritası için aşağıya bakın.
 
-## Özellikler (planlanan)
+## Özellikler
 
-- Ekstre yükleme ve ayrıştırma (Türkçe tarih ve tutar formatları)
-- Kural tabanlı otomatik kategorizasyon; kullanıcının düzeltmelerinden öğrenen kurallar
-- Aylık özet, kategori dağılımı, harcama trendi ve en çok harcama yapılan yerler
-- JWT ile kimlik doğrulama
+- Hesap ve kredi kartı ekstresi yükleme (CSV, PDF); Türkçe tarih ve tutar formatları, mükerrer işlem kontrolü
+- Kural tabanlı otomatik kategorizasyon; kullanıcının düzeltmelerinden ve **Kategori Eğitimi** sayfasından öğrenen kurallar
+- Aylık özet, kategori dağılımı, harcama trendi, takvim ve en çok harcama yapılan yerler; ay, istenirse kart hesap kesim gününe göre bölünür
+- JWT ile kimlik doğrulama, e-posta doğrulama, açık/koyu tema
 
 ## Teknolojiler
 
@@ -53,7 +56,7 @@ source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 
 uvicorn app.main:app --reload    # sunucuyu başlat
-pytest                           # testler (önce: docker compose up -d db)
+pytest --cov                     # testler + kapsam, %80 altı başarısız (önce: docker compose up -d db)
 ruff check . && black --check .  # lint
 ```
 
@@ -66,7 +69,16 @@ npm install
 npm run dev           # geliştirme sunucusu
 npm run lint          # ESLint
 npm run format:check  # Prettier
+npm test              # Vitest
 npm run build         # production build
+```
+
+### Demo hesabı
+
+Sahte ekstrelerle (Mayıs–Ekim) dolu bir demo hesabı oluşturur; tekrar çalıştırınca hesabı sıfırlar:
+
+```bash
+docker compose exec backend python -m app.demo   # demo@hesapkitap.dev / demo12345
 ```
 
 ### Pre-commit hook'ları
@@ -77,6 +89,26 @@ Her commit öncesinde lint ve format kontrolleri otomatik çalışır. Backend s
 pre-commit install
 pre-commit run --all-files   # tüm dosyalarda elle çalıştırmak için
 ```
+
+## Production
+
+`docker-compose.prod.yml`, uygulamayı production imajlarıyla çalıştırır:
+
+- **web:** Build alınmış site nginx ile sunulur. nginx `/api` isteklerini backend'e yönlendirir (aynı adres, CORS gerekmez), 6 MB'tan büyük yüklemeleri reddeder, giriş/kayıt/şifre/e-posta isteklerine rate limit uygular ve güvenlik başlıklarını ekler.
+- **backend:** Yalnızca uygulama ve çalışma zamanı bağımlılıkları, root olmayan kullanıcı; açılışta migration'ları uygular. `ENVIRONMENT=production` iken geliştirme veritabanı şifresiyle ya da `https` olmayan bir site adresiyle başlamayı reddeder.
+- **db:** PostgreSQL; dışarıya açık değildir.
+
+```bash
+cp .env.production.example .env.production   # bütün değerleri doldurun
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+docker compose -f docker-compose.prod.yml --env-file .env.production exec backend python -m app.demo
+```
+
+Site `WEB_PORT` (varsayılan 80) üzerinden düz http ile yayınlanır; TLS (https) önündeki platform ya da Caddy gibi bir proxy tarafından sağlanmalıdır. API dokümantasyonu: `/api/docs`.
+
+## CI
+
+Her push ve pull request'te [GitHub Actions](.github/workflows/ci.yml) şunları çalıştırır: ruff, black, migration'ların modellerle uyumu, PostgreSQL'e karşı backend testleri ve kapsam ([Codecov](https://codecov.io/gh/AykanYilmz/Harcamam)), ESLint, Prettier, Vitest, frontend build ve iki production Docker imajının build'i.
 
 ## Proje yapısı
 
@@ -91,7 +123,8 @@ pre-commit run --all-files   # tüm dosyalarda elle çalıştırmak için
 │   └── tests/
 ├── frontend/         # React + Vite uygulaması
 ├── sample_data/      # sahte örnek ekstreler (gerçek veri yok)
-└── docker-compose.yml
+├── docker-compose.yml        # geliştirme
+└── docker-compose.prod.yml   # production
 ```
 
 ## Yol haritası
@@ -102,7 +135,7 @@ pre-commit run --all-files   # tüm dosyalarda elle çalıştırmak için
 - [x] Faz 3 — Kategorizasyon (anahtar kelime + kullanıcı kuralları)
 - [x] Faz 4 — Raporlar (aylık özet, trend, en çok harcama yapılan yerler, işlem listesi)
 - [x] Faz 5 — Frontend arayüzü (dashboard, işlemler, takvim, raporlar, kategoriler, ayarlar; açık/koyu tema)
-- [ ] Faz 6 — CI, test kapsamı ve deploy
+- [x] Faz 6 — CI, test kapsamı, production imajları (deploy henüz yapılmadı)
 - [ ] Faz 7 — Opsiyonel geliştirmeler (ML kategorizer, bütçe, abonelik tespiti)
 - [ ] Faz 8 — Dokümantasyon ve portfolyo cilası
 
