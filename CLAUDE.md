@@ -129,8 +129,8 @@ Not: Bütçeler, Abonelikler ve Dışa aktarma kenar menüsüne sekme olarak ekl
 - [ ] (Karar bekliyor) Yapay zekâ ile kategori tahmini: yalnızca işyeri adları bir LLM'e gönderilir, kullanıcı onayıyla açılır. Soğuk başlangıçta (hiç görülmemiş işyeri) ML'in çözemediğini çözer; dış servise veri gönderme, API anahtarı ve maliyet kararı kullanıcının.
 
 ### Faz 8 — Portfolyo cilası
-- [ ] README: proje tanıtımı, ekran görüntüleri/GIF, mimari diyagram (Mermaid), kurulum adımları, API dokümantasyonu linki (FastAPI /docs), kullanılan teknolojiler, öğrendiklerim
-- [ ] Kod içinde gereksiz yorum yok, anlamlı isimlendirme, tutarlı yapı
+- [x] README: proje tanıtımı, ekran görüntüleri (`docs/screenshots/`, sahte demo verisi), mimari + yükleme akışı + veri modeli diyagramları (Mermaid), kurulum adımları, API dokümantasyonu linki (FastAPI /docs), teknolojiler ve seçim nedenleri, güvenlik, öğrendiklerim
+- [x] Kod içinde gereksiz yorum yok, anlamlı isimlendirme, tutarlı yapı (ölü kod / gereksiz export taraması yapıldı)
 
 ---
 
