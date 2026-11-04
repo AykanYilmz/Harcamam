@@ -62,7 +62,7 @@ export function BudgetRow({
             className="mt-2 h-2 overflow-hidden rounded-full bg-surface-muted"
           >
             <div
-              className={`h-full animate-bar-grow rounded-full ${BAR_COLORS[budget.status]}`}
+              className={`h-full origin-left animate-bar-grow rounded-full ${BAR_COLORS[budget.status]}`}
               style={{ width: `${Math.min(used, 100)}%` }}
             />
           </div>
