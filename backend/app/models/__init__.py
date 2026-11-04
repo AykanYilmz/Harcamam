@@ -1,3 +1,4 @@
+from app.models.budget import Budget
 from app.models.category import (
     INCOME_CATEGORY,
     OTHER_CATEGORY,
@@ -10,6 +11,7 @@ from app.models.transaction import Transaction, TransactionType
 from app.models.user import User
 
 __all__ = [
+    "Budget",
     "INCOME_CATEGORY",
     "OTHER_CATEGORY",
     "Category",

@@ -175,7 +175,7 @@ def category_trend(db: Session, user: User, first: dt.date, last: dt.date) -> li
     return trends
 
 
-def _spending_by_category(db: Session, user: User, period: Period) -> dict[Category, Decimal]:
+def spending_by_category(db: Session, user: User, period: Period) -> dict[Category, Decimal]:
     rows = db.execute(
         select(Category, func.sum(-_signed_amount))
         .join(Transaction, Transaction.category_id == Category.id)
@@ -193,8 +193,8 @@ def monthly_report(db: Session, user: User, month: dt.date | None = None) -> Mon
     month = month or latest_month(db, user)
     previous, current = monthly_totals(db, user, add_months(month, -1), month)
 
-    spending = _spending_by_category(db, user, current.period)
-    previous_spending = _spending_by_category(db, user, previous.period)
+    spending = spending_by_category(db, user, current.period)
+    previous_spending = spending_by_category(db, user, previous.period)
     category_rows = [
         CategorySpending(
             category=category,
