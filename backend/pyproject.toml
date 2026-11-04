@@ -3,7 +3,7 @@ requires = ["setuptools>=75"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "harcamam-backend"
+name = "hesapkitap-backend"
 version = "0.1.0"
 description = "Personal finance and spending analysis API"
 requires-python = ">=3.12"

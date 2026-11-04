@@ -21,7 +21,10 @@ def test_secure_production_settings_are_accepted() -> None:
 
 
 def test_production_refuses_the_development_database_password() -> None:
-    values = {**PRODUCTION, "database_url": "postgresql+psycopg://harcamam:harcamam@db/harcamam"}
+    values = {
+        **PRODUCTION,
+        "database_url": "postgresql+psycopg://hesapkitap:hesapkitap@db/hesapkitap",
+    }
 
     with pytest.raises(ValidationError, match="development user and password"):
         settings(**values)

@@ -1,4 +1,4 @@
-const REFRESH_TOKEN_KEY = 'harcamam.refreshToken'
+const REFRESH_TOKEN_KEY = 'hesapkitap.refreshToken'
 
 export interface TokenStore {
   getAccessToken(): string | null

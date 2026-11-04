@@ -2,9 +2,9 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-harcamam}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-harcamam}
-      POSTGRES_DB: ${POSTGRES_DB:-harcamam}
+      POSTGRES_USER: ${POSTGRES_USER:-hesapkitap}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hesapkitap}
+      POSTGRES_DB: ${POSTGRES_DB:-hesapkitap}
     ports:
       - "5432:5432"
     volumes:
@@ -22,7 +22,7 @@ services:
     # Apply pending migrations before starting the dev server.
     command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     environment:
-      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-harcamam}:${POSTGRES_PASSWORD:-harcamam}@db:5432/${POSTGRES_DB:-harcamam}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-hesapkitap}:${POSTGRES_PASSWORD:-hesapkitap}@db:5432/${POSTGRES_DB:-hesapkitap}
       CORS_ORIGINS: '["http://localhost:5173"]'
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (see .env.example)}
       FRONTEND_URL: http://localhost:5173

@@ -1,7 +1,7 @@
 # HesapKitap
 
-[![CI](https://github.com/AykanYilmz/Harcamam/actions/workflows/ci.yml/badge.svg)](https://github.com/AykanYilmz/Harcamam/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/AykanYilmz/Harcamam/graph/badge.svg)](https://codecov.io/gh/AykanYilmz/Harcamam)
+[![CI](https://github.com/AykanYilmz/HesapKitap/actions/workflows/ci.yml/badge.svg)](https://github.com/AykanYilmz/HesapKitap/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/AykanYilmz/HesapKitap/graph/badge.svg)](https://codecov.io/gh/AykanYilmz/HesapKitap)
 
 **Banka ekstreni yükle, paranın nereye gittiğini gör.** HesapKitap, hesap ve kredi kartı ekstrelerini (PDF / CSV) okuyup her harcamayı otomatik olarak kategorize eden, aylık özet, bütçe ve abonelik takibi sunan bir kişisel finans uygulamasıdır. Yanlış kategorileri düzelttikçe sistem senin kurallarını öğrenir.
 
@@ -180,8 +180,8 @@ Bilinçli olarak eklenmeyenler: **pandas** (CSV için gereksiz), **scikit-learn*
 Gereksinim: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ```bash
-git clone https://github.com/AykanYilmz/Harcamam.git
-cd Harcamam
+git clone https://github.com/AykanYilmz/HesapKitap.git
+cd HesapKitap
 cp .env.example .env
 # .env içindeki JWT_SECRET'ı doldurun:
 # python -c "import secrets; print(secrets.token_hex(32))"
@@ -250,7 +250,7 @@ cd frontend && npm test        # Vitest + Testing Library
 - E-posta gönderimi testlerde sahte bir göndericiyle yakalanır.
 - Ekstre parser'ları `sample_data/` altındaki sahte dosyalarla ve test içinde üretilen PDF'lerle test edilir.
 
-Her push ve pull request'te [GitHub Actions](.github/workflows/ci.yml): ruff, black, `alembic check`, backend testleri ve kapsam ([Codecov](https://codecov.io/gh/AykanYilmz/Harcamam)), ESLint, Prettier, Vitest, frontend build ve iki production Docker imajının build'i.
+Her push ve pull request'te [GitHub Actions](.github/workflows/ci.yml): ruff, black, `alembic check`, backend testleri ve kapsam ([Codecov](https://codecov.io/gh/AykanYilmz/HesapKitap)), ESLint, Prettier, Vitest, frontend build ve iki production Docker imajının build'i.
 
 ## Güvenlik
 

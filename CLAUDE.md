@@ -1,4 +1,4 @@
-# HesapKitap (çalışma adı: Harcamam) — Kişisel Finans ve Harcama Analizi Uygulaması
+# HesapKitap — Kişisel Finans ve Harcama Analizi Uygulaması
 
 Bu dosya projenin ana talimatıdır. Her oturumda önce bunu oku ve buradaki plana göre ilerle.
 
@@ -23,7 +23,7 @@ Kullanıcı banka hesap ekstresini (PDF veya CSV) yükler. Uygulama işlemleri a
 
 ## Proje yapısı
 ```
-harcamam/
+HesapKitap/
 ├── backend/
 │   ├── app/
 │   │   ├── api/          # router'lar (auth, statements, transactions, categories, reports)

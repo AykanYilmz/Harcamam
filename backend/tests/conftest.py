@@ -24,10 +24,10 @@ BACKEND_DIR = Path(__file__).resolve().parents[1]
 
 
 def test_database_url() -> URL:
-    """TEST_DATABASE_URL if given, otherwise the dev database URL pointed at `harcamam_test`."""
+    """TEST_DATABASE_URL if given, otherwise the dev database URL pointed at `hesapkitap_test`."""
     if url := os.environ.get("TEST_DATABASE_URL"):
         return make_url(url)
-    return make_url(get_settings().database_url).set(database="harcamam_test")
+    return make_url(get_settings().database_url).set(database="hesapkitap_test")
 
 
 def create_database_if_missing(url: URL) -> None:

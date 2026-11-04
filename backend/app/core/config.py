@@ -10,7 +10,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 ROOT_DIR = Path(__file__).resolve().parents[3]
 
 # The development defaults; a production database must not be reachable with these.
-DEV_DATABASE_CREDENTIALS = "harcamam:harcamam@"
+DEV_DATABASE_CREDENTIALS = "hesapkitap:hesapkitap@"
 LOCAL_HOSTS = {"localhost", "127.0.0.1"}
 
 
@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     # page links to the right OpenAPI URL. The proxy strips it before passing requests on.
     root_path: str = ""
 
-    database_url: str = "postgresql+psycopg://harcamam:harcamam@localhost:5432/harcamam"
+    database_url: str = "postgresql+psycopg://hesapkitap:hesapkitap@localhost:5432/hesapkitap"
 
     # No default on purpose: the app must not start with a guessable signing key.
     jwt_secret: str = Field(min_length=32)

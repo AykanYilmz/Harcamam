@@ -46,7 +46,7 @@ function PeriodSummary({ months }: { months: MonthTotals[] }) {
 }
 
 export function ReportsPage() {
-  const [period, setPeriod] = usePersistentState('harcamam.reportMonths', 12)
+  const [period, setPeriod] = usePersistentState('hesapkitap.reportMonths', 12)
   const latest = useMonthlyReport(undefined)
   const end = latest.data?.month
   const trend = useLongTrend(end, period)

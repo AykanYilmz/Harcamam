@@ -10,4 +10,4 @@ export interface ThemeContextValue {
 export const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 // Also read by the inline script in index.html, which applies it before first paint.
-export const THEME_STORAGE_KEY = 'harcamam.theme'
+export const THEME_STORAGE_KEY = 'hesapkitap.theme'
