@@ -3,7 +3,7 @@ import { api } from './index.ts'
 import { REPORTS_KEY } from './reports.ts'
 import type { Statement, StatementImportResult } from './types.ts'
 
-export const STATEMENTS_KEY = ['statements'] as const
+const STATEMENTS_KEY = ['statements'] as const
 export const TRANSACTIONS_KEY = ['transactions'] as const
 
 /** Uploading or deleting a statement changes everything built from transactions. */

@@ -15,7 +15,7 @@ import type {
  * the merchant just categorized would vanish before the user sees it confirmed. It is
  * fetched fresh whenever a page using it opens.
  */
-export const UNCATEGORIZED_KEY = ['uncategorized'] as const
+const UNCATEGORIZED_KEY = ['uncategorized'] as const
 
 export function useUncategorized() {
   return useQuery({

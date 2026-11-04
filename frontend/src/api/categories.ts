@@ -4,8 +4,8 @@ import { REPORTS_KEY } from './reports.ts'
 import { TRANSACTIONS_KEY } from './statements.ts'
 import type { Category, CategoryCreate, CategoryUpdate, Rule, RuleSaveResult } from './types.ts'
 
-export const CATEGORIES_KEY = ['categories'] as const
-export const RULES_KEY = ['category-rules'] as const
+const CATEGORIES_KEY = ['categories'] as const
+const RULES_KEY = ['category-rules'] as const
 
 /** Categories and rules decide where transactions land, so reports change with them. */
 export function invalidateCategorization(queryClient: QueryClient) {
