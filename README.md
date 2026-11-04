@@ -12,6 +12,9 @@ Banka hesap ekstrelerini (PDF / CSV) yükleyip harcamaları otomatik olarak kate
 - Hesap ve kredi kartı ekstresi yükleme (CSV, PDF); Türkçe tarih ve tutar formatları, mükerrer işlem kontrolü
 - Kural tabanlı otomatik kategorizasyon; kullanıcının düzeltmelerinden ve **Kategori Eğitimi** sayfasından öğrenen kurallar
 - Aylık özet, kategori dağılımı, harcama trendi, takvim ve en çok harcama yapılan yerler; ay, istenirse kart hesap kesim gününe göre bölünür
+- Kategori bazlı aylık bütçeler (limite yaklaşınca ve aşınca uyarı, ay sonu tahmini)
+- Abonelik ve düzenli ödeme tespiti (zam, sonraki ödeme, iptal edilmiş görünenler)
+- Excel / CSV dışa aktarma ve yazdırılabilir rapor
 - JWT ile kimlik doğrulama, e-posta doğrulama, açık/koyu tema
 
 ## Teknolojiler
@@ -136,7 +139,7 @@ Her push ve pull request'te [GitHub Actions](.github/workflows/ci.yml) şunları
 - [x] Faz 4 — Raporlar (aylık özet, trend, en çok harcama yapılan yerler, işlem listesi)
 - [x] Faz 5 — Frontend arayüzü (dashboard, işlemler, takvim, raporlar, kategoriler, ayarlar; açık/koyu tema)
 - [x] Faz 6 — CI, test kapsamı, production imajları (deploy henüz yapılmadı)
-- [ ] Faz 7 — Opsiyonel geliştirmeler (ML kategorizer, bütçe, abonelik tespiti)
+- [x] Faz 7 — Bütçeler, abonelik tespiti, dışa aktarma, ekstre toplamları (ML kategorizer ölçüldü, yeterli bulunmadı)
 - [ ] Faz 8 — Dokümantasyon ve portfolyo cilası
 
 ## Güvenlik notu

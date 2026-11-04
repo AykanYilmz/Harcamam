@@ -120,13 +120,13 @@ harcamam/
 - [ ] Ücretsiz bir platforma deploy ve canlı demo linki. (Proje deploy'a hazır; platform seçimi ve TLS bekliyor. Gerçek SMTP sağlayıcısı seçilecek.)
 
 ### Faz 7 — Opsiyonel geliştirmeler (vakit kalırsa)
-Not: Bütçeler, Abonelikler ve Dışa aktarma kenar menüsüne sekme olarak eklenecek; Faz 5'ten sonra öne çekildi.
-- [ ] ML tabanlı kategorizer: kullanıcının düzelttiği işlemlerle eğitilen TF-IDF + Logistic Regression. Kural eşleşmeyince devreye girsin, güven skoru düşükse "Diğer".
-- [ ] (Değerlendirilecek) Yapay zekâ ile kategori tahmini: yalnızca işyeri adları bir LLM'e gönderilir, kullanıcı onayıyla açılır. Hiç görülmemiş işyerlerinde ML'den iyi; gizlilik ve maliyet tartışılacak.
-- [ ] Ekstre bazlı kart takibi: her ekstrenin toplamı / dönemi (kart bazlı kesim günü gerekirse "Kartlar" yapısı)
+Not: Bütçeler, Abonelikler ve Dışa aktarma kenar menüsüne sekme olarak eklendi; Faz 5'ten sonra öne çekildi.
 - [x] Bütçe hedefleri: kategori bazlı aylık limit, aşılınca uyarı (+ %80 uyarısı, ay sonu tahmini, Özet'te uyarı kartı)
-- [ ] Abonelik tespiti: her ay tekrar eden ödemeleri otomatik bul
-- [ ] Rapor dışa aktarma (Excel/PDF)
+- [x] Abonelik tespiti: her ay tekrar eden ödemeleri otomatik bul (≥3 ödeme, ~aylık aralık, ±%35 tutar; zam tespiti, sonraki ödeme, durmuş olanlar, "Abonelik değil" ile gizleme). Hesaplanır, saklanmaz.
+- [x] Rapor dışa aktarma: Excel (işlemler + aylık özet + kategoriler, openpyxl) ve CSV; formül enjeksiyonuna karşı korumalı. PDF: Raporlar'da "Yazdır / PDF" (yazdırırken açık tema).
+- [x] Ekstre bazlı kart takibi: her ekstrenin ham giriş/çıkış toplamı (bankanın dönem toplamıyla karşılaştırılabilir). Kart bazlı kesim günü yapısına gerek görülmedi.
+- [x] ML tabanlı kategorizer **değerlendirildi, uygulanmadı:** Demo verisinde (55 işyeri, 13 kategori) "bir işyerini dışarıda bırak" testiyle TF-IDF (char n-gram) + Logistic Regression, hiç görülmemiş işyerlerinde %18 doğru; güven ≥ %40 eşiğinde 14 öneri, %36 doğru. İşyeri adı harflerinden kategori çıkarmak için dünya bilgisi gerekiyor; ~100+ MB'lık scikit-learn bağımlılığına değmedi. Kurallar + Kategori Eğitimi sayfası bu işi görüyor.
+- [ ] (Karar bekliyor) Yapay zekâ ile kategori tahmini: yalnızca işyeri adları bir LLM'e gönderilir, kullanıcı onayıyla açılır. Soğuk başlangıçta (hiç görülmemiş işyeri) ML'in çözemediğini çözer; dış servise veri gönderme, API anahtarı ve maliyet kararı kullanıcının.
 
 ### Faz 8 — Portfolyo cilası
 - [ ] README: proje tanıtımı, ekran görüntüleri/GIF, mimari diyagram (Mermaid), kurulum adımları, API dokümantasyonu linki (FastAPI /docs), kullanılan teknolojiler, öğrendiklerim
