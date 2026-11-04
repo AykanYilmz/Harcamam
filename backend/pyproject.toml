@@ -24,6 +24,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3",
+    "pytest-cov>=6.0",
     "httpx>=0.28",
     "ruff>=0.8",
     "black>=24.10",
@@ -52,3 +53,12 @@ known-third-party = ["alembic"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["app"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = true

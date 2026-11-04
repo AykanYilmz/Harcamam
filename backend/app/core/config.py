@@ -1,11 +1,21 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import Self
+from urllib.parse import urlsplit
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Repository root, where the shared .env file lives (absent inside Docker; env vars are used there).
 ROOT_DIR = Path(__file__).resolve().parents[3]
+
+# The development defaults; a production database must not be reachable with these.
+DEV_DATABASE_CREDENTIALS = "harcamam:harcamam@"
+LOCAL_HOSTS = {"localhost", "127.0.0.1"}
+
+
+class InsecureProductionSettingsError(ValueError):
+    pass
 
 
 class Settings(BaseSettings):
@@ -14,6 +24,9 @@ class Settings(BaseSettings):
     app_name: str = "HesapKitap API"
     environment: str = "development"
     cors_origins: list[str] = ["http://localhost:5173"]
+    # Path prefix a reverse proxy serves the API under ("/api" in production), so the docs
+    # page links to the right OpenAPI URL. The proxy strips it before passing requests on.
+    root_path: str = ""
 
     database_url: str = "postgresql+psycopg://harcamam:harcamam@localhost:5432/harcamam"
 
@@ -38,6 +51,29 @@ class Settings(BaseSettings):
     email_verification_expire_hours: int = 24
     # Minimum wait between two verification emails to the same user.
     verification_resend_seconds: int = 60
+
+    @property
+    def is_production(self) -> bool:
+        return self.environment == "production"
+
+    @model_validator(mode="after")
+    def refuse_insecure_production(self) -> Self:
+        """Fail at startup rather than run in production with development settings.
+
+        `localhost` stays allowed for the site address, so the production images can be tried
+        on one machine; anything else must be served over https.
+        """
+        if not self.is_production:
+            return self
+        problems = []
+        if DEV_DATABASE_CREDENTIALS in self.database_url:
+            problems.append("DATABASE_URL uses the development user and password")
+        site = urlsplit(self.frontend_url)
+        if site.scheme != "https" and site.hostname not in LOCAL_HOSTS:
+            problems.append("FRONTEND_URL must be an https:// address")
+        if problems:
+            raise InsecureProductionSettingsError("; ".join(problems))
+        return self
 
 
 @lru_cache
