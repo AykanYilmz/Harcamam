@@ -7,6 +7,7 @@ from app.api import (
     auth,
     budgets,
     categories,
+    exports,
     health,
     reports,
     statements,
@@ -41,6 +42,7 @@ def create_app() -> FastAPI:
     app.include_router(reports.router)
     app.include_router(budgets.router)
     app.include_router(subscriptions.router)
+    app.include_router(exports.router)
     return app
 
 
