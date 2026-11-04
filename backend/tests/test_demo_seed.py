@@ -36,6 +36,15 @@ def test_demo_account_has_six_months_of_statements(db: Session, client: TestClie
     ]
     # Salary 30.000, a raise to 40.000 in June and to 45.000 in August (plus interest).
     assert [m["income"][:2] for m in months] == ["30", "40", "40", "45", "45", "45"]
+    budgets = client.get(
+        "/budgets", headers=headers_for(user.id), params={"month": "2026-10"}
+    ).json()["budgets"]
+    assert {b["name"]: b["status"] for b in budgets} == {
+        "Ulaşım": "over",
+        "Market": "warning",
+        "Yemek": "ok",
+        "Eğlence": "ok",
+    }
 
 
 def test_running_again_resets_the_account(db: Session) -> None:

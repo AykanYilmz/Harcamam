@@ -5,7 +5,8 @@ import { AppLayout } from './components/AppLayout.tsx'
 import { CalendarPage } from './pages/CalendarPage.tsx'
 import { CategoriesPage } from './pages/CategoriesPage.tsx'
 import { UncategorizedPage } from './pages/UncategorizedPage.tsx'
-import { UNCATEGORIZED_PATH } from './components/navigation.ts'
+import { BUDGETS_PATH, UNCATEGORIZED_PATH } from './components/navigation.ts'
+import { BudgetsPage } from './pages/BudgetsPage.tsx'
 import { HelpPage } from './pages/HelpPage.tsx'
 import { LoginPage } from './pages/LoginPage.tsx'
 import { NotFoundPage } from './pages/NotFoundPage.tsx'
@@ -54,6 +55,7 @@ function App() {
           <Route path="/yukle" element={<UploadPage />} />
           <Route path="/kategoriler" element={<CategoriesPage />} />
           <Route path={UNCATEGORIZED_PATH} element={<UncategorizedPage />} />
+          <Route path={BUDGETS_PATH} element={<BudgetsPage />} />
           <Route path="/ayarlar" element={<SettingsPage />} />
           <Route path="/yardim" element={<HelpPage />} />
         </Route>

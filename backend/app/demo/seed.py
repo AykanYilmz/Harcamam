@@ -8,7 +8,9 @@ reset (e.g. nightly) to a known state, whatever visitors changed.
 """
 
 from datetime import UTC, datetime
+from decimal import Decimal
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.demo.statements import (
@@ -18,12 +20,16 @@ from app.demo.statements import (
     account_csvs,
     card_csv,
 )
-from app.models import User
+from app.models import Category, User
+from app.services.budgets import create_budget
 from app.services.statements import ImportResult, import_statement
 from app.services.users import create_user, get_user_by_email
 
 DEMO_EMAIL = "demo@hesapkitap.dev"
 DEMO_PASSWORD = "demo12345"
+
+# Chosen so October shows every state: Market close to its limit, Ulaşım over, others fine.
+DEMO_BUDGETS = {"Market": "4000", "Ulaşım": "5000", "Yemek": "1500", "Eğlence": "500"}
 
 
 def _statement_files() -> list[tuple[str, bytes]]:
@@ -49,4 +55,9 @@ def reset_demo_account(
     db.commit()
 
     results = [import_statement(db, user, name, content) for name, content in _statement_files()]
+    for name, limit in DEMO_BUDGETS.items():
+        category_id = db.scalar(
+            select(Category.id).where(Category.user_id.is_(None), Category.name == name)
+        )
+        create_budget(db, user, category_id, Decimal(limit))
     return user, results

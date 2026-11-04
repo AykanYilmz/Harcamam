@@ -36,3 +36,7 @@ export type UncategorizedMerchant = Schemas['UncategorizedMerchantRead']
 
 export type CategoryTrendReport = Schemas['CategoryTrendReportRead']
 export type CategoryTrend = Schemas['CategoryTrendRead']
+
+export type BudgetReport = Schemas['BudgetReportRead']
+export type Budget = Schemas['BudgetRead']
+export type BudgetStatus = Schemas['BudgetStatus']

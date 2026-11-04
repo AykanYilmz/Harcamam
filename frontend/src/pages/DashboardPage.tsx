@@ -2,6 +2,7 @@ import { Upload } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 import { useDailySpending, useMonthlyReport, useTopMerchants, useTrend } from '../api/reports.ts'
 import { useAuth } from '../auth/useAuth.ts'
+import { BudgetAlerts } from '../components/dashboard/BudgetAlerts.tsx'
 import { CategoryBreakdown } from '../components/dashboard/CategoryBreakdown.tsx'
 import { DailySpendingChart } from '../components/dashboard/DailySpendingChart.tsx'
 import { IncomeExpenseDonut } from '../components/dashboard/IncomeExpenseDonut.tsx'
@@ -79,6 +80,7 @@ export function DashboardPage() {
         <EmptyState />
       ) : (
         <>
+          <BudgetAlerts month={data.month} className="mt-6" />
           <section aria-label="Aylık özet" className="mt-6 grid gap-4 sm:grid-cols-3">
             <StatTile
               label="Gelir"
