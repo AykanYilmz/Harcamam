@@ -7,6 +7,7 @@ from app.models.category import (
     CategoryRule,
 )
 from app.models.statement import Statement
+from app.models.subscription import DismissedSubscription
 from app.models.transaction import Transaction, TransactionType
 from app.models.user import User
 
@@ -17,6 +18,7 @@ __all__ = [
     "Category",
     "CategoryKind",
     "CategoryRule",
+    "DismissedSubscription",
     "Statement",
     "Transaction",
     "TransactionType",
