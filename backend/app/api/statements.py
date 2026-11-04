@@ -5,22 +5,24 @@ from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 
 from app.core.config import get_settings
 from app.core.dependencies import CurrentUser, DbSession
-from app.models import Statement
 from app.schemas.statements import StatementImportResult, StatementRead
 from app.services.parsing.base import StatementParseError
 from app.services.statements import (
     DuplicateStatementError,
+    StatementSummary,
     UnsupportedFileError,
     get_user_statement,
     import_statement,
     list_statements,
     safe_file_name,
+    summarize,
 )
 
 router = APIRouter(prefix="/statements", tags=["statements"])
 
 
-def to_read(statement: Statement, transaction_count: int) -> StatementRead:
+def to_read(summary: StatementSummary) -> StatementRead:
+    statement = summary.statement
     return StatementRead(
         id=statement.id,
         file_name=statement.file_name,
@@ -28,7 +30,9 @@ def to_read(statement: Statement, transaction_count: int) -> StatementRead:
         period_start=statement.period_start,
         period_end=statement.period_end,
         uploaded_at=statement.uploaded_at,
-        transaction_count=transaction_count,
+        transaction_count=summary.transaction_count,
+        money_in=summary.money_in,
+        money_out=summary.money_out,
     )
 
 
@@ -62,7 +66,7 @@ def upload_statement(
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)) from exc
 
     return StatementImportResult(
-        statement=to_read(result.statement, result.imported),
+        statement=to_read(summarize(result)),
         imported=result.imported,
         skipped_duplicates=result.skipped_duplicates,
         uncategorized=result.uncategorized,
@@ -71,7 +75,7 @@ def upload_statement(
 
 @router.get("", response_model=list[StatementRead])
 def get_statements(current_user: CurrentUser, db: DbSession) -> list[StatementRead]:
-    return [to_read(statement, count) for statement, count in list_statements(db, current_user)]
+    return [to_read(summary) for summary in list_statements(db, current_user)]
 
 
 @router.delete("/{statement_id}", status_code=status.HTTP_204_NO_CONTENT)

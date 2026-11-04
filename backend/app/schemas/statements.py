@@ -1,5 +1,6 @@
 import uuid
 from datetime import date, datetime
+from decimal import Decimal
 
 from pydantic import BaseModel
 
@@ -12,6 +13,10 @@ class StatementRead(BaseModel):
     period_end: date
     uploaded_at: datetime
     transaction_count: int
+    # Totals as printed on the statement, whatever the categories (a credit card's money
+    # out is the period's purchases).
+    money_in: Decimal
+    money_out: Decimal
 
 
 class StatementImportResult(BaseModel):

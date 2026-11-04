@@ -221,6 +221,16 @@ def test_list_returns_only_own_statements_with_counts(
     assert counts == {SEPTEMBER_CSV: 26, CARD_CSV: 13}
 
 
+def test_statements_show_their_own_totals(client: TestClient, auth_headers: dict[str, str]) -> None:
+    uploaded = upload(client, auth_headers, CARD_CSV).json()["statement"]
+
+    listed = client.get("/statements", headers=auth_headers).json()[0]
+
+    # The card's purchases, and its payment plus a refund.
+    for statement in (uploaded, listed):
+        assert (statement["money_out"], statement["money_in"]) == ("10433.28", "5349.00")
+
+
 def test_delete_removes_statement_and_transactions(
     client: TestClient, auth_headers: dict[str, str], db: Session
 ) -> None:

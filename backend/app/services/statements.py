@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import PurePath
 
-from sqlalchemy import func, select
+from sqlalchemy import ColumnElement, case, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -155,16 +155,54 @@ def import_statement(
     )
 
 
-def list_statements(db: Session, user: User) -> list[tuple[Statement, int]]:
-    """The user's statements, newest first, with their transaction counts."""
+@dataclass(frozen=True)
+class StatementSummary:
+    statement: Statement
+    transaction_count: int
+    # Raw totals as printed on the statement, whatever the categories: for a credit card,
+    # money out is the period's purchases.
+    money_in: Decimal
+    money_out: Decimal
+
+
+def _sum_of(transaction_type: TransactionType) -> ColumnElement[Decimal]:
+    amount = case((Transaction.type == transaction_type, Transaction.amount), else_=0)
+    return func.coalesce(func.sum(amount), 0)
+
+
+def list_statements(db: Session, user: User) -> list[StatementSummary]:
+    """The user's statements, newest first, with their transaction counts and totals."""
     rows = db.execute(
-        select(Statement, func.count(Transaction.id))
+        select(
+            Statement,
+            func.count(Transaction.id),
+            _sum_of(TransactionType.INCOME),
+            _sum_of(TransactionType.EXPENSE),
+        )
         .outerjoin(Transaction, Transaction.statement_id == Statement.id)
         .where(Statement.user_id == user.id)
         .group_by(Statement.id)
         .order_by(Statement.uploaded_at.desc())
     )
-    return [(statement, count) for statement, count in rows]
+    return [
+        StatementSummary(statement, count, Decimal(money_in), Decimal(money_out))
+        for statement, count, money_in, money_out in rows
+    ]
+
+
+def summarize(result: ImportResult) -> StatementSummary:
+    """The same summary for a statement just imported, from its transactions."""
+    transactions = result.statement.transactions
+    return StatementSummary(
+        statement=result.statement,
+        transaction_count=len(transactions),
+        money_in=sum(
+            (t.amount for t in transactions if t.type is TransactionType.INCOME), Decimal(0)
+        ),
+        money_out=sum(
+            (t.amount for t in transactions if t.type is TransactionType.EXPENSE), Decimal(0)
+        ),
+    )
 
 
 def get_user_statement(db: Session, user: User, statement_id: uuid.UUID) -> Statement | None:

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useDeleteStatement, useStatements } from '../../api/statements.ts'
 import type { Statement } from '../../api/types.ts'
 import { errorMessage } from '../../lib/errors.ts'
-import { formatDate } from '../../lib/format.ts'
+import { formatCurrency, formatDate } from '../../lib/format.ts'
 import { ErrorAlert } from '../ui/Alert.tsx'
 import { Card } from '../ui/Card.tsx'
 import { ConfirmDialog } from '../ui/ConfirmDialog.tsx'
@@ -44,6 +44,11 @@ export function StatementList() {
                   {formatDate(statement.period_start)} – {formatDate(statement.period_end)} ·{' '}
                   {statement.transaction_count} işlem · {formatDate(statement.uploaded_at)}{' '}
                   tarihinde yüklendi
+                </p>
+                {/* As printed on the statement, so it can be checked against the bank's total. */}
+                <p className="mt-0.5 text-xs text-fg-muted tabular-nums">
+                  <span className="font-medium text-fg">{formatCurrency(statement.money_out)}</span>{' '}
+                  çıkış · {formatCurrency(statement.money_in)} giriş
                 </p>
               </div>
               <button

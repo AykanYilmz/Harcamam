@@ -556,6 +556,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/exports/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Transactions
+         * @description The transactions from `start` to `end`; the Excel file also has monthly and
+         *     per-category totals.
+         */
+        get: operations["export_transactions_exports_transactions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -829,6 +850,11 @@ export interface components {
             /** Name */
             name: string;
         };
+        /**
+         * ExportFormat
+         * @enum {string}
+         */
+        ExportFormat: "xlsx" | "csv";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -987,6 +1013,10 @@ export interface components {
             uploaded_at: string;
             /** Transaction Count */
             transaction_count: number;
+            /** Money In */
+            money_in: string;
+            /** Money Out */
+            money_out: string;
         };
         /** SubscriptionKey */
         SubscriptionKey: {
@@ -2341,6 +2371,42 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_transactions_exports_transactions_get: {
+        parameters: {
+            query: {
+                /** @description First day, inclusive */
+                start: string;
+                /** @description Last day, inclusive */
+                end: string;
+                format?: components["schemas"]["ExportFormat"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                    "text/csv; charset=utf-8": unknown;
+                };
             };
             /** @description Validation Error */
             422: {
