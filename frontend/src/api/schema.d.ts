@@ -499,6 +499,63 @@ export interface paths {
         patch: operations["update_budget_budgets__budget_id__patch"];
         trace?: never;
     };
+    "/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Subscriptions */
+        get: operations["list_subscriptions_subscriptions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/subscriptions/dismissed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Dismiss
+         * @description Mark a detected payment as not a subscription.
+         */
+        post: operations["dismiss_subscriptions_dismissed_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/subscriptions/dismissed/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Restore
+         * @description Show a dismissed payment again, if it is still detected.
+         */
+        delete: operations["restore_subscriptions_dismissed__key__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -765,6 +822,13 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** DismissedSubscriptionRead */
+        DismissedSubscriptionRead: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -923,6 +987,62 @@ export interface components {
             uploaded_at: string;
             /** Transaction Count */
             transaction_count: number;
+        };
+        /** SubscriptionKey */
+        SubscriptionKey: {
+            /** Key */
+            key: string;
+        };
+        /** SubscriptionRead */
+        SubscriptionRead: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /** Category Name */
+            category_name: string;
+            /** Color */
+            color: string;
+            /** Icon */
+            icon: string;
+            /** Amount */
+            amount: string;
+            /** Yearly Amount */
+            yearly_amount: string;
+            /** Previous Amount */
+            previous_amount: string | null;
+            /** Charge Count */
+            charge_count: number;
+            /**
+             * First Charge
+             * Format: date
+             */
+            first_charge: string;
+            /**
+             * Last Charge
+             * Format: date
+             */
+            last_charge: string;
+            /** Next Charge */
+            next_charge: string | null;
+            /** Active */
+            active: boolean;
+        };
+        /** SubscriptionReport */
+        SubscriptionReport: {
+            /** Monthly Total */
+            monthly_total: string;
+            /** Yearly Total */
+            yearly_total: string;
+            /** Subscriptions */
+            subscriptions: components["schemas"]["SubscriptionRead"][];
+            /** Dismissed */
+            dismissed: components["schemas"]["DismissedSubscriptionRead"][];
         };
         /** TokenPair */
         TokenPair: {
@@ -2134,6 +2254,86 @@ export interface operations {
                 "application/json": components["schemas"]["BudgetUpdate"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_subscriptions_subscriptions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionReport"];
+                };
+            };
+        };
+    };
+    dismiss_subscriptions_dismissed_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscriptionKey"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_subscriptions_dismissed__key__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             204: {

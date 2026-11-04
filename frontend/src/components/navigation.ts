@@ -5,6 +5,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   List,
+  Repeat,
   Settings,
   Target,
   Tags,
@@ -21,6 +22,7 @@ export interface NavItem {
 /** Sidebar sections, separated by a divider. A page is listed only once it is built. */
 export const UNCATEGORIZED_PATH = '/kategori-egitimi'
 export const BUDGETS_PATH = '/butceler'
+export const SUBSCRIPTIONS_PATH = '/abonelikler'
 
 export const NAV_SECTIONS: NavItem[][] = [
   [
@@ -29,6 +31,7 @@ export const NAV_SECTIONS: NavItem[][] = [
     { to: '/takvim', label: 'Takvim', icon: CalendarDays },
     { to: '/raporlar', label: 'Raporlar', icon: ChartColumn },
     { to: BUDGETS_PATH, label: 'Bütçeler', icon: Target },
+    { to: SUBSCRIPTIONS_PATH, label: 'Abonelikler', icon: Repeat },
     { to: '/yukle', label: 'Ekstre Yükle', icon: Upload },
     { to: '/kategoriler', label: 'Kategoriler', icon: Tags },
     { to: UNCATEGORIZED_PATH, label: 'Kategori Eğitimi', icon: GraduationCap },
